@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:schema="http://schema.org/" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" version="2.0" xml:base="http://default/">
+  <channel>
+    <title>Drush Site-Install</title>
+    <link>http://default/</link>
+    <description/>
+    <language>en</language>
+    
+    <item>
+  <title>test article</title>
+  <link>http://default/node/1</link>
+  <description>&lt;span property="schema:name" class="field field--name-title field--type-string field--label-hidden"&gt;test article&lt;/span&gt;
+&lt;span rel="schema:author" class="field field--name-uid field--type-entity-reference field--label-hidden"&gt;&lt;span lang="" about="http://default/user/1" typeof="schema:Person" property="schema:name" datatype="" xml:lang=""&gt;admin&lt;/span&gt;&lt;/span&gt;
+&lt;span property="schema:dateCreated" content="2020-08-01T12:20:38+00:00" class="field field--name-created field--type-created field--label-hidden"&gt;Sat, 08/01/2020 - 15:20&lt;/span&gt;
+</description>
+  <pubDate>Sat, 01 Aug 2020 12:20:38 +0000</pubDate>
+    <dc:creator>admin</dc:creator>
+    <guid isPermaLink="false">1 at http://default</guid>
+    <comments>http://default/node/1#comments</comments>
+    </item>
+
+  </channel>
+</rss>
