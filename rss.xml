@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:schema="http://schema.org/" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" version="2.0" xml:base="http://default/">
   <channel>
-    <title>Drush Site-Install</title>
+    <title>Static Drupal site</title>
     <link>http://default/</link>
     <description/>
     <language>en</language>
@@ -17,6 +17,111 @@
     <dc:creator>admin</dc:creator>
     <guid isPermaLink="false">1 at http://default</guid>
     <comments>http://default/node/1#comments</comments>
+    </item>
+<item>
+  <title>Article - Secundum Tation Wisi</title>
+  <link>http://default/node-5-article</link>
+  <description>&lt;span property="schema:name" class="field field--name-title field--type-string field--label-hidden"&gt;Article - Secundum Tation Wisi&lt;/span&gt;
+&lt;span rel="schema:author" class="field field--name-uid field--type-entity-reference field--label-hidden"&gt;&lt;span lang="" about="http://default/user/1" typeof="schema:Person" property="schema:name" datatype="" xml:lang=""&gt;admin&lt;/span&gt;&lt;/span&gt;
+&lt;span property="schema:dateCreated" content="2020-08-01T00:57:13+00:00" class="field field--name-created field--type-created field--label-hidden"&gt;Sat, 08/01/2020 - 03:57&lt;/span&gt;
+</description>
+  <pubDate>Sat, 01 Aug 2020 00:57:13 +0000</pubDate>
+    <dc:creator>admin</dc:creator>
+    <guid isPermaLink="false">5 at http://default</guid>
+    <comments>http://default/node-5-article#comments</comments>
+    </item>
+<item>
+  <title>Article - Singularis Utinam</title>
+  <link>http://default/node-7-article</link>
+  <description>&lt;span property="schema:name" class="field field--name-title field--type-string field--label-hidden"&gt;Article - Singularis Utinam&lt;/span&gt;
+&lt;span rel="schema:author" class="field field--name-uid field--type-entity-reference field--label-hidden"&gt;&lt;span lang="" about="http://default/user/1" typeof="schema:Person" property="schema:name" datatype="" xml:lang=""&gt;admin&lt;/span&gt;&lt;/span&gt;
+&lt;span property="schema:dateCreated" content="2020-07-31T04:16:03+00:00" class="field field--name-created field--type-created field--label-hidden"&gt;Fri, 07/31/2020 - 07:16&lt;/span&gt;
+</description>
+  <pubDate>Fri, 31 Jul 2020 04:16:03 +0000</pubDate>
+    <dc:creator>admin</dc:creator>
+    <guid isPermaLink="false">7 at http://default</guid>
+    <comments>http://default/node-7-article#comments</comments>
+    </item>
+<item>
+  <title>Article - Conventio Decet</title>
+  <link>http://default/node-11-article</link>
+  <description>&lt;span property="schema:name" class="field field--name-title field--type-string field--label-hidden"&gt;Article - Conventio Decet&lt;/span&gt;
+&lt;span rel="schema:author" class="field field--name-uid field--type-entity-reference field--label-hidden"&gt;&lt;span lang="" typeof="schema:Person" property="schema:name" datatype="" xml:lang=""&gt;Anonymous (not verified)&lt;/span&gt;&lt;/span&gt;
+&lt;span property="schema:dateCreated" content="2020-07-30T23:32:02+00:00" class="field field--name-created field--type-created field--label-hidden"&gt;Fri, 07/31/2020 - 02:32&lt;/span&gt;
+</description>
+  <pubDate>Thu, 30 Jul 2020 23:32:02 +0000</pubDate>
+    <dc:creator>Anonymous</dc:creator>
+    <guid isPermaLink="false">11 at http://default</guid>
+    <comments>http://default/node-11-article#comments</comments>
+    </item>
+<item>
+  <title>Article - Sed</title>
+  <link>http://default/node-15-article</link>
+  <description>&lt;span property="schema:name" class="field field--name-title field--type-string field--label-hidden"&gt;Article - Sed&lt;/span&gt;
+&lt;span rel="schema:author" class="field field--name-uid field--type-entity-reference field--label-hidden"&gt;&lt;span lang="" typeof="schema:Person" property="schema:name" datatype="" xml:lang=""&gt;Anonymous (not verified)&lt;/span&gt;&lt;/span&gt;
+&lt;span property="schema:dateCreated" content="2020-07-30T21:57:15+00:00" class="field field--name-created field--type-created field--label-hidden"&gt;Fri, 07/31/2020 - 00:57&lt;/span&gt;
+</description>
+  <pubDate>Thu, 30 Jul 2020 21:57:15 +0000</pubDate>
+    <dc:creator>Anonymous</dc:creator>
+    <guid isPermaLink="false">15 at http://default</guid>
+    </item>
+<item>
+  <title>Article - Neque</title>
+  <link>http://default/node-16-article</link>
+  <description>&lt;span property="schema:name" class="field field--name-title field--type-string field--label-hidden"&gt;Article - Neque&lt;/span&gt;
+&lt;span rel="schema:author" class="field field--name-uid field--type-entity-reference field--label-hidden"&gt;&lt;span lang="" about="http://default/user/1" typeof="schema:Person" property="schema:name" datatype="" xml:lang=""&gt;admin&lt;/span&gt;&lt;/span&gt;
+&lt;span property="schema:dateCreated" content="2020-07-30T13:38:16+00:00" class="field field--name-created field--type-created field--label-hidden"&gt;Thu, 07/30/2020 - 16:38&lt;/span&gt;
+</description>
+  <pubDate>Thu, 30 Jul 2020 13:38:16 +0000</pubDate>
+    <dc:creator>admin</dc:creator>
+    <guid isPermaLink="false">16 at http://default</guid>
+    <comments>http://default/node-16-article#comments</comments>
+    </item>
+<item>
+  <title>Article - Ibidem Luctus Secundum</title>
+  <link>http://default/node-3-article</link>
+  <description>&lt;span property="schema:name" class="field field--name-title field--type-string field--label-hidden"&gt;Article - Ibidem Luctus Secundum&lt;/span&gt;
+&lt;span rel="schema:author" class="field field--name-uid field--type-entity-reference field--label-hidden"&gt;&lt;span lang="" about="http://default/user/1" typeof="schema:Person" property="schema:name" datatype="" xml:lang=""&gt;admin&lt;/span&gt;&lt;/span&gt;
+&lt;span property="schema:dateCreated" content="2020-07-29T17:08:47+00:00" class="field field--name-created field--type-created field--label-hidden"&gt;Wed, 07/29/2020 - 20:08&lt;/span&gt;
+</description>
+  <pubDate>Wed, 29 Jul 2020 17:08:47 +0000</pubDate>
+    <dc:creator>admin</dc:creator>
+    <guid isPermaLink="false">3 at http://default</guid>
+    <comments>http://default/node-3-article#comments</comments>
+    </item>
+<item>
+  <title>Article - Camur Tum</title>
+  <link>http://default/node-10-article</link>
+  <description>&lt;span property="schema:name" class="field field--name-title field--type-string field--label-hidden"&gt;Article - Camur Tum&lt;/span&gt;
+&lt;span rel="schema:author" class="field field--name-uid field--type-entity-reference field--label-hidden"&gt;&lt;span lang="" about="http://default/user/1" typeof="schema:Person" property="schema:name" datatype="" xml:lang=""&gt;admin&lt;/span&gt;&lt;/span&gt;
+&lt;span property="schema:dateCreated" content="2020-07-29T07:59:33+00:00" class="field field--name-created field--type-created field--label-hidden"&gt;Wed, 07/29/2020 - 10:59&lt;/span&gt;
+</description>
+  <pubDate>Wed, 29 Jul 2020 07:59:33 +0000</pubDate>
+    <dc:creator>admin</dc:creator>
+    <guid isPermaLink="false">10 at http://default</guid>
+    <comments>http://default/node-10-article#comments</comments>
+    </item>
+<item>
+  <title>Article - Pertineo</title>
+  <link>http://default/node-12-article</link>
+  <description>&lt;span property="schema:name" class="field field--name-title field--type-string field--label-hidden"&gt;Article - Pertineo&lt;/span&gt;
+&lt;span rel="schema:author" class="field field--name-uid field--type-entity-reference field--label-hidden"&gt;&lt;span lang="" about="http://default/user/1" typeof="schema:Person" property="schema:name" datatype="" xml:lang=""&gt;admin&lt;/span&gt;&lt;/span&gt;
+&lt;span property="schema:dateCreated" content="2020-07-27T14:30:08+00:00" class="field field--name-created field--type-created field--label-hidden"&gt;Mon, 07/27/2020 - 17:30&lt;/span&gt;
+</description>
+  <pubDate>Mon, 27 Jul 2020 14:30:08 +0000</pubDate>
+    <dc:creator>admin</dc:creator>
+    <guid isPermaLink="false">12 at http://default</guid>
+    </item>
+<item>
+  <title>Article - Oppeto</title>
+  <link>http://default/node-20-article</link>
+  <description>&lt;span property="schema:name" class="field field--name-title field--type-string field--label-hidden"&gt;Article - Oppeto&lt;/span&gt;
+&lt;span rel="schema:author" class="field field--name-uid field--type-entity-reference field--label-hidden"&gt;&lt;span lang="" typeof="schema:Person" property="schema:name" datatype="" xml:lang=""&gt;Anonymous (not verified)&lt;/span&gt;&lt;/span&gt;
+&lt;span property="schema:dateCreated" content="2020-07-27T05:34:58+00:00" class="field field--name-created field--type-created field--label-hidden"&gt;Mon, 07/27/2020 - 08:34&lt;/span&gt;
+</description>
+  <pubDate>Mon, 27 Jul 2020 05:34:58 +0000</pubDate>
+    <dc:creator>Anonymous</dc:creator>
+    <guid isPermaLink="false">20 at http://default</guid>
     </item>
 
   </channel>
