@@ -1,0 +1,136 @@
+<html>
+    <head>
+
+        <style>
+            body {
+                background-image: url("https://www.highreshdwallpapers.com/wp-content/uploads/2017/05/Sexy-Cheeky-Wallpaper.jpg");
+                background-position: right; /* Center the image */
+                background-repeat: no-repeat; /* Do not repeat the image */
+                background-size: cover;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                font-size: 1rem;
+                font-weight: 400;
+                color: #222;
+                line-height: 1.5;
+            }
+
+            .container {
+                position: absolute;
+                top: 50%;
+                width: 80%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            .card {
+                background-color: #ffffff7d;
+                background-clip: border-box;
+                border-radius: .25rem;
+                box-shadow: 0 0 10px rgba(96, 134, 181, 0.3);
+                margin-top: 20px;
+                text-align: center;
+            }
+            .card__body {
+                font-size: 0;
+                padding: 1.25rem;
+            }
+            .card__title {
+                font-size: 2rem;
+                margin: 0 0 .75rem;
+            }
+
+            .countdown__section {
+                display: inline-block;
+                margin-left: 4px;
+            }
+            .countdown__section:first-child {
+                margin-left: 0;
+            }
+            .countdown__section > .value {
+                background-color: #333;
+                border-radius: 10px;
+                font-size: 50px;
+                color: #ffc107;
+                line-height: 100px;
+                text-align: center;
+                height: 100px;
+                width: 100px;
+            }
+            .countdown__label {
+                font-size: 11px;
+                padding-top: 4px;
+                text-align: center;
+            }
+
+        </style>
+    </head>
+    <main class="container">
+        <div class="card">
+            <div class="card__body">
+                <h2 class="card__title">
+                    Time until cofee
+                </h2>
+
+                <div class="countdown__section">
+                    <div id="days" class="value">00</div>
+                    <div class="countdown__label">DAYS</div>
+                </div>
+                <div class="countdown__section">
+                    <div id="hours" class="value">00</div>
+                    <div class="countdown__label">HOURS</div>
+                </div>
+                <div class="countdown__section">
+                    <div id="minutes" class="value">00</div>
+                    <div class="countdown__label">MINUTES</div>
+                </div>
+                <div class="countdown__section">
+                    <div id="seconds" class="value">00</div>
+                    <div class="countdown__label">SECONDS</div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        let newYearsDay = new Date('December 22, 2020 10:30:00');
+
+        let $days = document.getElementById('days');
+        let $hours = document.getElementById('hours');
+        let $minutes = document.getElementById('minutes');
+        let $seconds = document.getElementById('seconds');
+
+        setInterval(function () {
+            // Calculate the remaining time
+            var now = new Date();
+            var timeLeft = (newYearsDay - now) / 1000;
+            updateClock(timeLeft);
+        }, 1000);
+
+        function updateClock(remainingTime) {
+            // calculate (and subtract) whole days
+            let days = Math.floor(remainingTime / 86400);
+            remainingTime -= days * 86400;
+
+            // calculate (and subtract) whole hours
+            let hours = Math.floor(remainingTime / 3600) % 24;
+            remainingTime -= hours * 3600;
+
+            // calculate (and subtract) whole minutes
+            let minutes = Math.floor(remainingTime / 60) % 60;
+            remainingTime -= minutes * 60;
+
+            // what's left is seconds
+            let seconds = Math.floor(remainingTime % 60);
+
+            // pad numbers if needed
+            $days.innerHTML = padNumber(days);
+            $hours.innerHTML = padNumber(hours);
+            $minutes.innerHTML = padNumber(minutes);
+            $seconds.innerHTML = padNumber(seconds);
+        }
+
+        function padNumber(number) {
+            return number < 10 ? "0" + number : number;
+        }
+
+    </script>
+</html>
