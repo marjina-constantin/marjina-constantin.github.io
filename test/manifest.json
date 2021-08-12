@@ -1,21 +1,16 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Buna ziua",
+  "name": "Buna ziua long version",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "druplicon-deadpool.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "scarlett.png",
       "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "307x600"
     }
   ],
   "start_url": ".",
