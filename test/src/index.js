@@ -16,6 +16,7 @@ ReactDOM.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://cra.link/PWA
 serviceWorkerRegistration.register({onUpdate: (registration) => {
+  window.location.reload();
         // caches.keys().then(function(cacheNames) {
         //     cacheNames.forEach(function(cacheName) {
         //         caches.delete(cacheName);
