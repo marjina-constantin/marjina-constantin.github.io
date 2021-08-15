@@ -11,7 +11,7 @@ export default function Navbar() {
                         className="not-selected"
                         to="/test/build"
                         exact
-                    >Home</NavLink>
+                    >Home page</NavLink>
                 </li>
                 <li>
                     <NavLink
