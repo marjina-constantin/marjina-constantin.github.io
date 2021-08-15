@@ -1,0 +1,25 @@
+.navbar {
+  margin-bottom: 30px;
+}
+.navbar ul {
+  margin: 0;
+  list-style-type: none;
+  padding: 0;
+  min-height: 50px;
+}
+.navbar ul li {
+  background: #4791db;
+  width: 50%;
+  float: left;
+  text-align: center;
+  height: 50px;
+  line-height: 50px;
+}
+.navbar ul li a {
+  color: #fff;
+  text-decoration: none;
+  display: block;
+}
+.navbar ul li a.selected {
+  background: #1976d2;
+}
