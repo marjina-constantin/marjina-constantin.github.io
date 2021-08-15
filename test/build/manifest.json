@@ -1,9 +1,9 @@
 {
-  "short_name": "Buna ziua",
-  "name": "Buna ziua long version",
+  "short_name": "Expenses",
+  "name": "Expenses PWA",
   "icons": [
     {
-      "src": "android/android-launchericon-72-72.png",
+      "src": "android/android-launchericon-96-96.png",
       "sizes": "72x72",
       "type": "image/x-icon"
     },
