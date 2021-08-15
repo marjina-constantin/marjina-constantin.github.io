@@ -10,7 +10,7 @@ const Home = () => {
 
   return (
     <div>
-      {loading ? <img width="150px" alt="loader" src="https://miro.medium.com/max/1400/1*CsJ05WEGfunYMLGfsT2sXA.gif" /> : 'Homepage content loaded'}
+      Homepage content
     </div>
   );
 };
