@@ -71,3 +71,10 @@ self.addEventListener('message', (event) => {
 
 // Any other custom service worker logic can go here.
 self.skipWaiting();
+self.addEventListener("install", function() {
+    console.log("1111111 install");
+});
+
+self.addEventListener("activate", function() {
+    console.log("111111111 activate");
+});
