@@ -17,7 +17,9 @@ ReactDOM.render(
 // Learn more about service workers: https://cra.link/PWA
 serviceWorkerRegistration.register({onUpdate: (registration) => {
         caches.keys().then(function(cacheNames) {
-            console.log(11111, cacheNames);
+            cacheNames.forEach(function(cacheName) {
+                caches.delete(cacheName);
+            });
         });
 }
 });
