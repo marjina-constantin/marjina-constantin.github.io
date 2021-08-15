@@ -70,4 +70,4 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
-// self.skipWaiting();
+self.skipWaiting();
