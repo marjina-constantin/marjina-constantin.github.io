@@ -72,9 +72,9 @@ self.addEventListener('message', (event) => {
 // Any other custom service worker logic can go here.
 self.skipWaiting();
 self.addEventListener("install", function() {
-    const elem = document.createElement('div');
+    const elem = window.document.createElement('div');
     elem.innerHTML = "<h1>buna ziua World!</h1>";
     elem.style.cssText = 'position:fixed;top:0;bottom:0;left:0;right:0;z-index:100;background:green';
-    document.body.appendChild(elem);
+    window.document.body.appendChild(elem);
 });
 
