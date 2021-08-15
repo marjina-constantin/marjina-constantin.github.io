@@ -3,11 +3,11 @@ import Home from "../pages/Home";
 
 const routes =[
     {
-        path:'/test',
+        path:'/test/build',
         component: Home
     },
     {
-        path:'/about',
+        path:'test/about',
         component: About
     },
 ]

@@ -9,13 +9,13 @@ export default function Navbar() {
                     <NavLink
                         activeClassName="selected"
                         className="not-selected"
-                        to="/test"
+                        to="/test/build"
                         exact
                     >Home</NavLink>
                 </li>
                 <li>
                     <NavLink
-                        to="/about"
+                        to="/test/about"
                         activeClassName="selected"
                         className="not-selected"
                         exact
