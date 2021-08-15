@@ -10,7 +10,7 @@ const Home = () => {
 
   return (
     <div>
-      MISHAAA LUCRAZAAA
+      Brand new content
     </div>
   );
 };
