@@ -10,7 +10,7 @@ const Home = () => {
 
   return (
     <div>
-      Brand new content
+      Brand new homepage
     </div>
   );
 };
