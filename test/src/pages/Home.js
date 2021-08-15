@@ -4,7 +4,7 @@ const Home = () => {
 
     return (
         <div>
-            Home page updated...
+            Home page updated...312321312
         </div>
     );
 };
