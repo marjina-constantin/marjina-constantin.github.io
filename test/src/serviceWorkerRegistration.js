@@ -90,6 +90,12 @@ function registerValidSW(swUrl, config) {
           }
         };
       };
+      registration.oninstall = () => {
+        console.log('111111111 install')
+      };
+      registration.onactivate = () => {
+        console.log('111111111 activate')
+      };
     })
     .catch((error) => {
       console.error('Error during service worker registration:', error);
