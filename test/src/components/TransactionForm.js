@@ -60,8 +60,16 @@ const TransactionForm = ({formType, values, onSuccess}) => {
         <input required placeholder="Date" type="date" name="field_date" value={formState.field_date} onChange={handleChange} />
         <select required name="field_category" value={formState.field_category} onChange={handleChange}>
           <option value="">Category</option>
-          <option value="1">Category 1</option>
-          <option value="2">Category 2</option>
+          <option value="1">Clothing</option>
+          <option value="2">Entertainment</option>
+          <option value="3">Food</option>
+          <option value="4">Gifts</option>
+          <option value="5">Household Items/Supplies</option>
+          <option value="6">Housing</option>
+          <option value="7">Medical/Healthcare</option>
+          <option value="8">Personal</option>
+          <option value="9">Transportation</option>
+          <option value="10">Utilities</option>
         </select>
         <textarea placeholder="Description" name="field_description" rows="3" value={formState.field_description} onChange={handleChange} />
         <input type="submit" value={formType === 'add' ? 'Add transaction' : 'Edit transaction'} />
