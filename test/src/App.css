@@ -1,5 +1,25 @@
+body {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  margin-top: 35px;
+  color: #fff;
+  background: #282a36;
+  padding-bottom: 100px;
+}
 .navbar {
-  margin-bottom: 30px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #fff;
+  transition: all .3s ease-in-out;
+}
+.navbar.closed {
+  height: 60px;
+}
+.navbar.open {
+  height: 240px;
 }
 .navbar ul {
   margin: 0;
@@ -8,18 +28,166 @@
   min-height: 50px;
 }
 .navbar ul li {
-  background: #4791db;
-  width: 50%;
+  height: 60px;
+  line-height: 70px;
   float: left;
-  text-align: center;
-  height: 50px;
-  line-height: 50px;
+  width: 33.3333%;
+  transition: all .3s ease-in-out;
+}
+.navbar.open ul li {
+  width: 100%;
+}
+/*.navbar ul li:first-child:nth-last-child(1) {*/
+/*  width: 100%;*/
+/*}*/
+/*.navbar ul li:first-child:nth-last-child(2),*/
+/*.navbar ul li:first-child:nth-last-child(2) ~ li {*/
+/*  width: 50%;*/
+/*}*/
+/*.navbar ul li:first-child:nth-last-child(3),*/
+/*.navbar ul li:first-child:nth-last-child(3) ~ li {*/
+/*  width: 33.3333%;*/
+/*}*/
+@media only screen and (min-width: 600px) {
+  .navbar ul li:first-child:nth-last-child(4),
+  .navbar ul li:first-child:nth-last-child(4) ~ li {
+    width: 25%;
+  }
 }
 .navbar ul li a {
-  color: #fff;
-  text-decoration: none;
+  color: #58626b;
+  font-size: 40px;
+  width: 100%;
   display: block;
+  height: 100%;
 }
-.navbar ul li a.selected {
-  background: #1976d2;
+.navbar ul li a:focus, .navbar ul li a.selected {
+  color: #282a36;
+  background: #fcc700;
+}
+
+@media only screen and (max-width: 600px) {
+  .navbar ul li a {
+    font-size: 30px;
+  }
+}
+
+.add-transaction {
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 40px;
+}
+.add-transaction input, .add-transaction textarea, .add-transaction select {
+  background: none;
+  border: none;
+  min-height: 40px;
+  width: 100%;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #6D7781;
+  font-weight: bold;
+  transition: all .3s ease-in-out;
+  color: #ccc;
+}
+.add-transaction input:focus, .add-transaction textarea:focus {
+  outline: none;
+  border-bottom: 1px solid #fcc700;
+}
+.add-transaction input::placeholder, .add-transaction textarea::placeholder {
+  color: #ccc;
+  font-weight: bold;
+}
+.add-transaction input[type=submit] {
+  border: none;
+  background: #fcc700;
+  color: black;
+}
+.add-transaction input[type=date]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+.button {
+  font-weight: bold;
+  border: none;
+  min-height: 40px;
+  background: #fcc700;
+}
+.button.logout {
+  width: 80%;
+}
+.add-transaction input[type=submit]:hover, .button:hover {
+  cursor: pointer;
+}
+.table-wrapper {
+  overflow-x: auto;
+  margin-top: 30px;
+  padding: 0 25px;
+}
+.expenses-table {
+  width: 100%;
+  text-align: left;
+}
+.expenses-table thead {
+  box-shadow: 0 19px 38px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
+  background-color:#3d4449;
+}
+.expenses-table th {
+  padding: 0 8px;
+}
+.expenses-table td {
+  min-width: 100px;
+  padding: 0 8px;
+}
+.expenses-table tr {
+  height: 50px;
+}
+.expenses-table tr:nth-of-type(even) {
+  background-color:#3d4449;
+  /*box-shadow: 0 3px 6px rgb(0 0 0 / 16%), 0 3px 6px rgb(0 0 0 / 23%);*/
+}
+.month-badge {
+  margin-top: 20px;
+  display: block;
+  color: black;
+  background: #fcc700;
+  padding: 10px;
+}
+.btn-outline {
+  background: none;
+  border: 1px solid #fcc700;
+  color: #fff;
+  font-weight: bold;
+  padding: 10px 25px;
+}
+button:hover {
+  cursor: pointer;
+}
+.modal-window {
+  position: fixed;
+  background-color: rgba(255, 255, 255, 0.25);
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 999;
+  transition: all 0.3s;
+}
+.modal-window > div {
+  max-width: 700px;
+  width: 70%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 2em;
+  background: #282a36;
+}
+
+.modal-close {
+  color: #ccc;
+  line-height: 50px;
+  font-size: 80%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 70px;
+  text-decoration: none;
 }
