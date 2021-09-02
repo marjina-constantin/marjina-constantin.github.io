@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/test/build/static/css/main.9be0292f.chunk.css",
+    "main.css": "/test/build/static/css/main.b6b4e696.chunk.css",
     "main.js": "/test/build/static/js/main.5fbb7091.chunk.js",
     "main.js.map": "/test/build/static/js/main.5fbb7091.chunk.js.map",
     "runtime-main.js": "/test/build/static/js/runtime-main.bcc9b6e1.js",
@@ -12,13 +12,13 @@
     "index.html": "/test/build/index.html",
     "service-worker.js": "/test/build/service-worker.js",
     "service-worker.js.map": "/test/build/service-worker.js.map",
-    "static/css/main.9be0292f.chunk.css.map": "/test/build/static/css/main.9be0292f.chunk.css.map",
+    "static/css/main.b6b4e696.chunk.css.map": "/test/build/static/css/main.b6b4e696.chunk.css.map",
     "static/js/2.b5dd2f39.chunk.js.LICENSE.txt": "/test/build/static/js/2.b5dd2f39.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.bcc9b6e1.js",
     "static/js/2.b5dd2f39.chunk.js",
-    "static/css/main.9be0292f.chunk.css",
+    "static/css/main.b6b4e696.chunk.css",
     "static/js/main.5fbb7091.chunk.js"
   ]
 }
