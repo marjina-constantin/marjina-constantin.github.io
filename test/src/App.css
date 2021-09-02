@@ -131,6 +131,29 @@ body {
 }
 .expenses-table th {
   padding: 0 8px;
+  position: relative;
+}
+.expenses-table th.sortable:before,
+.expenses-table th.sortable:after {
+  border: 5px solid transparent;
+  content: "";
+  right: 5px;
+  top: 50%;
+  position: absolute;
+}
+.expenses-table th.sortable:before {
+  border-bottom-color: #fcc700;
+  margin-top: -10px;
+}
+.expenses-table th.sortable:after {
+  border-top-color: #fcc700;
+  margin-top: 2px;
+}
+.expenses-table th.sortable.ascending:after {
+  border: none;
+}
+.expenses-table th.sortable.descending:before {
+  border: none;
 }
 .expenses-table td {
   min-width: 100px;
@@ -190,4 +213,12 @@ button:hover {
   top: 0;
   width: 70px;
   text-decoration: none;
+}
+.filters {
+  text-align: left;
+  padding: 0 25px;
+  margin-top: 30px;
+}
+.filters select {
+  height: 38px;
 }

@@ -13,6 +13,12 @@ export const initialState = {
   userIsLoggedIn: !!user
 };
 
+export const initialData = {
+  groupedData: null,
+  totals: null,
+  filtered: null
+};
+
 export const AuthReducer = (initialState, action) => {
   switch (action.type) {
     case "REQUEST_LOGIN":
@@ -41,6 +47,52 @@ export const AuthReducer = (initialState, action) => {
         ...initialState,
         loading: false,
         errorMessage: action.error
+      };
+
+    default:
+      throw new Error(`Unhandled action type: ${action.type}`);
+  }
+};
+
+export const DataReducer = (initialState, action) => {
+  switch (action.type) {
+    case "SET_DATA":
+      return {
+        ...initialState,
+        groupedData: action.groupedData,
+        totals: action.totals,
+        raw: action.raw
+      };
+
+    case "FILTER_DATA":
+      if (action.category !== '') {
+        const filtered = initialState.raw.filter(item => item.field_category === action.category);
+        let groupedData = {};
+        let monthsTotals = {};
+        filtered.forEach(item => {
+          const date = new Date(item.field_date);
+          const month = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
+          if (!groupedData[month]) {
+            groupedData[month] = [];
+          }
+          if (!monthsTotals[month]) {
+            monthsTotals[month] = 0;
+          }
+          groupedData[month].push(item);
+          monthsTotals[month] += parseInt(item.field_amount);
+        });
+        const newState = {
+          groupedData: groupedData,
+          totals: monthsTotals,
+        };
+        return {
+          ...initialState,
+          filtered: newState
+        };
+      }
+      return {
+        ...initialState,
+        filtered: null
       };
 
     default:

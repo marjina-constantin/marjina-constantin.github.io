@@ -1,46 +1,23 @@
 import React, {useEffect, useState} from "react";
-import {useAuthState} from '../../context';
-import {fetchRequest, deleteNode} from '../../utils/utils';
+import {useAuthState, useData} from '../../context';
+import {deleteNode, fetchData} from '../../utils/utils';
 import Modal from '../../components/Modal';
 import TransactionForm from "../../components/TransactionForm";
+import TransactionsTable from "../../components/TransactionsTable";
+import Filters from "../../components/Filters";
 
 const Home = () => {
   const { userDetails, token } = useAuthState();
-  const [data, setData] = useState({});
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-
-  const fetchData = () => {
-    const fetchOptions = {
-      method: 'GET',
-      headers: new Headers({
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'JWT-Authorization': 'Bearer ' + token
-      }),
-    };
-    fetchRequest('https://dev-expenses-api.pantheonsite.io/user-expenses?_format=json', fetchOptions, (data) => {
-      let groupedData = {};
-      let monthsTotals = {};
-      data.forEach(item => {
-        const date = new Date(item.field_date);
-        const month = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
-        if (!groupedData[month]) {
-          groupedData[month] = [];
-        }
-        if (!monthsTotals[month]) {
-          monthsTotals[month] = 0;
-        }
-        groupedData[month].push(item);
-        monthsTotals[month] += parseInt(item.field_amount);
-      });
-      setData({groupedData: groupedData, totals: monthsTotals});
-    });
-  }
+  const { data, dataDispatch } = useData();
+  const noData = data.groupedData === null;
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (noData) {
+      fetchData(token, dataDispatch);
+    }
+  }, [data]);
 
   const [focusedItem, setFocusedItem] = useState({})
 
@@ -59,9 +36,11 @@ const Home = () => {
         alert('Something went wrong.');
       }
       setShowDeleteModal(false);
-      fetchData();
+      fetchData(token, dataDispatch);
     });
   };
+
+  const items = data.filtered || data;
 
   return (
     <div>
@@ -72,61 +51,23 @@ const Home = () => {
       <Modal show={showEditModal} onClose={() => setShowEditModal(false)}>
         <TransactionForm formType="edit" values={focusedItem} onSuccess={() => {
           setShowEditModal(false);
-          fetchData();
+          fetchData(token, dataDispatch);
         }} />
       </Modal>
       <h2>Expenses</h2>
       <h4>Hi, {userDetails?.current_user?.name}!</h4>
-      {Object.keys(data).length === 0 ? '' :
+      <Filters />
+      {noData ? '' :
         <div>
-          {Object.keys(data.groupedData).map((item, id) => (
-            <div className="table-wrapper" key={id}>
-              <div className="month-badge">{item}: {data.totals[item]}</div>
-              <table className="expenses-table" cellSpacing="0" cellPadding="0">
-                <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Amount</th>
-                  <th>Category</th>
-                  <th>Description</th>
-                  <th></th>
-                  <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                {Object.keys(data.groupedData[item]).map((element, id) => (
-                  <tr key={data.groupedData[item][id].nid}>
-                    <td>{data.groupedData[item][id].field_date}</td>
-                    <td>{data.groupedData[item][id].field_amount}</td>
-                    <td>{data.groupedData[item][id].field_category_name}</td>
-                    <td>{data.groupedData[item][id].field_description}</td>
-                    <td>
-                      <button
-                        data-values={JSON.stringify({
-                          nid: data.groupedData[item][id].nid,
-                          field_date: data.groupedData[item][id].field_date,
-                          field_amount: data.groupedData[item][id].field_amount,
-                          field_category: data.groupedData[item][id].field_category,
-                          field_description: data.groupedData[item][id].field_description,
-                        })}
-                        onClick={handleEdit}
-                        className="btn-outline">
-                        Edit
-                      </button>
-                    </td>
-                    <td>
-                      <button
-                        data-nid={data.groupedData[item][id].nid}
-                        onClick={(e) => setShowDeleteModal(e.currentTarget.getAttribute("data-nid"))}
-                        className="btn-outline">
-                          Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                </tbody>
-              </table>
-            </div>
+          {Object.keys(items.groupedData).map((item, id) => (
+            <TransactionsTable
+              key={id}
+              total={items.totals[item]}
+              month={item}
+              items={items.groupedData[item]}
+              handleEdit={handleEdit}
+              setShowDeleteModal={setShowDeleteModal}
+            />
           ))}
         </div>
       }
