@@ -44,11 +44,11 @@ const Home = () => {
 
   return (
     <div>
-      <Modal show={showDeleteModal} onClose={() => setShowDeleteModal(false)}>
+      <Modal show={showDeleteModal} onClose={(e) => {e.preventDefault(); setShowDeleteModal(false)}}>
         <h3>Are you sure you want to delete the transaction?</h3>
         <button onClick={() => handleDelete(showDeleteModal, token)} className="button logout">Yes, remove the transaction</button>
       </Modal>
-      <Modal show={showEditModal} onClose={() => setShowEditModal(false)}>
+      <Modal show={showEditModal} onClose={(e) => {e.preventDefault(); setShowEditModal(false)}}>
         <TransactionForm formType="edit" values={focusedItem} onSuccess={() => {
           setShowEditModal(false);
           fetchData(token, dataDispatch);
