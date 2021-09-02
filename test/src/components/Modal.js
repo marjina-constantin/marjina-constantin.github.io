@@ -5,7 +5,7 @@ export default function Modal({show, onClose, children}) {
   useEffect(() => {
     const checkIfClickedOutside = e => {
       if (show && ref.current && !ref.current.contains(e.target)) {
-        onClose();
+        onClose(e);
       }
     }
     document.addEventListener("mousedown", checkIfClickedOutside)
