@@ -55,7 +55,7 @@ const Home = () => {
         }} />
       </Modal>
       <h2>Expenses</h2>
-      <h4>Hi, {userDetails?.current_user?.name}! test change</h4>
+      <h4>Hi, {userDetails?.current_user?.name}!</h4>
       <Filters />
       {noData ? '' :
         <div>
