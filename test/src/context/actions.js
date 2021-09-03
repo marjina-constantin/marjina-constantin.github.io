@@ -24,8 +24,9 @@ export async function loginUser(dispatch, loginPayload) {
   }
 }
 
-export async function logout(dispatch) {
+export async function logout(dispatch, dataDispatch) {
   dispatch({ type: 'LOGOUT' });
+  dataDispatch({ type: 'REMOVE_DATA' });
   localStorage.removeItem('currentUser');
   localStorage.removeItem('token');
 }

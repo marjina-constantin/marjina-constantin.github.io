@@ -95,6 +95,9 @@ export const DataReducer = (initialState, action) => {
         filtered: null
       };
 
+    case "REMOVE_DATA":
+      return initialData;
+
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
   }
