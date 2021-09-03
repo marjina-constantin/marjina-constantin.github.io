@@ -93,7 +93,8 @@ export const DataReducer = (initialState, action) => {
       }
       return {
         ...initialState,
-        filtered: null
+        filtered: null,
+        category: '',
       };
 
     case "REMOVE_DATA":
