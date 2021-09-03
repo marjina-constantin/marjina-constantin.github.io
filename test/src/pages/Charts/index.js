@@ -5,6 +5,7 @@ import DarkUnica from 'highcharts/themes/dark-unica';
 import {useAuthState, useData} from "../../context";
 import {fetchData} from "../../utils/utils";
 import Filters from "../../components/Filters";
+import {categories} from '../../utils/constants'
 
 DarkUnica(Highcharts);
 
@@ -58,7 +59,7 @@ const Charts = () => {
       }
     },
     series: [{
-      name: 'Monthly totals',
+      name: data.category ? categories.find(element => element.value === data.category).label : 'Monthly totals',
       data: items.totals ? Object.values(items.totals).reverse() : []
 
     }],
