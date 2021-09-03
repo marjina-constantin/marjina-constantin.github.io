@@ -87,7 +87,8 @@ export const DataReducer = (initialState, action) => {
         };
         return {
           ...initialState,
-          filtered: newState
+          filtered: newState,
+          category: action.category
         };
       }
       return {

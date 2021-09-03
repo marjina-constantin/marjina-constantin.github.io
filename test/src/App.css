@@ -223,3 +223,6 @@ button:hover {
 .filters select {
   height: 38px;
 }
+.charts-page {
+  padding: 0 25px;
+}
