@@ -29,7 +29,7 @@ export const deleteNode = (nid, token, callback) => {
     });
 }
 
-export const fetchData = (token, dataDispatch) => {
+export const fetchData = (token, dataDispatch, category = null) => {
   const fetchOptions = {
     method: 'GET',
     headers: new Headers({
@@ -54,5 +54,8 @@ export const fetchData = (token, dataDispatch) => {
       monthsTotals[month] += parseInt(item.field_amount);
     });
     dataDispatch({ type: 'SET_DATA', raw: data, groupedData: groupedData, totals: monthsTotals });
+    if (category) {
+      dataDispatch({ type: 'FILTER_DATA', category: category });
+    }
   });
 }

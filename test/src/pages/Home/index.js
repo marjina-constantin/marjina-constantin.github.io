@@ -36,7 +36,7 @@ const Home = () => {
         alert('Something went wrong.');
       }
       setShowDeleteModal(false);
-      fetchData(token, dataDispatch);
+      fetchData(token, dataDispatch, data.category);
     });
   };
 
@@ -51,7 +51,7 @@ const Home = () => {
       <Modal show={showEditModal} onClose={(e) => {e.preventDefault(); setShowEditModal(false)}}>
         <TransactionForm formType="edit" values={focusedItem} onSuccess={() => {
           setShowEditModal(false);
-          fetchData(token, dataDispatch);
+          fetchData(token, dataDispatch, data.category);
         }} />
       </Modal>
       <h2>Expenses</h2>

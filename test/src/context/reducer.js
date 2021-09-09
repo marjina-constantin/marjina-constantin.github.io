@@ -16,7 +16,8 @@ export const initialState = {
 export const initialData = {
   groupedData: null,
   totals: null,
-  filtered: null
+  filtered: null,
+  raw: []
 };
 
 export const AuthReducer = (initialState, action) => {
