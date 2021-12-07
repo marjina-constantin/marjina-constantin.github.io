@@ -1,5 +1,11 @@
 import React from "react";
 import { useSortableData } from '../utils/useSortableData';
+import {categories as categoriesArray} from '../utils/constants';
+
+const categories = {};
+for (const item of categoriesArray) {
+  categories[item.value] = item.label;
+}
 
 export default function TransactionsTable({month, total, items, handleEdit, setShowDeleteModal}) {
 
@@ -19,8 +25,8 @@ export default function TransactionsTable({month, total, items, handleEdit, setS
         <tr>
           <th>Date</th>
           <th
-            onClick={() => requestSort('field_amount')}
-            className={ `sortable ${getClassNamesFor('field_amount')}` }
+            onClick={() => requestSort('sum')}
+            className={ `sortable ${getClassNamesFor('sum')}` }
           >
             Amount
           </th>
@@ -32,19 +38,19 @@ export default function TransactionsTable({month, total, items, handleEdit, setS
         </thead>
         <tbody>
         {sortedItems.map((element, id) => (
-          <tr key={element.nid}>
-            <td>{element.field_date}</td>
-            <td>{element.field_amount}</td>
-            <td>{element.field_category_name}</td>
-            <td>{element.field_description}</td>
+          <tr key={element.id}>
+            <td>{element.dt}</td>
+            <td>{element.sum}</td>
+            <td>{categories[element.cat]}</td>
+            <td>{element.dsc}</td>
             <td>
               <button
                 data-values={JSON.stringify({
-                  nid: element.nid,
-                  field_date: element.field_date,
-                  field_amount: element.field_amount,
-                  field_category: element.field_category,
-                  field_description: element.field_description,
+                  nid: element.id,
+                  field_date: element.dt,
+                  field_amount: element.sum,
+                  field_category: element.cat,
+                  field_description: element.dsc,
                 })}
                 onClick={handleEdit}
                 className="btn-outline">
@@ -53,7 +59,7 @@ export default function TransactionsTable({month, total, items, handleEdit, setS
             </td>
             <td>
               <button
-                data-nid={element.nid}
+                data-nid={element.id}
                 onClick={(e) => setShowDeleteModal(e.currentTarget.getAttribute("data-nid"))}
                 className="btn-outline">
                 Delete

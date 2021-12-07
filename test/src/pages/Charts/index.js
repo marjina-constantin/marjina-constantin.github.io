@@ -9,6 +9,26 @@ import {categories} from '../../utils/constants'
 
 DarkUnica(Highcharts);
 
+Highcharts.theme = {
+  chart: {
+    backgroundColor: '#282a36',
+  },
+  tooltip: {
+    style: {
+      fontSize: '15px',
+    }
+  },
+  // yAxis: {
+  //   stackLabels: {
+  //     style: {
+  //       fontSize: '13px',
+  //     }
+  //   },
+  // },
+};
+
+Highcharts.setOptions(Highcharts.theme);
+
 const Charts = () => {
 
   const { data, dataDispatch } = useData();

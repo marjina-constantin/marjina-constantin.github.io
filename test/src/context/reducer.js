@@ -67,11 +67,11 @@ export const DataReducer = (initialState, action) => {
 
     case "FILTER_DATA":
       if (action.category !== '') {
-        const filtered = initialState.raw.filter(item => item.field_category === action.category);
+        const filtered = initialState.raw.filter(item => item.cat === action.category);
         let groupedData = {};
         let monthsTotals = {};
         filtered.forEach(item => {
-          const date = new Date(item.field_date);
+          const date = new Date(item.dt);
           const month = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
           if (!groupedData[month]) {
             groupedData[month] = [];
@@ -80,7 +80,7 @@ export const DataReducer = (initialState, action) => {
             monthsTotals[month] = 0;
           }
           groupedData[month].push(item);
-          monthsTotals[month] += parseInt(item.field_amount);
+          monthsTotals[month] += parseInt(item.sum);
         });
         const newState = {
           groupedData: groupedData,

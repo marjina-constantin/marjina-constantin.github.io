@@ -42,6 +42,8 @@ const Home = () => {
 
   const items = data.filtered || data;
 
+  const [nrOfMonths, setNrOfMonths] = useState(2)
+
   return (
     <div>
       <Modal show={showDeleteModal} onClose={(e) => {e.preventDefault(); setShowDeleteModal(false)}}>
@@ -60,15 +62,21 @@ const Home = () => {
       {noData ? '' :
         <div>
           {Object.keys(items.groupedData).map((item, id) => (
-            <TransactionsTable
-              key={id}
-              total={items.totals[item]}
-              month={item}
-              items={items.groupedData[item]}
-              handleEdit={handleEdit}
-              setShowDeleteModal={setShowDeleteModal}
-            />
+            id < nrOfMonths ?
+              <TransactionsTable
+                key={id}
+                total={items.totals[item]}
+                month={item}
+                items={items.groupedData[item]}
+                handleEdit={handleEdit}
+                setShowDeleteModal={setShowDeleteModal}
+              />
+              : ''
           ))}
+          {Object.keys(items.groupedData).length > nrOfMonths ?
+            <div className="load-more"><button onClick={() => setNrOfMonths(nrOfMonths + 2)} className="btn-outline">Load more</button></div>
+            : ''
+          }
         </div>
       }
     </div>

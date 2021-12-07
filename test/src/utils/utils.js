@@ -42,7 +42,7 @@ export const fetchData = (token, dataDispatch, category = null) => {
     let groupedData = {};
     let monthsTotals = {};
     data.forEach(item => {
-      const date = new Date(item.field_date);
+      const date = new Date(item.dt);
       const month = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
       if (!groupedData[month]) {
         groupedData[month] = [];
@@ -51,7 +51,7 @@ export const fetchData = (token, dataDispatch, category = null) => {
         monthsTotals[month] = 0;
       }
       groupedData[month].push(item);
-      monthsTotals[month] += parseInt(item.field_amount);
+      monthsTotals[month] += parseInt(item.sum);
     });
     dataDispatch({ type: 'SET_DATA', raw: data, groupedData: groupedData, totals: monthsTotals });
     if (category) {

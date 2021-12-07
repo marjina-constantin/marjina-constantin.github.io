@@ -15,6 +15,7 @@ body {
   background-color: #fff;
   transition: all .3s ease-in-out;
   z-index: 99;
+  touch-action: none;
 }
 .navbar.closed {
   height: 50px;
@@ -228,4 +229,7 @@ button:hover {
 }
 .charts-page {
   padding: 0 25px;
+}
+.load-more {
+  margin: 40px 0;
 }
