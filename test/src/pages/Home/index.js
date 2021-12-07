@@ -74,7 +74,7 @@ const Home = () => {
               : ''
           ))}
           {Object.keys(items.groupedData).length > nrOfMonths ?
-            <div className="load-more"><button onClick={() => setNrOfMonths(nrOfMonths + 2)} className="btn-outline">Load more</button></div>
+            <div className="load-more"><button onClick={() => setNrOfMonths(nrOfMonths + 1)} className="btn-outline">Load more</button></div>
             : ''
           }
         </div>
