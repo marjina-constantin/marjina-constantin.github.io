@@ -90,14 +90,16 @@ const Charts = () => {
   const twoMonthsAgo = new Date().setDate(new Date().getDate()-60);
   const tomorrow = new Date().setDate(new Date().getDate()+1);
   const lastMonthTotals = {};
-  let lastTwoMonthsTotals = 0;
+  let lastTwoMonthsTotal = 0;
+  let lastProcessedItem = {};
   for (let item of data.raw) {
     const itemDate = new Date(item.dt);
     if (itemDate < twoMonthsAgo ) {
       break;
     }
+    lastProcessedItem = item;
     if (itemDate < tomorrow) {
-      lastTwoMonthsTotals += parseInt(item.sum);
+      lastTwoMonthsTotal += parseInt(item.sum);
       if (itemDate > oneMonthAgo ) {
         const category = categories.find(element => element.value === item.cat).label;
         if (!lastMonthTotals[category]) {
@@ -107,6 +109,8 @@ const Charts = () => {
       }
     }
   }
+  const timeDiff = new Date().getTime() - new Date(lastProcessedItem.dt).getTime();
+  const daysDiff = timeDiff / (1000 * 3600 * 24);
 
   const lastMonthOptions = {
     chart: {
@@ -144,9 +148,11 @@ const Charts = () => {
             options={lastMonthOptions}
           />
           <hr/>
-          <div className="average-spending">
-            Average spending for the last 60 days: {parseInt(lastTwoMonthsTotals / 60)} mdl / day
-          </div>
+          {lastTwoMonthsTotal &&
+            <div className="average-spending">
+              Average spending for the last 60 days: {parseInt(lastTwoMonthsTotal / Math.ceil(daysDiff))} mdl / day
+            </div>
+          }
         </div>
       }
     </div>
