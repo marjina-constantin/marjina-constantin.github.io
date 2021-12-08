@@ -43,7 +43,7 @@ const Charts = () => {
 
   const items = data.filtered || data;
 
-  const options = {
+  const allTimeOptions = {
     chart: {
       type: 'column'
     },
@@ -85,16 +85,70 @@ const Charts = () => {
     }],
   }
 
+
+  const oneMonthAgo = new Date().setDate(new Date().getDate()-30);
+  const twoMonthsAgo = new Date().setDate(new Date().getDate()-60);
+  const tomorrow = new Date().setDate(new Date().getDate()+1);
+  const lastMonthTotals = {};
+  let lastTwoMonthsTotals = 0;
+  for (let item of data.raw) {
+    const itemDate = new Date(item.dt);
+    if (itemDate < twoMonthsAgo ) {
+      break;
+    }
+    if (itemDate < tomorrow) {
+      lastTwoMonthsTotals += parseInt(item.sum);
+      if (itemDate > oneMonthAgo ) {
+        const category = categories.find(element => element.value === item.cat).label;
+        if (!lastMonthTotals[category]) {
+          lastMonthTotals[category] = {name: category, y: 0};
+        }
+        lastMonthTotals[category].y += parseInt(item.sum);
+      }
+    }
+  }
+
+  const lastMonthOptions = {
+    chart: {
+      type: 'pie'
+    },
+    title: {
+      text: 'Last 30 days spendings'
+    },
+    plotOptions: {
+      pie: {
+        borderWidth: 0
+      },
+
+    },
+    series: [{
+      name: 'MDL',
+      colorByPoint: true,
+      data: Object.values(lastMonthTotals)
+    }]
+  };
+
   return (
     <div>
       <h2>Charts page</h2>
       <Filters />
-      <div className="charts-page">
-        <HighchartsReact
-          highcharts={Highcharts}
-          options={options}
-        />
-      </div>
+      {!noData &&
+        <div className="charts-page">
+          <HighchartsReact
+            highcharts={Highcharts}
+            options={allTimeOptions}
+          />
+          <hr/>
+          <HighchartsReact
+            highcharts={Highcharts}
+            options={lastMonthOptions}
+          />
+          <hr/>
+          <div className="average-spending">
+            Average spending for the last 60 days: {parseInt(lastTwoMonthsTotals / 60)} mdl / day
+          </div>
+        </div>
+      }
     </div>
   );
 };
