@@ -67,6 +67,7 @@ const Home = () => {
                 key={id}
                 total={items.totals[item]}
                 month={item}
+                incomeTotals={items.incomeTotals}
                 items={items.groupedData[item]}
                 handleEdit={handleEdit}
                 setShowDeleteModal={setShowDeleteModal}

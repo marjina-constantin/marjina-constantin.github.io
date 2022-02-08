@@ -7,7 +7,7 @@ for (const item of categoriesArray) {
   categories[item.value] = item.label;
 }
 
-export default function TransactionsTable({month, total, items, handleEdit, setShowDeleteModal}) {
+export default function TransactionsTable({month, total, items, handleEdit, setShowDeleteModal, incomeTotals}) {
 
   const { sortedItems, requestSort, sortConfig } = useSortableData(items);
   const getClassNamesFor = (name) => {
@@ -16,10 +16,13 @@ export default function TransactionsTable({month, total, items, handleEdit, setS
     }
     return sortConfig.key === name ? sortConfig.direction : '';
   };
+  const income = incomeTotals[month];
+  const profit = income - total;
+  const message = income > 0 ? `${month}: Income: ${income} - Expenses: ${total} = Profit: ${profit}` : `${month}: Expenses: ${total}`;
 
   return (
     <div className="table-wrapper">
-      <div className="month-badge">{month}: {total}</div>
+      <div className="month-badge">{message}</div>
       <table className="expenses-table" cellSpacing="0" cellPadding="0">
         <thead>
         <tr>
