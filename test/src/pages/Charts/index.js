@@ -92,9 +92,11 @@ const Charts = () => {
   const lastMonthTotals = {};
   let lastTwoMonthsTotal = 0;
   let lastProcessedItem = {};
+  let userHasMoreThanTwoMonths = false;
   for (let item of data.raw) {
     const itemDate = new Date(item.dt);
     if (itemDate < twoMonthsAgo ) {
+      userHasMoreThanTwoMonths = true;
       break;
     }
     lastProcessedItem = item;
@@ -110,7 +112,7 @@ const Charts = () => {
     }
   }
   const timeDiff = new Date().getTime() - new Date(lastProcessedItem.dt).getTime();
-  const daysDiff = timeDiff / (1000 * 3600 * 24);
+  const daysDiff = userHasMoreThanTwoMonths ? 60 : timeDiff / (1000 * 3600 * 24);
 
   const lastMonthOptions = {
     chart: {
