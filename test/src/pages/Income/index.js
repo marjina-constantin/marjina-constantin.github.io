@@ -6,7 +6,7 @@ import Modal from "../../components/Modal";
 import IncomeTable from "../../components/IncomeTable";
 
 const Income = () => {
-  const { userDetails, token } = useAuthState();
+  const { token } = useAuthState();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [isNewModal, setIsNewModal] = useState(false);
@@ -30,7 +30,7 @@ const Income = () => {
   const handleDelete = (showDeleteModal, token) => {
     deleteNode(showDeleteModal, token, (response) => {
       if (response.ok) {
-        alert('Transaction was successfully deleted.');
+        alert('Income was successfully deleted.');
       }
       else {
         alert('Something went wrong.');
@@ -53,12 +53,9 @@ const Income = () => {
         }} />
       </Modal>
       <h2>Expenses</h2>
-      <h4>Hi, {userDetails?.current_user?.name}!</h4>
       {noData ? '' :
         <div>
-          <form className="add-transaction" onSubmit={() => {}}>
-            <input type="submit" value="Add new income" onClick={(e) => {e.preventDefault(); setShowEditModal(true); setIsNewModal(true)}} onClose={(e) => {e.preventDefault(); setShowEditModal(false)}} />
-          </form>
+          <button onClick={() => {setShowEditModal(true); setIsNewModal(true)}} className="button logout" >Add new income</button>
 
           {data.incomeData && data.incomeData.length ?
             <IncomeTable

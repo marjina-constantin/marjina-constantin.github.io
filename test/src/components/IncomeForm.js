@@ -45,7 +45,7 @@ const IncomeForm = ({formType, values, onSuccess}) => {
         setFormState(initialState);
       }
       else {
-        alert('Something went wrong, please contact Constantin :)')
+        alert('Something went wrong, please contact Sergiu S :)')
       }
     })
   };
