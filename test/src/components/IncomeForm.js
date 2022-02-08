@@ -55,7 +55,7 @@ const IncomeForm = ({formType, values, onSuccess}) => {
       <h2>{formType === 'add' ? 'Add income' : 'Edit income'}</h2>
       <form className="add-transaction" onSubmit={handleSubmit}>
         <input required placeholder="Amount" type="number" name="field_amount" value={formState.field_amount} onChange={handleChange} />
-        <input required placeholder="Date" type="month" name="field_date" value={formState.field_date} onChange={handleChange} />
+        <input required placeholder="Month" type="month" name="field_date" value={formState.field_date} onChange={handleChange} />
         <textarea placeholder="Description" name="field_description" rows="3" value={formState.field_description} onChange={handleChange} />
         <input type="submit" value={formType === 'add' ? 'Add income' : 'Edit income'} />
       </form>
