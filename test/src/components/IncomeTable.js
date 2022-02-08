@@ -1,16 +1,6 @@
 import React from "react";
-import { useSortableData } from '../utils/useSortableData';
 
 export default function IncomeTable({items, handleEdit, setShowDeleteModal}) {
-
-  const { sortedItems, requestSort, sortConfig } = useSortableData(items);
-  const getClassNamesFor = (name) => {
-    if (!sortConfig) {
-      return '';
-    }
-    return sortConfig.key === name ? sortConfig.direction : '';
-  };
-
   return (
     <div className="table-wrapper">
       <div className="month-badge">Incomes</div>
@@ -18,19 +8,14 @@ export default function IncomeTable({items, handleEdit, setShowDeleteModal}) {
         <thead>
         <tr>
           <th>Date</th>
-          <th
-            onClick={() => requestSort('sum')}
-            className={ `sortable ${getClassNamesFor('sum')}` }
-          >
-            Amount
-          </th>
+          <th>Amount</th>
           <th>Description</th>
           <th></th>
           <th></th>
         </tr>
         </thead>
         <tbody>
-        {sortedItems.map((element, id) => (
+        {items.map((element) => (
           <tr key={element.id}>
             <td>{element.dt}</td>
             <td>{element.sum}</td>

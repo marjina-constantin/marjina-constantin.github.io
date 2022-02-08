@@ -40,15 +40,11 @@ const Income = () => {
     });
   };
 
-  const items = data.filtered || data;
-
-  const [nrOfMonths, setNrOfMonths] = useState(2)
-
   return (
     <div>
       <Modal show={showDeleteModal} onClose={(e) => {e.preventDefault(); setShowDeleteModal(false)}}>
-        <h3>Are you sure you want to delete the transaction?</h3>
-        <button onClick={() => handleDelete(showDeleteModal, token)} className="button logout">Yes, remove the transaction</button>
+        <h3>Are you sure you want to delete the income?</h3>
+        <button onClick={() => handleDelete(showDeleteModal, token)} className="button logout">Yes, remove the income</button>
       </Modal>
       <Modal show={showEditModal} onClose={(e) => {e.preventDefault(); setShowEditModal(false); setIsNewModal(false)}}>
         <IncomeForm formType={!isNewModal ? "edit" : "add"} values={focusedItem} onSuccess={() => {
@@ -64,20 +60,14 @@ const Income = () => {
             <input type="submit" value="Add new income" onClick={(e) => {e.preventDefault(); setShowEditModal(true); setIsNewModal(true)}} onClose={(e) => {e.preventDefault(); setShowEditModal(false)}} />
           </form>
 
-          {Object.keys(items.groupedData).map((item, id) => (
-            id < nrOfMonths ?
-              <IncomeTable
-                key={id}
-                items={items.groupedData[item]}
-                handleEdit={handleEdit}
-                setShowDeleteModal={setShowDeleteModal}
-              />
-              : ''
-          ))}
-          {Object.keys(items.groupedData).length > nrOfMonths ?
-            <div className="load-more"><button onClick={() => setNrOfMonths(nrOfMonths + 1)} className="btn-outline">Load more</button></div>
-            : ''
-          }
+          {data.incomeData && data.incomeData.length ?
+            <IncomeTable
+              key={'income'}
+              items={data.incomeData ?? []}
+              handleEdit={handleEdit}
+              setShowDeleteModal={setShowDeleteModal}
+            /> : ''}
+
         </div>
       }
     </div>

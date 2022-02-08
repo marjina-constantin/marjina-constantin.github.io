@@ -94,6 +94,9 @@ const Charts = () => {
   let lastProcessedItem = {};
   let userHasMoreThanTwoMonths = false;
   for (let item of data.raw) {
+    if (item.type === 'incomes') {
+      continue;
+    }
     const itemDate = new Date(item.dt);
     if (itemDate < twoMonthsAgo ) {
       userHasMoreThanTwoMonths = true;
