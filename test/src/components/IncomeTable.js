@@ -1,50 +1,24 @@
 import React from "react";
-import { useSortableData } from '../utils/useSortableData';
-import {categories as categoriesArray} from '../utils/constants';
 
-const categories = {};
-for (const item of categoriesArray) {
-  categories[item.value] = item.label;
-}
-
-export default function TransactionsTable({month, total, items, handleEdit, setShowDeleteModal, incomeTotals}) {
-
-  const { sortedItems, requestSort, sortConfig } = useSortableData(items);
-  const getClassNamesFor = (name) => {
-    if (!sortConfig) {
-      return '';
-    }
-    return sortConfig.key === name ? sortConfig.direction : '';
-  };
-  const income = incomeTotals[month];
-  const profit = income - total;
-  const message = income > 0 ? `${month}: Income: ${income} - Expenses: ${total} = Profit: ${profit}` : `${month}: Expenses: ${total}`;
-
+export default function IncomeTable({items, handleEdit, setShowDeleteModal}) {
   return (
     <div className="table-wrapper">
-      <div className="month-badge">{message}</div>
+      <div className="month-badge">Incomes</div>
       <table className="expenses-table" cellSpacing="0" cellPadding="0">
         <thead>
         <tr>
           <th>Date</th>
-          <th
-            onClick={() => requestSort('sum')}
-            className={ `sortable ${getClassNamesFor('sum')}` }
-          >
-            Amount
-          </th>
-          <th>Category</th>
+          <th>Amount</th>
           <th>Description</th>
           <th></th>
           <th></th>
         </tr>
         </thead>
         <tbody>
-        {sortedItems.map((element, id) => (
+        {items.map((element) => (
           <tr key={element.id}>
             <td>{element.dt}</td>
             <td>{element.sum}</td>
-            <td>{categories[element.cat]}</td>
             <td>{element.dsc}</td>
             <td>
               <button
@@ -52,7 +26,6 @@ export default function TransactionsTable({month, total, items, handleEdit, setS
                   nid: element.id,
                   field_date: element.dt,
                   field_amount: element.sum,
-                  field_category: element.cat,
                   field_description: element.dsc,
                 })}
                 onClick={handleEdit}

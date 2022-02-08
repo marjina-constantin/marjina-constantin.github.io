@@ -3,6 +3,7 @@ import Home from "../pages/Home";
 import Login from '../pages/Login';
 import Logout from '../pages/Logout';
 import AddTransaction from '../pages/AddTransaction';
+import Income from '../pages/Income';
 
 const routes = [
   {
@@ -28,6 +29,11 @@ const routes = [
   {
     path:'/test/add-transaction',
     component: AddTransaction,
+    isPrivate: true,
+  },
+  {
+    path:'/test/income',
+    component: Income,
     isPrivate: true,
   },
 ]

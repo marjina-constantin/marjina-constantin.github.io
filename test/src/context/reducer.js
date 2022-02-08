@@ -17,7 +17,9 @@ export const initialData = {
   groupedData: null,
   totals: null,
   filtered: null,
-  raw: []
+  raw: [],
+  incomeData: null,
+  incomeTotals: null,
 };
 
 export const AuthReducer = (initialState, action) => {
@@ -62,7 +64,9 @@ export const DataReducer = (initialState, action) => {
         ...initialState,
         groupedData: action.groupedData,
         totals: action.totals,
-        raw: action.raw
+        raw: action.raw,
+        incomeData: action.incomeData,
+        incomeTotals: action.incomeTotals,
       };
 
     case "FILTER_DATA":

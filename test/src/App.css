@@ -21,7 +21,7 @@ body {
   height: 50px;
 }
 .navbar.open {
-  height: 200px;
+  height: 250px;
 }
 .navbar ul {
   margin: 0;
@@ -54,6 +54,10 @@ body {
   .navbar ul li:first-child:nth-last-child(4),
   .navbar ul li:first-child:nth-last-child(4) ~ li {
     width: 25%;
+  }
+  .navbar ul li:first-child:nth-last-child(5),
+  .navbar ul li:first-child:nth-last-child(5) ~ li {
+    width: 20%;
   }
 }
 .navbar ul li a {

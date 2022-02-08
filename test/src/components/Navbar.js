@@ -1,6 +1,6 @@
 import {NavLink} from 'react-router-dom'
 import {useAuthState} from '../context'
-import { FaHome, FaChartPie, FaSignOutAlt, FaPlus } from "react-icons/fa";
+import { FaHome, FaChartPie, FaSignOutAlt, FaPlus, FaMoneyBill } from "react-icons/fa";
 import {useState} from "react";
 
 export default function Navbar() {
@@ -67,6 +67,16 @@ export default function Navbar() {
             className="not-selected"
             exact
           ><FaPlus />
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            // onClick={() => setCssClass('closed')}
+            to="/test/income"
+            activeClassName="selected"
+            className="not-selected"
+            exact
+          ><FaMoneyBill />
           </NavLink>
         </li>
         {userIsLoggedIn ?
