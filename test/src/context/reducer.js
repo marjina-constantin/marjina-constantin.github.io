@@ -89,7 +89,6 @@ export const DataReducer = (initialState, action) => {
         const newState = {
           groupedData: groupedData,
           totals: monthsTotals,
-          incomeTotals: action.incomeTotals,
         };
         return {
           ...initialState,
