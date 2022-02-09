@@ -52,7 +52,7 @@ const Income = () => {
           fetchData(token, dataDispatch);
         }} />
       </Modal>
-      <h2>Expenses</h2>
+      <h2>Incomes</h2>
       {noData ? '' :
         <div>
           <button onClick={() => {setShowEditModal(true); setIsNewModal(true)}} className="button logout" >Add new income</button>
