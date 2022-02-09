@@ -8,7 +8,7 @@ export default function Filters() {
 
   const handleChange = (event) => {
     const value = event.target.value;
-    dataDispatch({ type: 'FILTER_DATA', category: value });
+    dataDispatch({ type: 'FILTER_DATA', category: value, incomeTotals: data.incomeTotals });
   };
 
   return (
