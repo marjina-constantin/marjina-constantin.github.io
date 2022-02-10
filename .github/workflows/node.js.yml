@@ -40,7 +40,8 @@ jobs:
         git remote set-url origin https://${github_token}@github.com/${repository}
         pwd
         git add .
-        git commit -m "Push built application" && git push origin master
+        git commit -m "Push built application"
+        git push origin master
       env:
         user_name: 'github-actions[bot]'
         user_email: 'github-actions[bot]@users.noreply.github.com'
