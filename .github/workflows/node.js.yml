@@ -25,4 +25,4 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
         cache-dependency-path: test/yarn.lock
-    - run: cd test && CI=false && yarn && yarn build && git status
+    - run: cd test && CI=false && yarn && yarn build && git commit -am "Push built application" && git push origin master
