@@ -32,14 +32,14 @@ jobs:
           **/node_modules
         key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
     - name: Build
-      run: cd test && CI=false && yarn && yarn build && cp build/index.html ../404.html && git status
+      run: cd test && CI=false && yarn && yarn build && cp build/index.html ../404.html
     - name: Deploy
       run: |
         git config --global user.name $user_name
         git config --global user.email $user_email
         git add .
         git commit -m "Push built application"
-        git push origin master
+        git push origin prod
       env:
         user_name: 'github-actions[bot]'
         user_email: 'github-actions[bot]@users.noreply.github.com'
