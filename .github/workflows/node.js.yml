@@ -40,7 +40,7 @@ jobs:
         git config --global user.email $user_email
         git add .
         git commit -m "Push built application"
-        git push origin prod
+        git push -f origin prod
       env:
         user_name: 'github-actions[bot]'
         user_email: 'github-actions[bot]@users.noreply.github.com'
