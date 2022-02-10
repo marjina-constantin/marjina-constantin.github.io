@@ -32,7 +32,7 @@ jobs:
           **/node_modules
         key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
     - name: Build
-      run: cd test && CI=false && yarn && yarn build
+      run: cd test && CI=false && yarn && yarn build && git status
     - name: Deploy
       run: |
         git config --global user.name $user_name
