@@ -3,9 +3,9 @@ const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
 
 
-const client_id = process.env.client_id;
-const client_secret = process.env.client_secret;
-const refresh_token = process.env.refresh_token;
+const client_id = process.env.CLIENT_ID;
+const client_secret = process.env.CLIENT_SECRET;
+const refresh_token = process.env.REFRESH_TOKEN;
 
 
 const createTransporter = async () => {
@@ -32,7 +32,7 @@ const createTransporter = async () => {
     service: "gmail",
     auth: {
       type: "OAuth2",
-      user: process.env.from_email,
+      user: process.env.FROM_EMAIL,
       accessToken,
       clientId: client_id,
       clientSecret: client_secret,
@@ -50,6 +50,6 @@ const sendEmail = async (emailOptions) => {
 sendEmail({
   subject: "Expenses App - Deploy complete!",
   text: "Here goes commit message.",
-  to: process.env.from_email,
-  from: process.env.from_email
+  to: process.env.FROM_EMAIL,
+  from: process.env.FROM_EMAIL
 });
