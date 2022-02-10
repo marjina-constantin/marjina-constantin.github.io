@@ -19,7 +19,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - run: git pull origin master
+      with:
+        fetch-depth: 0
+        ref: master
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
@@ -36,6 +38,7 @@ jobs:
       run: cd test && CI=false && yarn && yarn build && cp build/index.html ../404.html
     - name: Deploy
       run: |
+        git log
         git checkout -b prod
         git fetch origin
         git branch -u origin/prod
