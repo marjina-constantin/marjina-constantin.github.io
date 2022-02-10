@@ -60,3 +60,4 @@ jobs:
         CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
         FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+        SECONDARY_EMAIL: ${{ secrets.SECONDARY_EMAIL }}
