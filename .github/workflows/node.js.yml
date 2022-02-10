@@ -19,7 +19,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      run: git pull origin master
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
@@ -33,7 +32,7 @@ jobs:
           **/node_modules
         key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
     - name: Build
-      run: cd test && CI=false && yarn && yarn build && cp build/index.html ../404.html && git status
+      run: cd test && CI=false && yarn && yarn build && cp build/index.html ../404.html
     - name: Deploy
       run: |
         git checkout -b prod
@@ -42,7 +41,6 @@ jobs:
         git status
         git config --global user.name $user_name
         git config --global user.email $user_email
-        git status
         git add .
         git commit -m "Push built application"
         git push -f origin prod
