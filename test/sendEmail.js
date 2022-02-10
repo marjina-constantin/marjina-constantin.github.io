@@ -49,7 +49,7 @@ const sendEmail = async (emailOptions) => {
 
 sendEmail({
   subject: "Expenses App - Deploy complete!",
-  text: "Here goes commit message.",
+  text: 'The following feature/fix have been deployed: ' + process.argv[2],
   to: process.env.FROM_EMAIL,
   from: process.env.FROM_EMAIL
 });

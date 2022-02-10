@@ -35,14 +35,10 @@ jobs:
           **/node_modules
         key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
     - name: Build
-      run: cd test && CI=false && yarn && yarn build && cp build/index.html ../404.html && node sendEmail.js
-      env:
-        CLIENT_ID: ${{ secrets.CLIENT_ID }}
-        CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-        REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
-        FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+      run: cd test && CI=false && yarn && yarn build && cp build/index.html ../404.html
     - name: Deploy
       run: |
+        LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
         git checkout -b prod
         git fetch origin
         git branch -u origin/prod
@@ -53,8 +49,13 @@ jobs:
         git add .
         git commit -m "Push built application"
         git push -f origin prod
+        node sendEmail.js $LAST_COMMIT_MSG
       env:
         user_name: 'github-actions[bot]'
         user_email: 'github-actions[bot]@users.noreply.github.com'
         github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
         repository: ${{ github.repository }}
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+        FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
