@@ -35,6 +35,7 @@ jobs:
       run: cd test && CI=false && yarn && yarn build && cp build/index.html ../404.html && git status
     - name: Deploy
       run: |
+        git status
         git config --global user.name $user_name
         git config --global user.email $user_email
         git commit -am "Push built application"
