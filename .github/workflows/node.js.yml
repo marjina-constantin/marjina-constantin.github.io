@@ -38,11 +38,11 @@ jobs:
       run: cd test && CI=false && yarn && yarn build && cp build/index.html ../404.html
     - name: Deploy
       run: |
-        git log
         git checkout -b prod
         git fetch origin
         git branch -u origin/prod
         git status
+        date > date.txt
         git config --global user.name $user_name
         git config --global user.email $user_email
         git add .
