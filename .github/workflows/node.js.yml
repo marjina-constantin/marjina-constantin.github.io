@@ -23,14 +23,14 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'yarn'
-        cache-dependency-path: test/yarn.lock
-    - name: Cache dependencies
-      uses: actions/cache@v2
-      with:
-        path: |
-          **/node_modules
-        key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+#        cache: 'yarn'
+#        cache-dependency-path: test/yarn.lock
+#    - name: Cache dependencies
+#      uses: actions/cache@v2
+#      with:
+#        path: |
+#          **/node_modules
+#        key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
     - name: Build
       run: cd test && CI=false && yarn && yarn build && cp build/index.html ../404.html && git status
     - name: Deploy
