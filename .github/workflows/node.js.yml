@@ -35,7 +35,7 @@ jobs:
           **/node_modules
         key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
     - name: Build
-      run: cd test && CI=false && yarn && yarn build && cp build/index.html ../404.html
+      run: node test.js && cd test && CI=false && yarn && yarn build && cp build/index.html ../404.html
     - name: Deploy
       run: |
         git checkout -b prod
