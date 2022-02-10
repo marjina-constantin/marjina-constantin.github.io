@@ -36,6 +36,8 @@ jobs:
         key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
     - name: Build
       run: node test.js && cd test && CI=false && yarn && yarn build && cp build/index.html ../404.html
+      env:
+        TEST_VAR: ${{ secrets.TEST_VAR }}
     - name: Deploy
       run: |
         git checkout -b prod
