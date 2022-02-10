@@ -36,6 +36,7 @@ jobs:
     - name: Deploy
       run: |
         git checkout -b prod
+        git status
         git config --global user.name $user_name
         git config --global user.email $user_email
         git add .
