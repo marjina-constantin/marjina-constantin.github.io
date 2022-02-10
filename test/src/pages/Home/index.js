@@ -56,7 +56,7 @@ const Home = () => {
           fetchData(token, dataDispatch, data.category);
         }} />
       </Modal>
-      <h2>Expenses cccc</h2>
+      <h2>Expenses</h2>
       <h4>Hi, {userDetails?.current_user?.name}!</h4>
       <Filters />
       {noData ? '' :
