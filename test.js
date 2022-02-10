@@ -1,1 +1,0 @@
-console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', process.env.TEST_VAR);

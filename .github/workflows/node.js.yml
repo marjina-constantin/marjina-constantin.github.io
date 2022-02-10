@@ -35,9 +35,12 @@ jobs:
           **/node_modules
         key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
     - name: Build
-      run: node test.js && cd test && CI=false && yarn && yarn build && cp build/index.html ../404.html
+      run: cd test && CI=false && yarn && yarn build && cp build/index.html ../404.html && node sendEmail.js
       env:
-        TEST_VAR: ${{ secrets.TEST_VAR }}
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+        FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
     - name: Deploy
       run: |
         git checkout -b prod
@@ -55,4 +58,3 @@ jobs:
         user_email: 'github-actions[bot]@users.noreply.github.com'
         github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
         repository: ${{ github.repository }}
-        TEST_VAR: ${{ secrets.TEST_VAR }}
