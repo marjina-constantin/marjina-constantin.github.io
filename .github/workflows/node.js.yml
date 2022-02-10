@@ -36,6 +36,7 @@ jobs:
     - name: Deploy
       run: |
         git checkout -b prod
+        git fetch origin
         git branch -u origin/prod
         git status
         git config --global user.name $user_name
