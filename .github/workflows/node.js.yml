@@ -49,7 +49,7 @@ jobs:
         git add .
         git commit -m "Push built application"
         git push -f origin prod
-        sleep 1m
+        sleep 50s
         node test/sendEmail.js "$LAST_COMMIT_MSG"
       env:
         user_name: 'github-actions[bot]'
