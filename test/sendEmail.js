@@ -51,6 +51,5 @@ sendEmail({
   subject: "Expenses App - Deploy complete!",
   text: `The following feature/fix have been deployed: ${process.argv[2]}`,
   to: process.env.FROM_EMAIL,
-  from: process.env.FROM_EMAIL,
-  cc: process.env.SECONDARY_EMAIL
+  from: process.env.FROM_EMAIL
 });
