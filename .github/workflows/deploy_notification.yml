@@ -1,6 +1,6 @@
 name: Node.js CI
 
-on: deployment_status
+on: deployment
 jobs:
   send_email:
     if: github.event.deployment_status.state == 'success'
