@@ -1,0 +1,32 @@
+name: Node.js CI
+
+on: page_build
+jobs:
+  send_email:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+#      - uses: actions/checkout@v2
+#        with:
+#          fetch-depth: 0
+#          ref: master
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+#          cache: 'yarn'
+#          cache-dependency-path: test/yarn.lock
+      - name: Send notification
+        run: |
+          LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
+          node test/sendEmail.js "$LAST_COMMIT_MSG"
+        env:
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+          FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
