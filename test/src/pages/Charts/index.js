@@ -39,7 +39,7 @@ const Charts = () => {
     if (noData) {
       fetchData(token, dataDispatch);
     }
-  }, [data]);
+  }, [data, dataDispatch, noData, token]);
 
   const items = data.filtered || data;
 

@@ -17,7 +17,7 @@ const Income = () => {
     if (noData) {
       fetchData(token, dataDispatch);
     }
-  }, [data]);
+  }, [data, dataDispatch, noData, token]);
 
   const [focusedItem, setFocusedItem] = useState({})
 

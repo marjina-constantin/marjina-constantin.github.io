@@ -12,14 +12,14 @@ export default function Modal({show, onClose, children}) {
     return () => {
       document.removeEventListener("mousedown", checkIfClickedOutside)
     };
-  }, [show])
+  }, [show, onClose])
 
   return (
     <>
       {show ?
         <div className="modal-window" >
           <div ref={ref}>
-            <a href="#" onClick={onClose} title="Close" className="modal-close">Close</a>
+            <a href="/" onClick={onClose} title="Close" className="modal-close">Close</a>
             {children}
           </div>
         </div>

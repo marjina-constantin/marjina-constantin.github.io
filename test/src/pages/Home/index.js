@@ -17,7 +17,7 @@ const Home = () => {
     if (noData) {
       fetchData(token, dataDispatch);
     }
-  }, [data]);
+  }, [data, dataDispatch, token, noData]);
 
   const [focusedItem, setFocusedItem] = useState({})
 
