@@ -86,6 +86,7 @@ const Charts = () => {
   }
 
 
+  // Last month section
   const oneMonthAgo = new Date().setDate(new Date().getDate()-30);
   const twoMonthsAgo = new Date().setDate(new Date().getDate()-60);
   const tomorrow = new Date().setDate(new Date().getDate()+1);
@@ -137,6 +138,32 @@ const Charts = () => {
     }]
   };
 
+  // All time section
+  let totalSpent = 0;
+  const nrOfMonths = data.groupedData ? Object.keys(data.groupedData).length : 0;
+  for (let item of Object.values(data.categoryTotals)) {
+    totalSpent += item.y;
+  }
+  const allTimeSpendings = {
+    chart: {
+      type: 'pie'
+    },
+    title: {
+      text: 'All time spendings'
+    },
+    plotOptions: {
+      pie: {
+        borderWidth: 0
+      },
+
+    },
+    series: [{
+      name: 'MDL',
+      colorByPoint: true,
+      data: Object.values(data.categoryTotals)
+    }]
+  };
+
   return (
     <div>
       <h2>Charts page</h2>
@@ -152,6 +179,14 @@ const Charts = () => {
             highcharts={Highcharts}
             options={lastMonthOptions}
           />
+          <hr/>
+          <HighchartsReact
+            highcharts={Highcharts}
+            options={allTimeSpendings}
+          />
+          <div className="average-spending">
+            Total spent: {totalSpent} mdl in {nrOfMonths} months
+          </div>
           <hr/>
           {lastTwoMonthsTotal &&
             <div className="average-spending">

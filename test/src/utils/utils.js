@@ -1,3 +1,5 @@
+import {categories} from './constants'
+
 // const handleErrors = (response) => {
 //   if (!response.ok) throw Error(response.statusText);
 //   return response.json();
@@ -43,8 +45,10 @@ export const fetchData = (token, dataDispatch, category = null) => {
     let incomeData = [];
     let monthsTotals = {};
     let incomeTotals = {};
+    let categoryTotals = {};
     data.forEach(item => {
       const date = new Date(item.dt);
+      const category = item.cat;
       const month = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
       if (!groupedData[month]) {
         groupedData[month] = [];
@@ -55,6 +59,12 @@ export const fetchData = (token, dataDispatch, category = null) => {
       if (!incomeTotals[month]) {
         incomeTotals[month] = 0;
       }
+      if (!categoryTotals[category]) {
+        categoryTotals[category] = {
+          name: '',
+          y: 0
+        };
+      }
 
       if (item.type === 'incomes') {
         incomeData.push(item)
@@ -62,6 +72,8 @@ export const fetchData = (token, dataDispatch, category = null) => {
       } else {
         groupedData[month].push(item);
         monthsTotals[month] += parseInt(item.sum);
+        categoryTotals[category].name = categories[category].label;
+        categoryTotals[category].y += parseInt(item.sum);
       }
     });
     dataDispatch({
@@ -71,6 +83,7 @@ export const fetchData = (token, dataDispatch, category = null) => {
       totals: monthsTotals,
       incomeData: incomeData,
       incomeTotals: incomeTotals,
+      categoryTotals: categoryTotals,
     });
     if (category) {
       dataDispatch({ type: 'FILTER_DATA', category: category });

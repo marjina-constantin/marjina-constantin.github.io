@@ -20,6 +20,7 @@ export const initialData = {
   raw: [],
   incomeData: null,
   incomeTotals: null,
+  categoryTotals: [],
 };
 
 export const AuthReducer = (initialState, action) => {
@@ -67,6 +68,7 @@ export const DataReducer = (initialState, action) => {
         raw: action.raw,
         incomeData: action.incomeData,
         incomeTotals: action.incomeTotals,
+        categoryTotals: action.categoryTotals,
       };
 
     case "FILTER_DATA":
