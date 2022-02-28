@@ -89,7 +89,7 @@ const Charts = () => {
   // Last month section
   const oneMonthAgo = new Date().setDate(new Date().getDate()-30);
   const twoMonthsAgo = new Date().setDate(new Date().getDate()-60);
-  const tomorrow = new Date().setDate(new Date().getDate()+1);
+  const tomorrow = new Date().setHours(24,0,0,0);
   const lastMonthTotals = {};
   let lastTwoMonthsTotal = 0;
   let lastProcessedItem = {};
