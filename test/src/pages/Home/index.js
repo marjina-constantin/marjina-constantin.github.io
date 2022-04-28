@@ -12,6 +12,7 @@ const Home = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const { data, dataDispatch } = useData();
   const noData = data.groupedData === null;
+  const loading = data.loading;
 
   useEffect(() => {
     if (noData) {
@@ -59,7 +60,7 @@ const Home = () => {
       <h2>Expenses</h2>
       <h4>Hi, {userDetails?.current_user?.name}!</h4>
       <Filters />
-      {noData ? '' :
+      {loading ? <div className="lds-ripple"><div></div><div></div></div> : noData ? '' :
         <div>
           {Object.keys(items.groupedData).map((item, id) => (
             id < nrOfMonths ?

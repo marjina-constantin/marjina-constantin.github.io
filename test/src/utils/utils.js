@@ -46,36 +46,38 @@ export const fetchData = (token, dataDispatch, category = null) => {
     let monthsTotals = {};
     let incomeTotals = {};
     let categoryTotals = {};
-    data.forEach(item => {
-      const date = new Date(item.dt);
-      const category = item.cat;
-      const month = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
-      if (!groupedData[month]) {
-        groupedData[month] = [];
-      }
-      if (!monthsTotals[month]) {
-        monthsTotals[month] = 0;
-      }
-      if (!incomeTotals[month]) {
-        incomeTotals[month] = 0;
-      }
-      if (!categoryTotals[category]) {
-        categoryTotals[category] = {
-          name: '',
-          y: 0
-        };
-      }
+    if (data) {
+      data.forEach(item => {
+        const date = new Date(item.dt);
+        const category = item.cat;
+        const month = `${date.toLocaleString('default', {month: 'long'})} ${date.getFullYear()}`;
+        if (!groupedData[month]) {
+          groupedData[month] = [];
+        }
+        if (!monthsTotals[month]) {
+          monthsTotals[month] = 0;
+        }
+        if (!incomeTotals[month]) {
+          incomeTotals[month] = 0;
+        }
+        if (!categoryTotals[category]) {
+          categoryTotals[category] = {
+            name: '',
+            y: 0
+          };
+        }
 
-      if (item.type === 'incomes') {
-        incomeData.push(item)
-        incomeTotals[month] += parseInt(item.sum);
-      } else {
-        groupedData[month].push(item);
-        monthsTotals[month] += parseInt(item.sum);
-        categoryTotals[category].name = categories[category].label;
-        categoryTotals[category].y += parseInt(item.sum);
-      }
-    });
+        if (item.type === 'incomes') {
+          incomeData.push(item)
+          incomeTotals[month] += parseInt(item.sum);
+        } else {
+          groupedData[month].push(item);
+          monthsTotals[month] += parseInt(item.sum);
+          categoryTotals[category].name = categories[category].label;
+          categoryTotals[category].y += parseInt(item.sum);
+        }
+      });
+    }
     dataDispatch({
       type: 'SET_DATA',
       raw: data,
@@ -84,6 +86,7 @@ export const fetchData = (token, dataDispatch, category = null) => {
       incomeData: incomeData,
       incomeTotals: incomeTotals,
       categoryTotals: categoryTotals,
+      loading: false,
     });
     if (category) {
       dataDispatch({ type: 'FILTER_DATA', category: category });

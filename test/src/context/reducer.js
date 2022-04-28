@@ -21,6 +21,7 @@ export const initialData = {
   incomeData: null,
   incomeTotals: null,
   categoryTotals: [],
+  loading: true,
 };
 
 export const AuthReducer = (initialState, action) => {
@@ -69,10 +70,11 @@ export const DataReducer = (initialState, action) => {
         incomeData: action.incomeData,
         incomeTotals: action.incomeTotals,
         categoryTotals: action.categoryTotals,
+        loading: action.loading,
       };
 
     case "FILTER_DATA":
-      if (action.category !== '') {
+      if (action.category !== '' && initialState.raw) {
         const filtered = initialState.raw.filter(item => item.cat === action.category);
         let groupedData = {};
         let monthsTotals = {};

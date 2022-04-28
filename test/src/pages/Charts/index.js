@@ -34,6 +34,7 @@ const Charts = () => {
   const { data, dataDispatch } = useData();
   const noData = data.groupedData === null;
   const { token } = useAuthState();
+  const loading = data.loading;
 
   useEffect(() => {
     if (noData) {
@@ -168,7 +169,7 @@ const Charts = () => {
     <div>
       <h2>Charts page</h2>
       <Filters />
-      {!noData &&
+      {loading ? <div className="lds-ripple"><div></div><div></div></div> : !noData &&
         <div className="charts-page">
           <HighchartsReact
             highcharts={Highcharts}
