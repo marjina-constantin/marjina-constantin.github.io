@@ -6,8 +6,9 @@ on:
     - cron:  '*/5 * * * *'
 
 jobs:
-  ping:
+  build:
+    name: Trigger Site Ping
     runs-on: ubuntu-latest
     steps:
-    - name: Ping the site
-      run: curl -I https://dev-expenses-api.pantheonsite.io/github-action-ping
+      - name: cURL request
+        run: curl -I https://dev-expenses-api.pantheonsite.io/github-action-ping
