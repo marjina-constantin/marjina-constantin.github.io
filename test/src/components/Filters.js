@@ -15,7 +15,7 @@ export default function Filters() {
     <div className="filters">
       <select name="category" onChange={handleChange}>
         {categories.map((category, id) => (
-          <option selected={data.category === category.value} key={id} value={category.value}>{category.label}</option>
+          <option defaultValue={data.category === category.value} key={id} value={category.value}>{category.label}</option>
         ))}
       </select>
     </div>

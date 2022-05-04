@@ -1,33 +1,33 @@
 import React, {useEffect} from "react";
-import Highcharts from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
-import DarkUnica from 'highcharts/themes/dark-unica';
+// import Highcharts from 'highcharts';
+// import HighchartsReact from 'highcharts-react-official';
+// import DarkUnica from 'highcharts/themes/dark-unica';
 import {useAuthState, useData} from "../../context";
 import {fetchData} from "../../utils/utils";
 import Filters from "../../components/Filters";
 import {categories} from '../../utils/constants'
 
-DarkUnica(Highcharts);
+// DarkUnica(Highcharts);
 
-Highcharts.theme = {
-  chart: {
-    backgroundColor: '#282a36',
-  },
-  tooltip: {
-    style: {
-      fontSize: '15px',
-    }
-  },
-  // yAxis: {
-  //   stackLabels: {
-  //     style: {
-  //       fontSize: '13px',
-  //     }
-  //   },
-  // },
-};
-
-Highcharts.setOptions(Highcharts.theme);
+// Highcharts.theme = {
+//   chart: {
+//     backgroundColor: '#282a36',
+//   },
+//   tooltip: {
+//     style: {
+//       fontSize: '15px',
+//     }
+//   },
+//   // yAxis: {
+//   //   stackLabels: {
+//   //     style: {
+//   //       fontSize: '13px',
+//   //     }
+//   //   },
+//   // },
+// };
+//
+// Highcharts.setOptions(Highcharts.theme);
 
 const Charts = () => {
 
@@ -85,6 +85,7 @@ const Charts = () => {
 
     }],
   }
+  console.log('allTimeOptions', allTimeOptions)
 
 
   // Last month section
@@ -138,6 +139,7 @@ const Charts = () => {
       data: Object.values(lastMonthTotals)
     }]
   };
+  console.log('lastMonthOptions', lastMonthOptions)
 
   // All time section
   let totalSpent = 0;
@@ -164,6 +166,7 @@ const Charts = () => {
       data: Object.values(data.categoryTotals)
     }]
   };
+  console.log('allTimeSpendings', allTimeSpendings)
 
   return (
     <div>
@@ -171,20 +174,20 @@ const Charts = () => {
       <Filters />
       {loading ? <div className="lds-ripple"><div></div><div></div></div> : !noData &&
         <div className="charts-page">
-          <HighchartsReact
-            highcharts={Highcharts}
-            options={allTimeOptions}
-          />
-          <hr/>
-          <HighchartsReact
-            highcharts={Highcharts}
-            options={lastMonthOptions}
-          />
-          <hr/>
-          <HighchartsReact
-            highcharts={Highcharts}
-            options={allTimeSpendings}
-          />
+          {/*<HighchartsReact*/}
+          {/*  highcharts={Highcharts}*/}
+          {/*  options={allTimeOptions}*/}
+          {/*/>*/}
+          {/*<hr/>*/}
+          {/*<HighchartsReact*/}
+          {/*  highcharts={Highcharts}*/}
+          {/*  options={lastMonthOptions}*/}
+          {/*/>*/}
+          {/*<hr/>*/}
+          {/*<HighchartsReact*/}
+          {/*  highcharts={Highcharts}*/}
+          {/*  options={allTimeSpendings}*/}
+          {/*/>*/}
           <div className="average-spending">
             Total spent: {totalSpent} mdl in {nrOfMonths} months
           </div>

@@ -47,10 +47,13 @@ export const fetchData = (token, dataDispatch, category = null) => {
     let incomeTotals = {};
     let categoryTotals = {};
     if (data) {
+      const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
       data.forEach(item => {
         const date = new Date(item.dt);
         const category = item.cat;
-        const month = `${date.toLocaleString('default', {month: 'long'})} ${date.getFullYear()}`;
+        const month = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
         if (!groupedData[month]) {
           groupedData[month] = [];
         }

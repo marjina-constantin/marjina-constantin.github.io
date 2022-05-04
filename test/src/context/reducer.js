@@ -78,9 +78,12 @@ export const DataReducer = (initialState, action) => {
         const filtered = initialState.raw.filter(item => item.cat === action.category);
         let groupedData = {};
         let monthsTotals = {};
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"
+        ];
         filtered.forEach(item => {
           const date = new Date(item.dt);
-          const month = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
+          const month = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
           if (!groupedData[month]) {
             groupedData[month] = [];
           }

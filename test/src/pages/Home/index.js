@@ -62,14 +62,14 @@ const Home = () => {
       <Filters />
       {loading ? <div className="lds-ripple"><div></div><div></div></div> : noData ? '' :
         <div>
-          {Object.keys(items.groupedData).map((item, id) => (
+          {Object.keys(items.groupedData).map((monthName, id) => (
             id < nrOfMonths ?
               <TransactionsTable
                 key={id}
-                total={items.totals[item]}
-                month={item}
+                total={items.totals[monthName]}
+                month={monthName}
                 incomeTotals={items.incomeTotals}
-                items={items.groupedData[item]}
+                items={items.groupedData[monthName]}
                 handleEdit={handleEdit}
                 setShowDeleteModal={setShowDeleteModal}
               />
