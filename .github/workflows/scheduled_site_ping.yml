@@ -1,0 +1,13 @@
+name: Ping the site to keep the server running
+
+on:
+  schedule:
+    # At every 5th minute.
+    - cron:  '*/5 * * * *'
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Ping the site
+      run: curl -I https://dev-expenses-api.pantheonsite.io/github-action-ping
