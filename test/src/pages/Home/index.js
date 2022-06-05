@@ -58,7 +58,7 @@ const Home = () => {
         }} />
       </Modal>
       <h2>Expenses</h2>
-      <h4>Hi, {userDetails?.current_user?.name}!</h4>
+      <h4>Hi iopta, {userDetails?.current_user?.name}!</h4>
       <Filters />
       {loading ? <div className="lds-ripple"><div></div><div></div></div> : noData ? '' :
         <div>
