@@ -208,7 +208,7 @@ const Charts = () => {
               highcharts={Highcharts}
               options={allTimeSpendings}
             />
-            <div className="average-spending heading">
+            <div className="average-spending">
               Total spent: {totalSpent} mdl in {nrOfMonths} months
             </div>
           </div>
