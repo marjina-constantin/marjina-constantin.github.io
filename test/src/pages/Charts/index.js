@@ -28,6 +28,22 @@ Highcharts.theme = {
 };
 
 Highcharts.setOptions(Highcharts.theme);
+// Radialize the colors
+Highcharts.setOptions({
+  colors: Highcharts.map(Highcharts.getOptions().colors, function (color) {
+    return {
+      radialGradient: {
+        cx: 0.5,
+        cy: 0.3,
+        r: 0.7
+      },
+      stops: [
+        [0, color],
+        [1, Highcharts.color(color).brighten(-0.25).get('rgb')] // darken
+      ]
+    };
+  })
+});
 
 const Charts = () => {
 
@@ -165,33 +181,54 @@ const Charts = () => {
     }]
   };
 
+  // Daily average section
+  const firstDay = data.raw[data.raw.length - 1]?.dt;
+  const daysPassed = (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1;
+
   return (
     <div>
       <h2>Charts page</h2>
       <Filters />
       {loading ? <div className="lds-ripple"><div></div><div></div></div> : !noData &&
         <div className="charts-page">
-          <HighchartsReact
-            highcharts={Highcharts}
-            options={allTimeOptions}
-          />
-          <hr/>
-          <HighchartsReact
-            highcharts={Highcharts}
-            options={lastMonthOptions}
-          />
-          <hr/>
-          <HighchartsReact
-            highcharts={Highcharts}
-            options={allTimeSpendings}
-          />
-          <div className="average-spending">
-            Total spent: {totalSpent} mdl in {nrOfMonths} months
+          <div className="charts-section">
+            <HighchartsReact
+              highcharts={Highcharts}
+              options={allTimeOptions}
+            />
           </div>
-          <hr/>
+          <div className="charts-section">
+            <HighchartsReact
+              highcharts={Highcharts}
+              options={lastMonthOptions}
+            />
+          </div>
+          <div className="charts-section">
+            <HighchartsReact
+              highcharts={Highcharts}
+              options={allTimeSpendings}
+            />
+            <div className="average-spending heading">
+              Total spent: {totalSpent} mdl in {nrOfMonths} months
+            </div>
+          </div>
+          <div className="charts-section">
+            <span className="heading">Daily average per category</span>
+            <table className="daily-average">
+              <tbody>
+              {Object.values(data.categoryTotals).map((item, key) => (
+                <tr key={key}>
+                  <td>{item.name}</td>
+                  <td>{parseInt(item.y / daysPassed)} mdl / day</td>
+                </tr>
+              ))}
+              </tbody>
+            </table>
+          </div>
+
           {lastTwoMonthsTotal &&
-            <div className="average-spending">
-              Average spending for the last 60 days: {parseInt(lastTwoMonthsTotal / Math.ceil(daysDiff))} mdl / day
+            <div className="charts-section">
+              <span className="heading">Average spending for the last 60 days: {parseInt(lastTwoMonthsTotal / Math.ceil(daysDiff))} mdl / day</span>
             </div>
           }
         </div>

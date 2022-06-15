@@ -287,3 +287,27 @@ button:hover {
     opacity: 0;
   }
 }
+.charts-section {
+  padding: 25px 0;
+  border-bottom: 1px solid #E0E0E3;
+}
+.charts-section .heading {
+  color: #E0E0E3;
+  font-size: 20px;
+  text-transform: uppercase;
+  font-family: 'Unica One', sans-serif;
+  display: block;
+  margin: 20px 0;
+}
+.daily-average {
+  margin: 0 auto;
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 800px;
+}
+.daily-average td {
+  padding: 15px 30px;
+  width: 50%;
+  background: #3d4449;
+  border: 2px solid #282a36;
+}
