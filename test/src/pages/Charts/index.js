@@ -228,7 +228,7 @@ const Charts = () => {
 
           {lastTwoMonthsTotal &&
             <div className="charts-section">
-              <span className="heading">Average spending for the last 60 days: {parseInt(lastTwoMonthsTotal / Math.ceil(daysDiff))} mdl / day</span>
+              <span>Average spending for the last 60 days: {parseInt(lastTwoMonthsTotal / Math.ceil(daysDiff))} mdl / day</span>
             </div>
           }
         </div>

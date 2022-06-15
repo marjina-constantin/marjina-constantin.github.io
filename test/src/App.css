@@ -306,7 +306,7 @@ button:hover {
   max-width: 800px;
 }
 .daily-average td {
-  padding: 15px 30px;
+  padding: 15px 0;
   width: 50%;
   background: #3d4449;
   border: 2px solid #282a36;
