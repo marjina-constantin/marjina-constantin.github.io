@@ -219,11 +219,14 @@ const Charts = () => {
               {Object.values(data.categoryTotals).map((item, key) => (
                 <tr key={key}>
                   <td>{item.name}</td>
-                  <td>{parseInt(item.y / daysPassed)} mdl / day</td>
+                  <td>~{parseInt(item.y / daysPassed)} mdl / day</td>
                 </tr>
               ))}
               </tbody>
             </table>
+            <div className="average-spending">
+              Average spending per day: ~{parseInt(totalSpent / daysPassed)} mdl
+            </div>
           </div>
 
           {lastTwoMonthsTotal &&
