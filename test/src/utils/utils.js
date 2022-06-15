@@ -63,7 +63,7 @@ export const fetchData = (token, dataDispatch, category = null) => {
         if (!incomeTotals[month]) {
           incomeTotals[month] = 0;
         }
-        if (!categoryTotals[category]) {
+        if (!categoryTotals[category] && category) {
           categoryTotals[category] = {
             name: '',
             y: 0
