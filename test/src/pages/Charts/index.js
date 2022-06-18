@@ -6,6 +6,7 @@ import {useAuthState, useData} from "../../context";
 import {fetchData} from "../../utils/utils";
 import Filters from "../../components/Filters";
 import {categories} from '../../utils/constants'
+import DailyAverageTrend from "../../components/DailyAverageTrend";
 
 DarkUnica(Highcharts);
 
@@ -95,6 +96,9 @@ const Charts = () => {
         colorByPoint: true,
       }
     },
+    credits: {
+      enabled: false
+    },
     series: [{
       name: data.category ? categories.find(element => element.value === data.category).label : 'Monthly totals',
       data: items.totals ? Object.values(items.totals).reverse() : []
@@ -152,15 +156,14 @@ const Charts = () => {
       name: 'MDL',
       colorByPoint: true,
       data: Object.values(lastMonthTotals)
-    }]
+    }],
+    credits: {
+      enabled: false
+    },
   };
 
   // All time section
-  let totalSpent = 0;
   const nrOfMonths = data.groupedData ? Object.keys(data.groupedData).length : 0;
-  for (let item of Object.values(data.categoryTotals)) {
-    totalSpent += item.y;
-  }
   const allTimeSpendings = {
     chart: {
       type: 'pie'
@@ -178,12 +181,15 @@ const Charts = () => {
       name: 'MDL',
       colorByPoint: true,
       data: Object.values(data.categoryTotals)
-    }]
+    }],
+    credits: {
+      enabled: false
+    },
   };
 
   // Daily average section
   const firstDay = data.raw[data.raw.length - 1]?.dt;
-  const daysPassed = (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1;
+  const daysPassed = parseInt((new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1);
 
   return (
     <div>
@@ -209,7 +215,7 @@ const Charts = () => {
               options={allTimeSpendings}
             />
             <div className="average-spending">
-              Total spent: {totalSpent} mdl in {nrOfMonths} months
+              Total spent: {data.totalSpent} mdl in {nrOfMonths} months
             </div>
           </div>
           <div className="charts-section">
@@ -225,8 +231,12 @@ const Charts = () => {
               </tbody>
             </table>
             <div className="average-spending">
-              Average spending per day: ~{parseInt(totalSpent / daysPassed)} mdl
+              Average spending per day: ~{parseInt(data.totalSpentUntilTomorrow / daysPassed)} mdl
             </div>
+          </div>
+
+          <div className="charts-section">
+            <DailyAverageTrend />
           </div>
 
           {lastTwoMonthsTotal &&

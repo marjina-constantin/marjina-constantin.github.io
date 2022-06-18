@@ -46,6 +46,9 @@ export const fetchData = (token, dataDispatch, category = null) => {
     let monthsTotals = {};
     let incomeTotals = {};
     let categoryTotals = {};
+    let totalSpent = 0;
+    let totalSpentUntilTomorrow = 0;
+    const tomorrow = new Date().setHours(24,0,0,0);
     if (data) {
       const monthNames = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
@@ -78,6 +81,10 @@ export const fetchData = (token, dataDispatch, category = null) => {
           monthsTotals[month] += parseInt(item.sum);
           categoryTotals[category].name = categories[category].label;
           categoryTotals[category].y += parseInt(item.sum);
+          if (date < tomorrow ) {
+            totalSpentUntilTomorrow += parseInt(item.sum);
+          }
+          totalSpent += parseInt(item.sum);
         }
       });
     }
@@ -90,6 +97,8 @@ export const fetchData = (token, dataDispatch, category = null) => {
       incomeTotals: incomeTotals,
       categoryTotals: categoryTotals,
       loading: false,
+      totalSpent,
+      totalSpentUntilTomorrow,
     });
     if (category) {
       dataDispatch({ type: 'FILTER_DATA', category: category });
