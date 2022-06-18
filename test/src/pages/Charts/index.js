@@ -235,9 +235,9 @@ const Charts = () => {
             </div>
           </div>
 
-          <div className="charts-section">
-            <DailyAverageTrend />
-          </div>
+          {/*<div className="charts-section">*/}
+          {/*  <DailyAverageTrend />*/}
+          {/*</div>*/}
 
           {lastTwoMonthsTotal &&
             <div className="charts-section">
