@@ -1,38 +1,38 @@
 import Charts from "../pages/Charts";
 import Home from "../pages/Home";
 import Login from '../pages/Login';
-import Logout from '../pages/Logout';
+import Profile from '../pages/Profile';
 import AddTransaction from '../pages/AddTransaction';
 import Income from '../pages/Income';
 
 const routes = [
   {
-    path:'/test/build',
+    path:'/expenses/login',
     component: Login,
     isPrivate: false,
   },
   {
-    path:'/test/charts',
+    path:'/expenses/charts',
     component: Charts,
     isPrivate: true,
   },
   {
-    path:'/test/home',
+    path:'/expenses/home',
     component: Home,
     isPrivate: true,
   },
   {
-    path:'/test/logout',
-    component: Logout,
+    path:'/expenses/user',
+    component: Profile,
     isPrivate: true,
   },
   {
-    path:'/test/add-transaction',
+    path:'/expenses/add-transaction',
     component: AddTransaction,
     isPrivate: true,
   },
   {
-    path:'/test/income',
+    path:'/expenses/income',
     component: Income,
     isPrivate: true,
   },

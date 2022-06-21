@@ -2,14 +2,14 @@ import React from "react";
 import {logout, useAuthDispatch, useData} from "../../context";
 import {useHistory} from "react-router-dom";
 
-const Logout = () => {
+const Profile = () => {
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
   const history = useHistory();
   const handleLogout = (e) => {
     e.preventDefault();
     logout(dispatch, dataDispatch);
-    history.push('/test/build') //navigate to logout page on logout
+    history.push('/expenses/login') //navigate to logout page on logout
   }
 
   return (
@@ -20,4 +20,4 @@ const Logout = () => {
   );
 };
 
-export default Logout;
+export default Profile;

@@ -1,6 +1,6 @@
 import {NavLink} from 'react-router-dom'
 import {useAuthState} from '../context'
-import { FaHome, FaChartPie, FaSignOutAlt, FaPlus, FaMoneyBill } from "react-icons/fa";
+import { FaHome, FaChartPie, FaUser, FaPlus, FaMoneyBill } from "react-icons/fa";
 import {useState} from "react";
 
 export default function Navbar() {
@@ -45,14 +45,14 @@ export default function Navbar() {
             // onClick={() => setCssClass('closed')}
             activeClassName="selected"
             className="not-selected"
-            to="/test/home"
+            to="/expenses/home"
             exact
           ><FaHome /></NavLink>
         </li>
         <li>
           <NavLink
             // onClick={() => setCssClass('closed')}
-            to="/test/charts"
+            to="/expenses/charts"
             activeClassName="selected"
             className="not-selected"
             exact
@@ -62,7 +62,7 @@ export default function Navbar() {
         <li>
           <NavLink
             // onClick={() => setCssClass('closed')}
-            to="/test/add-transaction"
+            to="/expenses/add-transaction"
             activeClassName="selected"
             className="not-selected"
             exact
@@ -72,7 +72,7 @@ export default function Navbar() {
         <li>
           <NavLink
             // onClick={() => setCssClass('closed')}
-            to="/test/income"
+            to="/expenses/income"
             activeClassName="selected"
             className="not-selected"
             exact
@@ -83,11 +83,11 @@ export default function Navbar() {
           <li>
             <NavLink
               // onClick={() => setCssClass('closed')}
-              to="/test/logout"
+              to="/expenses/user"
               activeClassName="selected"
               className="not-selected"
               exact
-            ><FaSignOutAlt />
+            ><FaUser />
             </NavLink>
           </li> : ''
         }
