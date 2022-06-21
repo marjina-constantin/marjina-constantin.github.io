@@ -1,24 +1,18 @@
 {
   "files": {
-    "main.css": "/test/build/static/css/main.b9927755.chunk.css",
-    "main.js": "/test/build/static/js/main.28ac1cab.chunk.js",
-    "main.js.map": "/test/build/static/js/main.28ac1cab.chunk.js.map",
-    "runtime-main.js": "/test/build/static/js/runtime-main.10ae45f6.js",
-    "runtime-main.js.map": "/test/build/static/js/runtime-main.10ae45f6.js.map",
-    "static/js/2.59a766e4.chunk.js": "/test/build/static/js/2.59a766e4.chunk.js",
-    "static/js/2.59a766e4.chunk.js.map": "/test/build/static/js/2.59a766e4.chunk.js.map",
-    "static/js/3.d6af6c94.chunk.js": "/test/build/static/js/3.d6af6c94.chunk.js",
-    "static/js/3.d6af6c94.chunk.js.map": "/test/build/static/js/3.d6af6c94.chunk.js.map",
-    "index.html": "/test/build/index.html",
-    "service-worker.js": "/test/build/service-worker.js",
-    "service-worker.js.map": "/test/build/service-worker.js.map",
-    "static/css/main.b9927755.chunk.css.map": "/test/build/static/css/main.b9927755.chunk.css.map",
-    "static/js/2.59a766e4.chunk.js.LICENSE.txt": "/test/build/static/js/2.59a766e4.chunk.js.LICENSE.txt"
+    "main.css": "/expenses/home/static/css/main.77882260.chunk.css",
+    "main.js": "/expenses/home/static/js/main.4bbe4986.chunk.js",
+    "runtime-main.js": "/expenses/home/static/js/runtime-main.acf15086.js",
+    "static/js/2.863cddc6.chunk.js": "/expenses/home/static/js/2.863cddc6.chunk.js",
+    "static/js/3.1c0e7fb9.chunk.js": "/expenses/home/static/js/3.1c0e7fb9.chunk.js",
+    "index.html": "/expenses/home/index.html",
+    "service-worker.js": "/expenses/home/service-worker.js",
+    "static/js/2.863cddc6.chunk.js.LICENSE.txt": "/expenses/home/static/js/2.863cddc6.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.10ae45f6.js",
-    "static/js/2.59a766e4.chunk.js",
-    "static/css/main.b9927755.chunk.css",
-    "static/js/main.28ac1cab.chunk.js"
+    "static/js/runtime-main.acf15086.js",
+    "static/js/2.863cddc6.chunk.js",
+    "static/css/main.77882260.chunk.css",
+    "static/js/main.4bbe4986.chunk.js"
   ]
 }
