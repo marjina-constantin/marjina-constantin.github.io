@@ -63,7 +63,8 @@ const Charts = () => {
 
   const allTimeOptions = {
     chart: {
-      type: 'column'
+      type: 'column',
+      zoomType: 'x',
     },
     title: {
       text: 'Monthly Totals'
