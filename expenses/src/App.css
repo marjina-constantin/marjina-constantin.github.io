@@ -82,7 +82,7 @@ body {
   .filters {
     text-align: center !important;
   }
-  select {
+  .filters select, .user-currency select {
     width: 80%;
   }
 }
@@ -240,7 +240,7 @@ button:hover {
   padding: 0 25px;
   margin-top: 30px;
 }
-select {
+.filters select, .user-currency select {
   height: 40px;
   border: none;
   -webkit-appearance: none;
@@ -335,6 +335,20 @@ select {
   stroke-width: 10px;
   fill: #282a36;
 }
+.user-avatar.saved svg {
+  animation: avatar-blink 2s ease 1;
+}
 .currency {
   margin-top: 20px;
+}
+@keyframes avatar-blink {
+  0% {
+    stroke: #BDBDBD;
+  }
+  50% {
+    stroke: #fcc700;
+  }
+  100% {
+    stroke: #BDBDBD;
+  }
 }

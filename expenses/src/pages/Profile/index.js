@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {logout, useAuthDispatch, useAuthState, useData} from "../../context";
 import {useHistory} from "react-router-dom";
 import {currencies} from "../../utils/constants";
@@ -32,6 +32,8 @@ const Profile = () => {
         userDetails.current_user.currency = data.field_currency[0].value;
         localStorage.setItem('currentUser', JSON.stringify(userDetails));
         dispatch({ type: 'UPDATE_USER', payload: {currency: data.field_currency[0].value} });
+        setBlink(true);
+        setTimeout(() => setBlink(false), 2000);
       }
       else {
         alert('Something went wrong, please contact Constantin :)')
@@ -39,15 +41,20 @@ const Profile = () => {
     })
   };
 
+  const sortedCurrencies = Object.entries(currencies).sort((a,b) => { return a[1] < b[1] ? -1 : 1 });
+  const [blink, setBlink] = useState(false);
+
   return (
     <div>
-      <div className="user-avatar"><FaUserCircle /></div>
+      <div className={blink ? 'user-avatar saved' : 'user-avatar'}><FaUserCircle /></div>
       <h3>{userDetails.current_user.name}</h3>
-      <select value={currency} className="currency" name="currency" onChange={handleChange}>
-        {Object.entries(currencies).map(([id, currency]) => (
-          <option key={id} value={id}>{currency}</option>
-        ))}
-      </select>
+      <div className="user-currency">
+        <select value={currency} className="currency" name="currency" onChange={handleChange}>
+          {sortedCurrencies.map(([id, currency]) => (
+            <option key={id} value={id}>{currency}</option>
+          ))}
+        </select>
+      </div>
       <button className="button logout" onClick={handleLogout}>Logout</button>
     </div>
   );
