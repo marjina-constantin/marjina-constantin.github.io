@@ -10,7 +10,8 @@ export const initialState = {
   token: "" || token,
   loading: false,
   errorMessage: null,
-  userIsLoggedIn: !!user
+  userIsLoggedIn: !!user,
+  currency: user?.current_user?.currency || 'MDL'
 };
 
 export const initialData = {
@@ -37,7 +38,13 @@ export const AuthReducer = (initialState, action) => {
         userDetails: action.payload,
         token: action.payload.jwt_token,
         loading: false,
-        userIsLoggedIn: true
+        userIsLoggedIn: true,
+        currency: action.payload.current_user.currency || 'MDL'
+      };
+    case "UPDATE_USER":
+      return {
+        ...initialState,
+        ...action.payload,
       };
     case "LOGOUT":
       return {

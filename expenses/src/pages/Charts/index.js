@@ -50,7 +50,7 @@ const Charts = () => {
 
   const { data, dataDispatch } = useData();
   const noData = data.groupedData === null;
-  const { token } = useAuthState();
+  const { token, currency } = useAuthState();
   const loading = data.loading;
 
   useEffect(() => {
@@ -75,7 +75,7 @@ const Charts = () => {
     yAxis: {
       min: 0,
       title: {
-        text: 'MDL'
+        text: currency
       },
       stackLabels: {
         style: {
@@ -154,7 +154,7 @@ const Charts = () => {
 
     },
     series: [{
-      name: 'MDL',
+      name: currency,
       colorByPoint: true,
       data: Object.values(lastMonthTotals)
     }],
@@ -179,7 +179,7 @@ const Charts = () => {
 
     },
     series: [{
-      name: 'MDL',
+      name: currency,
       colorByPoint: true,
       data: Object.values(data.categoryTotals)
     }],
@@ -216,7 +216,7 @@ const Charts = () => {
               options={allTimeSpendings}
             />
             <div className="average-spending">
-              Total spent: {data.totalSpent} mdl in {nrOfMonths} months
+              Total spent: {data.totalSpent} {currency} in {nrOfMonths} months
             </div>
           </div>
           <div className="charts-section">
@@ -226,13 +226,13 @@ const Charts = () => {
               {Object.values(data.categoryTotals).map((item, key) => (
                 <tr key={key}>
                   <td>{item.name}</td>
-                  <td>~{parseInt(item.y / daysPassed)} mdl / day</td>
+                  <td>~{parseInt(item.y / daysPassed)} {currency} / day</td>
                 </tr>
               ))}
               </tbody>
             </table>
             <div className="average-spending">
-              Average spending per day: ~{parseInt(data.totalSpentUntilTomorrow / daysPassed)} mdl
+              Average spending per day: ~{parseInt(data.totalSpentUntilTomorrow / daysPassed)} {currency}
             </div>
           </div>
 
@@ -242,7 +242,7 @@ const Charts = () => {
 
           {lastTwoMonthsTotal &&
             <div className="charts-section">
-              <span>Average spending for the last 60 days: {parseInt(lastTwoMonthsTotal / Math.ceil(daysDiff))} mdl / day</span>
+              <span>Average spending for the last 60 days: {parseInt(lastTwoMonthsTotal / Math.ceil(daysDiff))} {currency} / day</span>
             </div>
           }
         </div>

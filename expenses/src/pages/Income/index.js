@@ -44,7 +44,7 @@ const Income = () => {
     <div>
       <Modal show={showDeleteModal} onClose={(e) => {e.preventDefault(); setShowDeleteModal(false)}}>
         <h3>Are you sure you want to delete the income?</h3>
-        <button onClick={() => handleDelete(showDeleteModal, token)} className="button logout">Yes, remove the income</button>
+        <button onClick={() => handleDelete(showDeleteModal, token)} className="button wide">Yes, remove the income</button>
       </Modal>
       <Modal show={showEditModal} onClose={(e) => {e.preventDefault(); setShowEditModal(false); setIsNewModal(false)}}>
         <IncomeForm formType={!isNewModal ? "edit" : "add"} values={focusedItem} onSuccess={() => {
@@ -55,7 +55,7 @@ const Income = () => {
       <h2>Incomes</h2>
       {noData ? '' :
         <div>
-          <button onClick={() => {setShowEditModal(true); setIsNewModal(true)}} className="button logout" >Add new income</button>
+          <button onClick={() => {setShowEditModal(true); setIsNewModal(true)}} className="button wide" >Add new income</button>
 
           {data.incomeData && data.incomeData.length ?
             <IncomeTable

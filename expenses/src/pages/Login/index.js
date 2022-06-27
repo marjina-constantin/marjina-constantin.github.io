@@ -38,7 +38,7 @@ const Login = () => {
         clientId="954790461001-2p4vab8hud9u6mj4n6hb6iio4uaiofe5.apps.googleusercontent.com"
         buttonText="Login"
         render={renderProps => (
-          <button onClick={renderProps.onClick} className="button logout" disabled={loading}>Log in</button>
+          <button onClick={renderProps.onClick} className="button wide" disabled={loading}>Log in</button>
         )}
         onSuccess={handleLogin}
         onFailure={failedResponseGoogle}

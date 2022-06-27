@@ -79,6 +79,12 @@ body {
   .navbar ul li a {
     font-size: 30px;
   }
+  .filters {
+    text-align: center !important;
+  }
+  select {
+    width: 80%;
+  }
 }
 
 .add-transaction {
@@ -119,8 +125,14 @@ body {
   min-height: 40px;
   background: #fcc700;
 }
+.button.wide {
+  width: 80%;
+}
 .button.logout {
   width: 80%;
+  position: fixed;
+  bottom: 120px;
+  left: 10%;
 }
 .add-transaction input[type=submit]:hover, .button:hover {
   cursor: pointer;
@@ -228,8 +240,13 @@ button:hover {
   padding: 0 25px;
   margin-top: 30px;
 }
-.filters select {
-  height: 38px;
+select {
+  height: 40px;
+  border: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-align: center;
+  padding: 10px;
 }
 .charts-page {
   padding: 0 25px;
@@ -310,4 +327,14 @@ button:hover {
   width: 50%;
   background: #3d4449;
   border: 2px solid #282a36;
+}
+.user-avatar svg {
+  width: 200px;
+  height: 200px;
+  stroke: #BDBDBD;
+  stroke-width: 10px;
+  fill: #282a36;
+}
+.currency {
+  margin-top: 20px;
 }

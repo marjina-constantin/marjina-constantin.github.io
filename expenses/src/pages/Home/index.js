@@ -7,7 +7,7 @@ import TransactionsTable from "../../components/TransactionsTable";
 import Filters from "../../components/Filters";
 
 const Home = () => {
-  const { userDetails, token } = useAuthState();
+  const { token } = useAuthState();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const { data, dataDispatch } = useData();
@@ -49,7 +49,7 @@ const Home = () => {
     <div>
       <Modal show={showDeleteModal} onClose={(e) => {e.preventDefault(); setShowDeleteModal(false)}}>
         <h3>Are you sure you want to delete the transaction?</h3>
-        <button onClick={() => handleDelete(showDeleteModal, token)} className="button logout">Yes, remove the transaction</button>
+        <button onClick={() => handleDelete(showDeleteModal, token)} className="button wide">Yes, remove the transaction</button>
       </Modal>
       <Modal show={showEditModal} onClose={(e) => {e.preventDefault(); setShowEditModal(false)}}>
         <TransactionForm formType="edit" values={focusedItem} onSuccess={() => {
@@ -58,7 +58,6 @@ const Home = () => {
         }} />
       </Modal>
       <h2>Expenses</h2>
-      <h4>Hi, {userDetails?.current_user?.name}!</h4>
       <Filters />
       {loading ? <div className="lds-ripple"><div></div><div></div></div> : noData ? '' :
         <div>
