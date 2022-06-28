@@ -53,12 +53,16 @@ const TransactionForm = ({formType, values, onSuccess}) => {
     })
   };
 
+  let today = new Date();
+  const offset = today.getTimezoneOffset();
+  today = new Date(today.getTime() - (offset*60*1000)).toISOString().split('T')[0];
+
   return (
     <div>
       <h2>{formType === 'add' ? 'Add transaction' : 'Edit transaction'}</h2>
       <form className="add-transaction" onSubmit={handleSubmit}>
         <input required placeholder="Amount" type="number" name="field_amount" value={formState.field_amount} onChange={handleChange} />
-        <input required placeholder="Date" type="date" name="field_date" value={formState.field_date} onChange={handleChange} />
+        <input required placeholder="Date" type="date" max={today} name="field_date" value={formState.field_date} onChange={handleChange} />
         <select required name="field_category" value={formState.field_category} onChange={handleChange}>
           {categories.map((category, id) => (
             <option key={id} value={category.value}>{category.label}</option>

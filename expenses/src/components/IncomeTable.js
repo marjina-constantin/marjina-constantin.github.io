@@ -1,7 +1,7 @@
 import React from "react";
 
 export default function IncomeTable({items, handleEdit, setShowDeleteModal}) {
-  const total = items && items.length ? items.reduce((accumulator, curValue) => parseInt(accumulator) + (parseInt(curValue['sum']) || 0), 0) : 0;
+  const total = items && items.length ? items.reduce((accumulator, curValue) => (parseFloat(accumulator) + (parseFloat(curValue['sum']) || 0)).toFixed(2), 0) : 0;
   return (
     <div className="table-wrapper">
       <div className="month-badge">Incomes: {total}</div>

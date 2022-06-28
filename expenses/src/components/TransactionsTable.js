@@ -17,7 +17,7 @@ export default function TransactionsTable({month, total, items, handleEdit, setS
     return sortConfig.key === name ? sortConfig.direction : '';
   };
   const income = incomeTotals ? incomeTotals[month] : -1;
-  const profit = income - total;
+  const profit = (income - total).toFixed(2);
   const message = income > 0 ? `${month}: Income: ${income} - Expenses: ${total} = Profit: ${profit}` : `${month}: Expenses: ${total}`;
 
   return (

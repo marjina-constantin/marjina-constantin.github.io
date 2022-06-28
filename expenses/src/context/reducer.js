@@ -100,7 +100,7 @@ export const DataReducer = (initialState, action) => {
             monthsTotals[month] = 0;
           }
           groupedData[month].push(item);
-          monthsTotals[month] += parseInt(item.sum);
+          monthsTotals[month] = parseFloat((parseFloat(monthsTotals[month]) + parseFloat(item.sum)).toFixed(2));
         });
         const newState = {
           groupedData: groupedData,

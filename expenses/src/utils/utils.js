@@ -75,16 +75,16 @@ export const fetchData = (token, dataDispatch, category = null) => {
 
         if (item.type === 'incomes') {
           incomeData.push(item)
-          incomeTotals[month] += parseInt(item.sum);
+          incomeTotals[month] = (parseFloat(incomeTotals[month]) + parseFloat(item.sum)).toFixed(2);
         } else {
           groupedData[month].push(item);
-          monthsTotals[month] += parseInt(item.sum);
+          monthsTotals[month] = parseFloat((parseFloat(monthsTotals[month]) + parseFloat(item.sum)).toFixed(2));
           categoryTotals[category].name = categories[category].label;
-          categoryTotals[category].y += parseInt(item.sum);
+          categoryTotals[category].y = parseFloat((parseFloat(categoryTotals[category].y) + parseFloat(item.sum)).toFixed(2));
           if (date < tomorrow ) {
-            totalSpentUntilTomorrow += parseInt(item.sum);
+            totalSpentUntilTomorrow = (parseFloat(totalSpentUntilTomorrow) + parseFloat(item.sum)).toFixed(2);
           }
-          totalSpent += parseInt(item.sum);
+          totalSpent = (parseFloat(totalSpent) + parseFloat(item.sum)).toFixed(2);
         }
       });
     }

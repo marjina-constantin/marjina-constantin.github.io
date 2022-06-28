@@ -127,13 +127,13 @@ const Charts = () => {
     }
     lastProcessedItem = item;
     if (itemDate < tomorrow) {
-      lastTwoMonthsTotal += parseInt(item.sum);
+      lastTwoMonthsTotal = (parseFloat(lastTwoMonthsTotal) + parseFloat(item.sum)).toFixed(2);
       if (itemDate > oneMonthAgo ) {
         const category = categories.find(element => element.value === item.cat).label;
         if (!lastMonthTotals[category]) {
           lastMonthTotals[category] = {name: category, y: 0};
         }
-        lastMonthTotals[category].y += parseInt(item.sum);
+        lastMonthTotals[category].y = parseFloat((parseFloat(lastMonthTotals[category].y) + parseFloat(item.sum)).toFixed(2));
       }
     }
   }
@@ -226,13 +226,13 @@ const Charts = () => {
               {Object.values(data.categoryTotals).map((item, key) => (
                 <tr key={key}>
                   <td>{item.name}</td>
-                  <td>~{parseInt(item.y / daysPassed)} {currency} / day</td>
+                  <td>{parseFloat(item.y / daysPassed).toFixed(2)} {currency} / day</td>
                 </tr>
               ))}
               </tbody>
             </table>
             <div className="average-spending">
-              Average spending per day: ~{parseInt(data.totalSpentUntilTomorrow / daysPassed)} {currency}
+              Average spending per day: {parseFloat(data.totalSpentUntilTomorrow / daysPassed).toFixed(2)} {currency}
             </div>
           </div>
 
@@ -242,7 +242,7 @@ const Charts = () => {
 
           {lastTwoMonthsTotal &&
             <div className="charts-section">
-              <span>Average spending for the last 60 days: {parseInt(lastTwoMonthsTotal / Math.ceil(daysDiff))} {currency} / day</span>
+              <span>Average spending for the last 60 days: {parseFloat(lastTwoMonthsTotal / Math.ceil(daysDiff)).toFixed(2)} {currency} / day</span>
             </div>
           }
         </div>
