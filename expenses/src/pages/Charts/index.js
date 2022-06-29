@@ -2,7 +2,7 @@ import React, {useEffect} from "react";
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import DarkUnica from 'highcharts/themes/dark-unica';
-import {useAuthState, useData} from "../../context";
+import {useAuthDispatch, useAuthState, useData} from "../../context";
 import {fetchData} from "../../utils/utils";
 import Filters from "../../components/Filters";
 import {categories} from '../../utils/constants'
@@ -52,12 +52,13 @@ const Charts = () => {
   const noData = data.groupedData === null;
   const { token, currency } = useAuthState();
   const loading = data.loading;
+  const dispatch = useAuthDispatch();
 
   useEffect(() => {
     if (noData) {
-      fetchData(token, dataDispatch);
+      fetchData(token, dataDispatch, dispatch);
     }
-  }, [data, dataDispatch, noData, token]);
+  }, [data, dataDispatch, noData, token, dispatch]);
 
   const items = data.filtered || data;
 

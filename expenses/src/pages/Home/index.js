@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {useAuthState, useData} from '../../context';
+import {useAuthDispatch, useAuthState, useData} from '../../context';
 import {deleteNode, fetchData} from '../../utils/utils';
 import Modal from '../../components/Modal';
 import TransactionForm from "../../components/TransactionForm";
@@ -13,12 +13,13 @@ const Home = () => {
   const { data, dataDispatch } = useData();
   const noData = data.groupedData === null;
   const loading = data.loading;
+  const dispatch = useAuthDispatch();
 
   useEffect(() => {
     if (noData) {
-      fetchData(token, dataDispatch);
+      fetchData(token, dataDispatch, dispatch);
     }
-  }, [data, dataDispatch, token, noData]);
+  }, [data, dataDispatch, token, noData, dispatch]);
 
   const [focusedItem, setFocusedItem] = useState({})
 
@@ -37,7 +38,7 @@ const Home = () => {
         alert('Something went wrong.');
       }
       setShowDeleteModal(false);
-      fetchData(token, dataDispatch, data.category);
+      fetchData(token, dataDispatch, dispatch, data.category);
     });
   };
 
@@ -54,7 +55,7 @@ const Home = () => {
       <Modal show={showEditModal} onClose={(e) => {e.preventDefault(); setShowEditModal(false)}}>
         <TransactionForm formType="edit" values={focusedItem} onSuccess={() => {
           setShowEditModal(false);
-          fetchData(token, dataDispatch, data.category);
+          fetchData(token, dataDispatch, dispatch, data.category);
         }} />
       </Modal>
       <h2>Expenses</h2>

@@ -1,13 +1,14 @@
 import React from "react";
 import TransactionForm from "../../components/TransactionForm";
 import {fetchData} from '../../utils/utils';
-import {useAuthState, useData} from "../../context";
+import {useAuthDispatch, useAuthState, useData} from "../../context";
 
 const AddTransaction = () => {
   const { token } = useAuthState();
   const { dataDispatch } = useData();
+  const dispatch = useAuthDispatch();
   return (
-    <TransactionForm formType="add" onSuccess={() => {fetchData(token, dataDispatch);}}/>
+    <TransactionForm formType="add" onSuccess={() => {fetchData(token, dataDispatch, dispatch);}}/>
   );
 };
 

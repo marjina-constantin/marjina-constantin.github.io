@@ -1,17 +1,26 @@
-import {categories} from './constants'
+import {categories} from './constants';
+import { logout } from '../context'
 
 // const handleErrors = (response) => {
 //   if (!response.ok) throw Error(response.statusText);
 //   return response.json();
 // }
-const handleErrors = (response) => {
-  if (!response.ok) return (response.statusText);
+const handleErrors = (response, options, dataDispatch, dispatch) => {
+  if (!response.ok) {
+    fetch(`https://dev-expenses-api.pantheonsite.io/jwt/token`, options)
+      .then(response => {
+        if (response.status === 403) {
+          logout(dispatch, dataDispatch);
+        }
+      });
+    return (response.statusText);
+  }
   return response.json();
 }
 
-export const fetchRequest = (url, options, callback) => {
+export const fetchRequest = (url, options, dataDispatch, dispatch, callback) => {
   fetch(url, options)
-    .then(handleErrors)
+    .then(response => handleErrors(response, options, dataDispatch, dispatch))
     .then(response => callback(response))
     .catch(error => console.log(error));
 }
@@ -31,7 +40,7 @@ export const deleteNode = (nid, token, callback) => {
     });
 }
 
-export const fetchData = (token, dataDispatch, category = null) => {
+export const fetchData = (token, dataDispatch, dispatch, category = null) => {
   const fetchOptions = {
     method: 'GET',
     headers: new Headers({
@@ -40,7 +49,7 @@ export const fetchData = (token, dataDispatch, category = null) => {
       'JWT-Authorization': 'Bearer ' + token
     }),
   };
-  fetchRequest('https://dev-expenses-api.pantheonsite.io/user-expenses?_format=json', fetchOptions, (data) => {
+  fetchRequest('https://dev-expenses-api.pantheonsite.io/user-expenses?_format=json', fetchOptions, dataDispatch, dispatch, (data) => {
     let groupedData = {};
     let incomeData = [];
     let monthsTotals = {};

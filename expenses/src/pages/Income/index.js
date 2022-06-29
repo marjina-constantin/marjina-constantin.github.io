@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import IncomeForm from "../../components/IncomeForm";
 import {deleteNode, fetchData} from '../../utils/utils';
-import {useAuthState, useData} from "../../context";
+import {useAuthDispatch, useAuthState, useData} from "../../context";
 import Modal from "../../components/Modal";
 import IncomeTable from "../../components/IncomeTable";
 
@@ -12,12 +12,13 @@ const Income = () => {
   const [isNewModal, setIsNewModal] = useState(false);
   const { data, dataDispatch } = useData();
   const noData = data.groupedData === null;
+  const dispatch = useAuthDispatch();
 
   useEffect(() => {
     if (noData) {
-      fetchData(token, dataDispatch);
+      fetchData(token, dataDispatch, dispatch);
     }
-  }, [data, dataDispatch, noData, token]);
+  }, [data, dataDispatch, noData, token, dispatch]);
 
   const [focusedItem, setFocusedItem] = useState({})
 
@@ -36,7 +37,7 @@ const Income = () => {
         alert('Something went wrong.');
       }
       setShowDeleteModal(false);
-      fetchData(token, dataDispatch);
+      fetchData(token, dataDispatch, dispatch);
     });
   };
 
@@ -49,7 +50,7 @@ const Income = () => {
       <Modal show={showEditModal} onClose={(e) => {e.preventDefault(); setShowEditModal(false); setIsNewModal(false)}}>
         <IncomeForm formType={!isNewModal ? "edit" : "add"} values={focusedItem} onSuccess={() => {
           setShowEditModal(false);
-          fetchData(token, dataDispatch);
+          fetchData(token, dataDispatch, dispatch);
         }} />
       </Modal>
       <h2>Incomes</h2>
