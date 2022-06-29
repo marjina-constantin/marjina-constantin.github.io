@@ -27,7 +27,7 @@ const Profile = () => {
       body: JSON.stringify({field_currency: [event.target.value]}),
     };
     const url = `https://dev-expenses-api.pantheonsite.io/user/${userDetails.current_user.uid}?_format=json`;
-    fetchRequest(url, fetchOptions, (data) => {
+    fetchRequest(url, fetchOptions, dataDispatch, dispatch, (data) => {
       if (data.uid) {
         userDetails.current_user.currency = data.field_currency[0].value;
         localStorage.setItem('currentUser', JSON.stringify(userDetails));
@@ -45,7 +45,7 @@ const Profile = () => {
   const [blink, setBlink] = useState(false);
 
   return (
-    <div>
+    <div className="user-page">
       <div className={blink ? 'user-avatar saved' : 'user-avatar'}><FaUserCircle /></div>
       <h3>{userDetails.current_user.name}</h3>
       <div className="user-currency">

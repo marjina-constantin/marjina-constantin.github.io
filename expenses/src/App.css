@@ -83,7 +83,7 @@ body {
     text-align: center !important;
   }
   .filters select, .user-currency select {
-    width: 80%;
+    width: 100%;
   }
 }
 
@@ -129,10 +129,8 @@ body {
   width: 80%;
 }
 .button.logout {
-  width: 80%;
-  position: fixed;
-  bottom: 120px;
-  left: 10%;
+  margin-top: 20px;
+  width: 100%;
 }
 .add-transaction input[type=submit]:hover, .button:hover {
   cursor: pointer;
@@ -351,4 +349,8 @@ button:hover {
   100% {
     stroke: #BDBDBD;
   }
+}
+.user-page {
+  max-width: 265px;
+  margin: 0 auto;
 }
