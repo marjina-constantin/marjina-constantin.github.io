@@ -1,0 +1,14 @@
+name: Ping the site to keep the server running
+
+on:
+  schedule:
+    # At every 15th minute.
+    - cron:  '*/15 * * * *'
+
+jobs:
+  build:
+    name: Trigger Site Ping
+    runs-on: ubuntu-latest
+    steps:
+      - name: cURL request
+        run: curl -I https://dev-expenses-api.pantheonsite.io/github-action-ping
