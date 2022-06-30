@@ -8,52 +8,41 @@ export default function DailyAverageTrend() {
   const { data } = useData();
 
   const firstDay = new Date(data.raw[data.raw.length - 1]?.dt);
-  const secondMonthDate = new Date(new Date(firstDay).setDate(firstDay.getDate() + 0));
   const getNrOfDaysFromStart = (endDate) => {
     let difference = endDate.getTime() - firstDay.getTime();
     return (difference / (1000 * 3600 * 24)) + 1;
   }
 
-  const dailyExpenses = {};
-  const dailyIncomes = [];
-  let totalSumAtDate = 0;
-  const tomorrow = new Date().setHours(24,0,0,0);
+  let dailyExpenses = {};
+  let dailyIncomes = {};
+  let totalExpensesAtDate = 0;
+  let totalIncomesAtDate = 0;
   const dataInChronologicalOrder = data.raw.slice().reverse();
 
-  // Expenses
   for (let item of dataInChronologicalOrder) {
     const itemDate = new Date(item.dt);
-    if (item.type === 'incomes' || itemDate >= tomorrow) {
-      continue;
+    if (item.type === 'incomes') {
+      totalIncomesAtDate = parseFloat(totalIncomesAtDate) + parseFloat(item.sum);
+    }
+    else {
+      totalExpensesAtDate = parseFloat(totalExpensesAtDate) + parseFloat(item.sum);
     }
 
-    totalSumAtDate += parseInt(item.sum);
-
-    // Skip first month from chart.
-    if (itemDate.getTime() < secondMonthDate.getTime()) {
-      continue;
-    }
-
+    dailyIncomes[item.dt] = [
+      itemDate.getTime(),
+      parseFloat(parseFloat(totalIncomesAtDate / getNrOfDaysFromStart(itemDate)).toFixed(2)),
+    ];
     dailyExpenses[item.dt] = [
       itemDate.getTime(),
-      parseInt(totalSumAtDate / getNrOfDaysFromStart(new Date(item.dt))),
+      parseFloat(parseFloat(totalExpensesAtDate / getNrOfDaysFromStart(itemDate)).toFixed(2)),
     ];
   }
 
-  const getDaysInMonth = (monthName) => {
-    const date = new Date(monthName);
-    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-  }
-
-  // Incomes
-  for (const [month, value] of Object.entries(data.incomeTotals).reverse()) {
-    const daysInMonth = getDaysInMonth(month);
-    const dailyAverage = value === 0 ? null : parseInt(value / daysInMonth);
-    for (let day = 1; day <= daysInMonth; day++) {
-      // The Z at the end is intentional, to have the correct time zone.
-      const itemDate = new Date(`${month} ${day}Z`);
-      dailyIncomes.push([itemDate.getTime(), dailyAverage]);
-    }
+  dailyExpenses = Object.values(dailyExpenses);
+  dailyIncomes = Object.values(dailyIncomes);
+  if (dailyExpenses.length > 14) {
+    dailyExpenses.splice(0, 14);
+    dailyIncomes.splice(0, 14);
   }
 
   const dailyAverageOptions = {
@@ -83,7 +72,7 @@ export default function DailyAverageTrend() {
     series: [
       {
         name: 'Daily expenses',
-        data: Object.values(dailyExpenses)
+        data: dailyExpenses
       },
       {
         name: 'Daily incomes',

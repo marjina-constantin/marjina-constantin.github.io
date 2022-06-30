@@ -1,9 +1,11 @@
 import React, {useState} from "react";
 import {fetchRequest} from '../utils/utils'
-import {useAuthState} from "../context";
+import {useAuthDispatch, useAuthState, useData} from "../context";
 import {categories} from '../utils/constants'
 
 const TransactionForm = ({formType, values, onSuccess}) => {
+  const dispatch = useAuthDispatch();
+  const { dataDispatch } = useData();
   const initialState = {
     field_amount: '',
     field_date: new Date().toISOString().substr(0,10),
@@ -41,7 +43,7 @@ const TransactionForm = ({formType, values, onSuccess}) => {
     const url = formType === 'add' ?
       'https://dev-expenses-api.pantheonsite.io/node?_format=json' :
       `https://dev-expenses-api.pantheonsite.io/node/${values.nid}?_format=json`;
-    fetchRequest(url, fetchOptions, (data) => {
+    fetchRequest(url, fetchOptions, dataDispatch, dispatch, (data) => {
       if (data.nid) {
         onSuccess();
         alert('Success!');
