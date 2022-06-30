@@ -109,13 +109,15 @@ export const DataReducer = (initialState, action) => {
         return {
           ...initialState,
           filtered: newState,
-          category: action.category
+          category: action.category,
+          filtered_raw: filtered
         };
       }
       return {
         ...initialState,
         filtered: null,
         category: '',
+        filtered_raw: null
       };
 
     case "REMOVE_DATA":

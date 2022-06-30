@@ -205,37 +205,37 @@ const Charts = () => {
               options={allTimeOptions}
             />
           </div>
-          <div className="charts-section">
-            <HighchartsReact
-              highcharts={Highcharts}
-              options={lastMonthOptions}
-            />
-          </div>
-          <div className="charts-section">
-            <HighchartsReact
-              highcharts={Highcharts}
-              options={allTimeSpendings}
-            />
-            <div className="average-spending">
-              Total spent: {data.totalSpent} {currency} in {nrOfMonths} months
-            </div>
-          </div>
-          <div className="charts-section">
-            <span className="heading">Daily average per category</span>
-            <table className="daily-average">
-              <tbody>
-              {Object.values(data.categoryTotals).map((item, key) => (
-                <tr key={key}>
-                  <td>{item.name}</td>
-                  <td>{parseFloat(item.y / daysPassed).toFixed(2)} {currency} / day</td>
-                </tr>
-              ))}
-              </tbody>
-            </table>
-            <div className="average-spending">
-              Average spending per day: {parseFloat(data.totalSpentUntilTomorrow / daysPassed).toFixed(2)} {currency}
-            </div>
-          </div>
+          {/*<div className="charts-section">*/}
+          {/*  <HighchartsReact*/}
+          {/*    highcharts={Highcharts}*/}
+          {/*    options={lastMonthOptions}*/}
+          {/*  />*/}
+          {/*</div>*/}
+          {/*<div className="charts-section">*/}
+          {/*  <HighchartsReact*/}
+          {/*    highcharts={Highcharts}*/}
+          {/*    options={allTimeSpendings}*/}
+          {/*  />*/}
+          {/*  <div className="average-spending">*/}
+          {/*    Total spent: {data.totalSpent} {currency} in {nrOfMonths} months*/}
+          {/*  </div>*/}
+          {/*</div>*/}
+          {/*<div className="charts-section">*/}
+          {/*  <span className="heading">Daily average per category</span>*/}
+          {/*  <table className="daily-average">*/}
+          {/*    <tbody>*/}
+          {/*    {Object.values(data.categoryTotals).map((item, key) => (*/}
+          {/*      <tr key={key}>*/}
+          {/*        <td>{item.name}</td>*/}
+          {/*        <td>{parseFloat(item.y / daysPassed).toFixed(2)} {currency} / day</td>*/}
+          {/*      </tr>*/}
+          {/*    ))}*/}
+          {/*    </tbody>*/}
+          {/*  </table>*/}
+          {/*  <div className="average-spending">*/}
+          {/*    Average spending per day: {parseFloat(data.totalSpentUntilTomorrow / daysPassed).toFixed(2)} {currency}*/}
+          {/*  </div>*/}
+          {/*</div>*/}
 
           <div className="charts-section">
             <DailyAverageTrend />

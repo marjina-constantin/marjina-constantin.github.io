@@ -6,8 +6,9 @@ import HighchartsReact from "highcharts-react-official";
 export default function DailyAverageTrend() {
 
   const { data } = useData();
+  const items = data.filtered_raw || data.raw;
 
-  const firstDay = new Date(data.raw[data.raw.length - 1]?.dt);
+  const firstDay = new Date(items[items.length - 1]?.dt);
   const getNrOfDaysFromStart = (endDate) => {
     let difference = endDate.getTime() - firstDay.getTime();
     return (difference / (1000 * 3600 * 24)) + 1;
@@ -17,7 +18,7 @@ export default function DailyAverageTrend() {
   let dailyIncomes = {};
   let totalExpensesAtDate = 0;
   let totalIncomesAtDate = 0;
-  const dataInChronologicalOrder = data.raw.slice().reverse();
+  const dataInChronologicalOrder = items.slice().reverse();
 
   for (let item of dataInChronologicalOrder) {
     const itemDate = new Date(item.dt);
@@ -45,6 +46,19 @@ export default function DailyAverageTrend() {
     dailyIncomes.splice(0, 14);
   }
 
+  const series = [
+    {
+      name: 'Daily expenses',
+      data: dailyExpenses
+    }
+  ];
+  if (!data.filtered_raw) {
+    series.push({
+      name: 'Daily incomes',
+      data: dailyIncomes
+    });
+  }
+
   const dailyAverageOptions = {
     chart: {
       type: 'spline',
@@ -69,16 +83,7 @@ export default function DailyAverageTrend() {
     credits: {
       enabled: false
     },
-    series: [
-      {
-        name: 'Daily expenses',
-        data: dailyExpenses
-      },
-      {
-        name: 'Daily incomes',
-        data: dailyIncomes
-      }
-    ]
+    series: series
   };
 
   return (
