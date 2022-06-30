@@ -9,7 +9,7 @@ export default function DailyAverageTrend() {
   const items = data.filtered_raw || data.raw;
   const isFiltered = !!data.filtered_raw;
 
-  const firstDay = new Date(items[items.length - 1]?.dt);
+  const firstDay = new Date(data.raw[data.raw.length - 1]?.dt);
   const getNrOfDaysFromStart = (endDate) => {
     let difference = endDate.getTime() - firstDay.getTime();
     return (difference / (1000 * 3600 * 24)) + 1;
