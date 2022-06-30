@@ -7,6 +7,7 @@ export default function DailyAverageTrend() {
 
   const { data } = useData();
   const items = data.filtered_raw || data.raw;
+  const isFiltered = !!data.filtered_raw;
 
   const firstDay = new Date(items[items.length - 1]?.dt);
   const getNrOfDaysFromStart = (endDate) => {
@@ -41,7 +42,7 @@ export default function DailyAverageTrend() {
 
   dailyExpenses = Object.values(dailyExpenses);
   dailyIncomes = Object.values(dailyIncomes);
-  if (dailyExpenses.length > 14) {
+  if (dailyExpenses.length > 14 && !isFiltered) {
     dailyExpenses.splice(0, 14);
     dailyIncomes.splice(0, 14);
   }
@@ -52,7 +53,7 @@ export default function DailyAverageTrend() {
       data: dailyExpenses
     }
   ];
-  if (!data.filtered_raw) {
+  if (!isFiltered) {
     series.push({
       name: 'Daily incomes',
       data: dailyIncomes
