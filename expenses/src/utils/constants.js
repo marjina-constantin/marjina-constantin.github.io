@@ -10,6 +10,7 @@ export const categories = [
   {value: '8', label: 'Personal'},
   {value: '9', label: 'Transportation'},
   {value: '10', label: 'Utilities'},
+  {value: '11', label: 'Travel'},
 ];
 
 export const currencies = {
