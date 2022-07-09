@@ -2,7 +2,6 @@ import React, {useEffect} from "react";
 import {useAuthState, useData} from "../context";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import {categories} from "../utils/constants";
 
 export default function LastMonth() {
   // Last month section
@@ -11,22 +10,6 @@ export default function LastMonth() {
 
   // Re-render the component only when dependencies are changed.
   useEffect(() => {}, [data.raw, currency]);
-
-  const oneMonthAgo = new Date().setDate(new Date().getDate()-30);
-  const lastMonthTotals = {};
-  for (let item of data.raw) {
-    if (item.type === 'incomes') {
-      continue;
-    }
-    const itemDate = new Date(item.dt);
-    if (itemDate > oneMonthAgo ) {
-      const category = categories.find(element => element.value === item.cat).label;
-      if (!lastMonthTotals[category]) {
-        lastMonthTotals[category] = {name: category, y: 0};
-      }
-      lastMonthTotals[category].y = parseFloat((parseFloat(lastMonthTotals[category].y) + parseFloat(item.sum)).toFixed(2));
-    }
-  }
 
   const lastMonthOptions = {
     chart: {
@@ -44,7 +27,7 @@ export default function LastMonth() {
     series: [{
       name: currency,
       colorByPoint: true,
-      data: Object.values(lastMonthTotals)
+      data: Object.values(data.lastMonthTotals)
     }],
     credits: {
       enabled: false

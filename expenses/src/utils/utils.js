@@ -56,8 +56,17 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
     let incomeTotals = {};
     let categoryTotals = {};
     let totalSpent = 0;
-    let totalSpentUntilTomorrow = 0;
-    const tomorrow = new Date().setHours(24,0,0,0);
+    const oneMonthAgo = new Date().setDate(new Date().getDate()-30);
+    const lastMonthTotals = {};
+    const firstDay = new Date(data[data.length - 1]?.dt);
+    const getNrOfDaysFromStart = (endDate) => {
+      let difference = endDate.getTime() - firstDay.getTime();
+      return (difference / (1000 * 3600 * 24)) + 1;
+    }
+    let dailyExpenses = {};
+    let dailyIncomes = {};
+    let totalExpensesAtDate = 0;
+    let totalIncomesAtDate = 0;
     if (data) {
       const monthNames = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
@@ -90,12 +99,38 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
           monthsTotals[month] = parseFloat((parseFloat(monthsTotals[month]) + parseFloat(item.sum)).toFixed(2));
           categoryTotals[category].name = categories[category].label;
           categoryTotals[category].y = parseFloat((parseFloat(categoryTotals[category].y) + parseFloat(item.sum)).toFixed(2));
-          if (date < tomorrow ) {
-            totalSpentUntilTomorrow = (parseFloat(totalSpentUntilTomorrow) + parseFloat(item.sum)).toFixed(2);
-          }
           totalSpent = (parseFloat(totalSpent) + parseFloat(item.sum)).toFixed(2);
+
+          // Last month chart
+          if (date > oneMonthAgo ) {
+            const category = categories.find(element => element.value === item.cat).label;
+            if (!lastMonthTotals[category]) {
+              lastMonthTotals[category] = {name: category, y: 0};
+            }
+            lastMonthTotals[category].y = parseFloat((parseFloat(lastMonthTotals[category].y) + parseFloat(item.sum)).toFixed(2));
+          }
         }
       });
+
+      const dataInChronologicalOrder = data.slice().reverse();
+      for (let item of dataInChronologicalOrder) {
+        const itemDate = new Date(item.dt);
+        if (item.type === 'incomes') {
+          totalIncomesAtDate = parseFloat(totalIncomesAtDate) + parseFloat(item.sum);
+        }
+        else {
+          totalExpensesAtDate = parseFloat(totalExpensesAtDate) + parseFloat(item.sum);
+        }
+
+        dailyIncomes[item.dt] = [
+          itemDate.getTime(),
+          parseFloat(parseFloat(totalIncomesAtDate / getNrOfDaysFromStart(itemDate)).toFixed(2)),
+        ];
+        dailyExpenses[item.dt] = [
+          itemDate.getTime(),
+          parseFloat(parseFloat(totalExpensesAtDate / getNrOfDaysFromStart(itemDate)).toFixed(2)),
+        ];
+      }
     }
     dataDispatch({
       type: 'SET_DATA',
@@ -107,7 +142,9 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
       categoryTotals: categoryTotals,
       loading: false,
       totalSpent,
-      totalSpentUntilTomorrow,
+      lastMonthTotals,
+      dailyExpenses: Object.values(dailyExpenses),
+      dailyIncomes: Object.values(dailyIncomes),
     });
     if (category) {
       dataDispatch({ type: 'FILTER_DATA', category: category });

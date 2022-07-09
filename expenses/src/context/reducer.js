@@ -79,7 +79,9 @@ export const DataReducer = (initialState, action) => {
         categoryTotals: action.categoryTotals,
         loading: action.loading,
         totalSpent: action.totalSpent,
-        totalSpentUntilTomorrow: action.totalSpentUntilTomorrow,
+        lastMonthTotals: action.lastMonthTotals,
+        dailyExpenses: action.dailyExpenses,
+        dailyIncomes: action.dailyIncomes
       };
 
     case "FILTER_DATA":
