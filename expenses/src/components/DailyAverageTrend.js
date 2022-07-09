@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {useData} from "../context";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
@@ -8,6 +8,9 @@ export default function DailyAverageTrend() {
   const { data } = useData();
   const items = data.filtered_raw || data.raw;
   const isFiltered = !!data.filtered_raw;
+
+  // Re-render the component only when dependencies are changed.
+  useEffect(() => {}, [data.raw, data.filtered_raw]);
 
   const firstDay = new Date(data.raw[data.raw.length - 1]?.dt);
   const getNrOfDaysFromStart = (endDate) => {
