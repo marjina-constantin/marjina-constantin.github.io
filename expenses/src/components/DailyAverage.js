@@ -7,7 +7,7 @@ export default function DailyAverage() {
   const { currency } = useAuthState();
 
   // Re-render the component only when dependencies are changed.
-  useEffect(() => {}, [data.raw, data.categoryTotals]);
+  useEffect(() => {}, [data.raw, data.categoryTotals, data.totalSpentUntilTomorrow]);
 
   const firstDay = data.raw[data.raw.length - 1]?.dt;
   const daysPassed = parseInt((new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1);
@@ -26,7 +26,7 @@ export default function DailyAverage() {
         </tbody>
       </table>
       <div className="average-spending">
-        Average spending per day: {parseFloat(data.totalSpent / daysPassed).toFixed(2)} {currency}
+        Average spending per day: {parseFloat(data.totalSpentUntilTomorrow / daysPassed).toFixed(2)} {currency}
       </div>
     </>
   )
