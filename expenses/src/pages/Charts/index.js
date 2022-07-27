@@ -6,12 +6,6 @@ import {fetchData} from "../../utils/utils";
 import Filters from "../../components/Filters";
 import MonthlyTotals from "../../components/MonthlyTotals";
 
-const LastMonth = React.lazy(() => import("../../components/LastMonth"));
-const AllTimeSpendings = React.lazy(() => import("../../components/AllTimeSpendings"));
-const DailyAverage = React.lazy(() => import("../../components/DailyAverage"));
-const LastTwoMonthsAverage = React.lazy(() => import("../../components/LastTwoMonthsAverage"));
-const DailyAverageTrend = React.lazy(() => import("../../components/DailyAverageTrend"));
-
 DarkUnica(Highcharts);
 
 Highcharts.theme = {
@@ -44,6 +38,11 @@ Highcharts.setOptions({
 });
 
 const Charts = () => {
+  const LastMonth = React.lazy(() => import("../../components/LastMonth"));
+  const AllTimeSpendings = React.lazy(() => import("../../components/AllTimeSpendings"));
+  const DailyAverage = React.lazy(() => import("../../components/DailyAverage"));
+  const LastTwoMonthsAverage = React.lazy(() => import("../../components/LastTwoMonthsAverage"));
+  const DailyAverageTrend = React.lazy(() => import("../../components/DailyAverageTrend"));
 
   const { data, dataDispatch } = useData();
   const noData = data.groupedData === null;
@@ -69,31 +68,31 @@ const Charts = () => {
           </div>
 
           <div className="charts-section">
-            <Suspense fallback={<div className="lds-ripple"><div></div><div></div></div>}>
+            <Suspense fallback=''>
               <LastMonth />
             </Suspense>
           </div>
 
           <div className="charts-section">
-            <Suspense fallback={<div className="lds-ripple"><div></div><div></div></div>}>
+            <Suspense fallback=''>
               <AllTimeSpendings />
             </Suspense>
           </div>
 
           <div className="charts-section">
-            <Suspense fallback={<div className="lds-ripple"><div></div><div></div></div>}>
+            <Suspense fallback=''>
               <DailyAverage />
             </Suspense>
           </div>
 
           <div className="charts-section">
-            <Suspense fallback={<div className="lds-ripple"><div></div><div></div></div>}>
+            <Suspense fallback=''>
               <DailyAverageTrend />
             </Suspense>
           </div>
 
           <div className="charts-section">
-            <Suspense fallback={<div className="lds-ripple"><div></div><div></div></div>}>
+            <Suspense fallback=''>
               <LastTwoMonthsAverage />
             </Suspense>
           </div>
