@@ -41,6 +41,13 @@ Highcharts.setOptions({
     };
   })
 });
+Highcharts.setOptions({
+  plotOptions: {
+    series: {
+      animation: false
+    }
+  }
+});
 
 const Charts = () => {
 
