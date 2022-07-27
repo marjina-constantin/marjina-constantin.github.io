@@ -1,10 +1,15 @@
-import React, { useEffect, Suspense } from "react";
+import React, {useEffect} from "react";
 import Highcharts from 'highcharts';
 import DarkUnica from 'highcharts/themes/dark-unica';
 import {useAuthDispatch, useAuthState, useData} from "../../context";
 import {fetchData} from "../../utils/utils";
 import Filters from "../../components/Filters";
+import DailyAverageTrend from "../../components/DailyAverageTrend";
 import MonthlyTotals from "../../components/MonthlyTotals";
+import LastMonth from "../../components/LastMonth";
+import AllTimeSpendings from "../../components/AllTimeSpendings";
+import DailyAverage from "../../components/DailyAverage";
+import LastTwoMonthsAverage from "../../components/LastTwoMonthsAverage";
 
 DarkUnica(Highcharts);
 
@@ -38,11 +43,6 @@ Highcharts.setOptions({
 });
 
 const Charts = () => {
-  const LastMonth = React.lazy(() => import("../../components/LastMonth"));
-  const AllTimeSpendings = React.lazy(() => import("../../components/AllTimeSpendings"));
-  const DailyAverage = React.lazy(() => import("../../components/DailyAverage"));
-  const LastTwoMonthsAverage = React.lazy(() => import("../../components/LastTwoMonthsAverage"));
-  const DailyAverageTrend = React.lazy(() => import("../../components/DailyAverageTrend"));
 
   const { data, dataDispatch } = useData();
   const noData = data.groupedData === null;
@@ -68,33 +68,23 @@ const Charts = () => {
           </div>
 
           <div className="charts-section">
-            <Suspense fallback=''>
-              <LastMonth />
-            </Suspense>
+            <LastMonth />
           </div>
 
           <div className="charts-section">
-            <Suspense fallback=''>
-              <AllTimeSpendings />
-            </Suspense>
+            <AllTimeSpendings />
           </div>
 
           <div className="charts-section">
-            <Suspense fallback=''>
-              <DailyAverage />
-            </Suspense>
+            <DailyAverage />
           </div>
 
           <div className="charts-section">
-            <Suspense fallback=''>
-              <DailyAverageTrend />
-            </Suspense>
+            <DailyAverageTrend />
           </div>
 
           <div className="charts-section">
-            <Suspense fallback=''>
-              <LastTwoMonthsAverage />
-            </Suspense>
+            <LastTwoMonthsAverage />
           </div>
 
         </div>

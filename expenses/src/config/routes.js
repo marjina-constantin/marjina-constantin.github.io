@@ -1,4 +1,4 @@
-import Charts from "../pages/Charts";
+import Charts from "../pages/LazyCharts";
 import Home from "../pages/Home";
 import Login from '../pages/Login';
 import Profile from '../pages/Profile';
