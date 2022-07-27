@@ -248,11 +248,11 @@ button:hover {
 }
 .charts-page {
   padding: 0 25px;
-  animation: fadeIn 0.3s;
+  animation: fadeIn 0.8s;
 }
 @keyframes fadeIn {
-  0% { filter: blur(5px); }
-  100% { filter: blur(0); }
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 .load-more {
   margin: 40px 0;
