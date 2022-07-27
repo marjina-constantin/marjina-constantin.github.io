@@ -1,15 +1,21 @@
-import React, {useEffect} from "react";
+import React, { useEffect, Suspense } from "react";
 import Highcharts from 'highcharts';
 import DarkUnica from 'highcharts/themes/dark-unica';
 import {useAuthDispatch, useAuthState, useData} from "../../context";
 import {fetchData} from "../../utils/utils";
 import Filters from "../../components/Filters";
-import DailyAverageTrend from "../../components/DailyAverageTrend";
+// import DailyAverageTrend from "../../components/DailyAverageTrend";
 import MonthlyTotals from "../../components/MonthlyTotals";
-import LastMonth from "../../components/LastMonth";
-import AllTimeSpendings from "../../components/AllTimeSpendings";
-import DailyAverage from "../../components/DailyAverage";
-import LastTwoMonthsAverage from "../../components/LastTwoMonthsAverage";
+// import LastMonth from "../../components/LastMonth";
+// import AllTimeSpendings from "../../components/AllTimeSpendings";
+// import DailyAverage from "../../components/DailyAverage";
+// import LastTwoMonthsAverage from "../../components/LastTwoMonthsAverage";
+
+const LastMonth = React.lazy(() => import("../../components/LastMonth"));
+const AllTimeSpendings = React.lazy(() => import("../../components/AllTimeSpendings"));
+const DailyAverage = React.lazy(() => import("../../components/DailyAverage"));
+const LastTwoMonthsAverage = React.lazy(() => import("../../components/LastTwoMonthsAverage"));
+const DailyAverageTrend = React.lazy(() => import("../../components/DailyAverageTrend"));
 
 DarkUnica(Highcharts);
 
@@ -68,23 +74,33 @@ const Charts = () => {
           </div>
 
           <div className="charts-section">
-            <LastMonth />
+            <Suspense fallback={<div className="lds-ripple"><div></div><div></div></div>}>
+              <LastMonth />
+            </Suspense>
           </div>
 
           <div className="charts-section">
-            <AllTimeSpendings />
+            <Suspense fallback={<div className="lds-ripple"><div></div><div></div></div>}>
+              <AllTimeSpendings />
+            </Suspense>
           </div>
 
           <div className="charts-section">
-            <DailyAverage />
+            <Suspense fallback={<div className="lds-ripple"><div></div><div></div></div>}>
+              <DailyAverage />
+            </Suspense>
           </div>
 
           <div className="charts-section">
-            <DailyAverageTrend />
+            <Suspense fallback={<div className="lds-ripple"><div></div><div></div></div>}>
+              <DailyAverageTrend />
+            </Suspense>
           </div>
 
           <div className="charts-section">
-            <LastTwoMonthsAverage />
+            <Suspense fallback={<div className="lds-ripple"><div></div><div></div></div>}>
+              <LastTwoMonthsAverage />
+            </Suspense>
           </div>
 
         </div>
