@@ -4,12 +4,7 @@ import DarkUnica from 'highcharts/themes/dark-unica';
 import {useAuthDispatch, useAuthState, useData} from "../../context";
 import {fetchData} from "../../utils/utils";
 import Filters from "../../components/Filters";
-// import DailyAverageTrend from "../../components/DailyAverageTrend";
 import MonthlyTotals from "../../components/MonthlyTotals";
-// import LastMonth from "../../components/LastMonth";
-// import AllTimeSpendings from "../../components/AllTimeSpendings";
-// import DailyAverage from "../../components/DailyAverage";
-// import LastTwoMonthsAverage from "../../components/LastTwoMonthsAverage";
 
 const LastMonth = React.lazy(() => import("../../components/LastMonth"));
 const AllTimeSpendings = React.lazy(() => import("../../components/AllTimeSpendings"));
