@@ -74,25 +74,25 @@ const Charts = () => {
             <MonthlyTotals />
           </div>
 
-          <div className="charts-section">
-            <LastMonth />
-          </div>
+          {/*<div className="charts-section">*/}
+          {/*  <LastMonth />*/}
+          {/*</div>*/}
 
-          <div className="charts-section">
-            <AllTimeSpendings />
-          </div>
+          {/*<div className="charts-section">*/}
+          {/*  <AllTimeSpendings />*/}
+          {/*</div>*/}
 
-          <div className="charts-section">
-            <DailyAverage />
-          </div>
+          {/*<div className="charts-section">*/}
+          {/*  <DailyAverage />*/}
+          {/*</div>*/}
 
-          <div className="charts-section">
-            <DailyAverageTrend />
-          </div>
+          {/*<div className="charts-section">*/}
+          {/*  <DailyAverageTrend />*/}
+          {/*</div>*/}
 
-          <div className="charts-section">
-            <LastTwoMonthsAverage />
-          </div>
+          {/*<div className="charts-section">*/}
+          {/*  <LastTwoMonthsAverage />*/}
+          {/*</div>*/}
 
         </div>
       }
