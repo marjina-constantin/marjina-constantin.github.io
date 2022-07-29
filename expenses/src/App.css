@@ -248,7 +248,7 @@ button:hover {
 }
 .charts-page {
   padding: 0 25px;
-  /*animation: fadeIn 0.8s;*/
+  animation: fadeIn 0.4s;
 }
 @keyframes fadeIn {
   0% { opacity: 0; }
