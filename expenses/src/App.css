@@ -12,14 +12,12 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  /*background-color: #fff;*/
-  /*background-image: url(https://media.istockphoto.com/id/1139893830/vector/glowing-blue-neon-circuit-board-chip-background.jpg?b=1&s=612x612&w=0&k=20&c=0N7lXrXfIP3pkn74zbCQLEPEenLQcfqWz2dODe89DhQ=);*/
-  /*background-repeat: no-repeat;*/
-  /*background-size: cover;*/
-  /*background-position: center center;*/
   transition: all .3s ease-in-out;
   z-index: 99;
   touch-action: none;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 0 0 200px rgba(255,255,255,0.08);
 }
 .navbar.closed {
   height: 50px;
@@ -32,9 +30,6 @@ body {
   list-style-type: none;
   padding: 0;
   height: 50px;
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  box-shadow: inset 0 0 0 200px rgba(255,255,255,0.08);
 }
 .navbar ul li {
   height: 100%;
