@@ -1,4 +1,4 @@
-name: Ping the site to keep the server running
+name: Ping the site to keep the server running.
 
 on:
   schedule:
