@@ -14,6 +14,7 @@ const Home = () => {
   const noData = data.groupedData === null;
   const loading = data.loading;
   const dispatch = useAuthDispatch();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (noData) {
@@ -30,12 +31,15 @@ const Home = () => {
   }
 
   const handleDelete = (showDeleteModal, token) => {
+    setIsSubmitting(true);
     deleteNode(showDeleteModal, token, (response) => {
       if (response.ok) {
         alert('Transaction was successfully deleted.');
+        setIsSubmitting(false);
       }
       else {
         alert('Something went wrong.');
+        setIsSubmitting(false);
       }
       setShowDeleteModal(false);
       fetchData(token, dataDispatch, dispatch, data.category);
@@ -50,7 +54,16 @@ const Home = () => {
     <div>
       <Modal show={showDeleteModal} onClose={(e) => {e.preventDefault(); setShowDeleteModal(false)}}>
         <h3>Are you sure you want to delete the transaction?</h3>
-        <button onClick={() => handleDelete(showDeleteModal, token)} className="button wide">Yes, remove the transaction</button>
+        <button onClick={() => handleDelete(showDeleteModal, token)} className="button wide">
+          {isSubmitting ? (
+            <div className="loader">
+              <span className="loader__element"></span>
+              <span className="loader__element"></span>
+              <span className="loader__element"></span>
+            </div>
+          ) : 'Yes, remove the transaction'
+          }
+        </button>
       </Modal>
       <Modal show={showEditModal} onClose={(e) => {e.preventDefault(); setShowEditModal(false)}}>
         <TransactionForm formType="edit" values={focusedItem} onSuccess={() => {

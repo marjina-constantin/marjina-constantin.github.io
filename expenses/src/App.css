@@ -136,6 +136,9 @@ input[type=submit] {
 .button.wide {
   width: 80%;
 }
+.button.w-100 {
+  width: 100%;
+}
 .button.logout {
   margin-top: 20px;
   width: 100%;
@@ -154,7 +157,7 @@ input[type=submit] {
 }
 .expenses-table thead {
   box-shadow: 0 19px 38px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
-  background-color:#3d4449;
+  background-color:#3e3f4a;
 }
 .expenses-table th {
   padding: 0 8px;
@@ -190,7 +193,7 @@ input[type=submit] {
   height: 50px;
 }
 .expenses-table tr:nth-of-type(even) {
-  background-color:#3d4449;
+  background-color:#3e3f4a;
 }
 .month-badge {
   margin-top: 20px;
@@ -340,7 +343,7 @@ button:hover {
 .daily-average td {
   padding: 15px 0;
   width: 50%;
-  background: #3d4449;
+  background: #3e3f4a;
   border: 2px solid #282a36;
 }
 .user-avatar svg {
@@ -370,4 +373,28 @@ button:hover {
 .user-page {
   max-width: 265px;
   margin: 0 auto;
+}
+.loader {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+}
+
+.loader__element {
+  border-radius: 100%;
+  border: 3px solid #b3e5e6;
+  margin: 10px;
+}
+.loader__element:nth-child(1) {
+  animation: preloader .6s ease-in-out alternate infinite;
+}
+.loader__element:nth-child(2) {
+  animation: preloader .6s ease-in-out alternate .2s infinite;
+}
+.loader__element:nth-child(3) {
+  animation: preloader .6s ease-in-out alternate .4s infinite;
+}
+@keyframes preloader {
+  100% { transform: scale(2); }
 }

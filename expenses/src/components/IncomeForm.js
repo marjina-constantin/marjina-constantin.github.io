@@ -19,8 +19,10 @@ const IncomeForm = ({formType, values, onSuccess}) => {
       [event.target.name]: value
     });
   };
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const handleSubmit = (event) => {
     event.preventDefault();
+    setIsSubmitting(true);
     const node = {
       type: 'incomes',
       title: [formState.field_date],
@@ -44,10 +46,12 @@ const IncomeForm = ({formType, values, onSuccess}) => {
       if (data.nid) {
         onSuccess();
         alert('Success!');
+        setIsSubmitting(false);
         setFormState(initialState);
       }
       else {
         alert('Something went wrong, please contact Sergiu S :)')
+        setIsSubmitting(false);
       }
     })
   };
@@ -63,7 +67,16 @@ const IncomeForm = ({formType, values, onSuccess}) => {
         <input required placeholder="Amount" type="number" name="field_amount" value={formState.field_amount} onChange={handleChange} />
         <input required placeholder="Date" type="date" max={today} name="field_date" value={formState.field_date} onChange={handleChange} />
         <textarea placeholder="Description" name="field_description" rows="3" value={formState.field_description} onChange={handleChange} />
-        <input type="submit" value={formType === 'add' ? 'Add income' : 'Edit income'} />
+        <button type="submit" disabled={isSubmitting} className="button w-100">
+          {isSubmitting ? (
+            <div className="loader">
+              <span className="loader__element"></span>
+              <span className="loader__element"></span>
+              <span className="loader__element"></span>
+            </div>
+          ) : formType === 'add' ? 'Add income' : 'Edit income'
+          }
+        </button>
       </form>
     </div>
   );

@@ -21,8 +21,10 @@ const TransactionForm = ({formType, values, onSuccess}) => {
       [event.target.name]: value
     });
   };
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const handleSubmit = (event) => {
     event.preventDefault();
+    setIsSubmitting(true);
     const node = {
       type: 'transaction',
       title: [formState.field_date],
@@ -47,10 +49,12 @@ const TransactionForm = ({formType, values, onSuccess}) => {
       if (data.nid) {
         onSuccess();
         alert('Success!');
+        setIsSubmitting(false);
         setFormState(initialState);
       }
       else {
-        alert('Something went wrong, please contact Constantin :)')
+        alert('Something went wrong, please contact Constantin :)');
+        setIsSubmitting(false);
       }
     })
   };
@@ -71,7 +75,16 @@ const TransactionForm = ({formType, values, onSuccess}) => {
           ))}
         </select>
         <textarea placeholder="Description" name="field_description" rows="3" value={formState.field_description} onChange={handleChange} />
-        <input type="submit" value={formType === 'add' ? 'Add transaction' : 'Edit transaction'} />
+        <button type="submit" disabled={isSubmitting} className="button w-100">
+          {isSubmitting ? (
+            <div className="loader">
+              <span className="loader__element"></span>
+              <span className="loader__element"></span>
+              <span className="loader__element"></span>
+            </div>
+          ) : formType === 'add' ? 'Add transaction' : 'Edit transaction'
+          }
+        </button>
       </form>
     </div>
   );

@@ -13,6 +13,7 @@ const Income = () => {
   const { data, dataDispatch } = useData();
   const noData = data.groupedData === null;
   const dispatch = useAuthDispatch();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (noData) {
@@ -29,12 +30,15 @@ const Income = () => {
   }
 
   const handleDelete = (showDeleteModal, token) => {
+    setIsSubmitting(true);
     deleteNode(showDeleteModal, token, (response) => {
       if (response.ok) {
         alert('Income was successfully deleted.');
+        setIsSubmitting(false);
       }
       else {
         alert('Something went wrong.');
+        setIsSubmitting(false);
       }
       setShowDeleteModal(false);
       fetchData(token, dataDispatch, dispatch);
@@ -45,7 +49,16 @@ const Income = () => {
     <div>
       <Modal show={showDeleteModal} onClose={(e) => {e.preventDefault(); setShowDeleteModal(false)}}>
         <h3>Are you sure you want to delete the income?</h3>
-        <button onClick={() => handleDelete(showDeleteModal, token)} className="button wide">Yes, remove the income</button>
+        <button onClick={() => handleDelete(showDeleteModal, token)} className="button wide">
+          {isSubmitting ? (
+            <div className="loader">
+              <span className="loader__element"></span>
+              <span className="loader__element"></span>
+              <span className="loader__element"></span>
+            </div>
+          ) : 'Yes, remove the income'
+          }
+        </button>
       </Modal>
       <Modal show={showEditModal} onClose={(e) => {e.preventDefault(); setShowEditModal(false); setIsNewModal(false)}}>
         <IncomeForm formType={!isNewModal ? "edit" : "add"} values={focusedItem} onSuccess={() => {
