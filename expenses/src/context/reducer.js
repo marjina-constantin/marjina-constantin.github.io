@@ -86,6 +86,7 @@ export const DataReducer = (initialState, action) => {
         const filtered = initialState.raw.filter(item => item.cat === action.category);
         let groupedData = {};
         let monthsTotals = {};
+        let totalSpent = 0;
         const monthNames = ["January", "February", "March", "April", "May", "June",
           "July", "August", "September", "October", "November", "December"
         ];
@@ -100,10 +101,12 @@ export const DataReducer = (initialState, action) => {
           }
           groupedData[month].push(item);
           monthsTotals[month] = parseFloat((parseFloat(monthsTotals[month]) + parseFloat(item.sum)).toFixed(2));
+          totalSpent = (parseFloat(totalSpent) + parseFloat(item.sum)).toFixed(2);
         });
         const newState = {
           groupedData: groupedData,
           totals: monthsTotals,
+          totalSpent
         };
         return {
           ...initialState,

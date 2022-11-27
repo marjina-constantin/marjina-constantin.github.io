@@ -13,6 +13,11 @@ export default function MonthlyTotals() {
   // Re-render the component only when dependencies are changed.
   useEffect(() => {}, [data, currency]);
 
+  const firstDay = data.raw[data.raw.length - 1]?.dt;
+  const daysPassed = parseInt((new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1);
+  const monthsPassed = parseFloat(daysPassed / 30.42).toFixed(2);
+  const monthlyAverage = parseFloat(items.totalSpent / monthsPassed).toFixed(2);
+
   const allTimeOptions = {
     chart: {
       type: 'column',
@@ -36,7 +41,14 @@ export default function MonthlyTotals() {
         },
         enabled: true,
         verticalAlign: 'top'
-      }
+      },
+      plotLines: [{
+        color: '#00a8ad',
+        value: monthlyAverage,
+        width: '1',
+        zIndex: 4,
+        dashStyle: 'ShortDot',
+      }]
     },
     plotOptions: {
       column: {
