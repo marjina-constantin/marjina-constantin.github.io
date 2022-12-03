@@ -1,10 +1,9 @@
-import React, {useEffect} from "react";
+import React, {Suspense, useEffect} from "react";
 import Highcharts from 'highcharts';
 import DarkUnica from 'highcharts/themes/dark-unica';
 import {useAuthDispatch, useAuthState, useData} from "../../context";
 import {fetchData} from "../../utils/utils";
 import Filters from "../../components/Filters";
-import DailyAverageTrend from "../../components/DailyAverageTrend";
 import MonthlyTotals from "../../components/MonthlyTotals";
 import LastMonth from "../../components/LastMonth";
 import AllTimeSpendings from "../../components/AllTimeSpendings";
@@ -53,6 +52,7 @@ Highcharts.setOptions({
 });
 
 const Charts = () => {
+  const DailyAverageTrend = React.lazy(() => import("../../components/DailyAverageTrend"));
 
   const { data, dataDispatch } = useData();
   const noData = data.groupedData === null;
@@ -90,7 +90,9 @@ const Charts = () => {
           </div>
 
           <div className="charts-section">
-            <DailyAverageTrend />
+            <Suspense fallback=''>
+              <DailyAverageTrend />
+            </Suspense>
           </div>
 
           <div className="charts-section">
