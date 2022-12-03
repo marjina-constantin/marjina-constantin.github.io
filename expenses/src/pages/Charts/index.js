@@ -49,6 +49,33 @@ Highcharts.setOptions({
   }
 });
 
+// Highcharts.setOptions({
+//   plotOptions: {
+//     column: { animation: false, enableMouseTracking: false, stickyTracking: true, shadow: false, dataLabels: { style: { textShadow: false } } },
+//     pie: { animation: false, enableMouseTracking: false, stickyTracking: true, shadow: false, dataLabels: { style: { textShadow: false } } },
+//     spline: { animation: false, enableMouseTracking: false, stickyTracking: true, shadow: false, dataLabels: { style: { textShadow: false } } },
+//   },
+//   chart: {
+//     reflow: false,
+//     events: {
+//       redraw: function() {
+//         console.log("highcharts redraw, rendering-done");
+//       }
+//     },
+//     animation: false
+//   },
+//   tooltip: {
+//     enabled: false,
+//     animation: false
+//   },
+//   exporting: {
+//     enabled:false
+//   },
+//   credits: {
+//     enabled: false
+//   }
+// });
+
 const Charts = () => {
 
   const { data, dataDispatch } = useData();
