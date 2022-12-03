@@ -18,18 +18,10 @@ export default function MonthlyTotals() {
   const monthsPassed = parseFloat(daysPassed / 30.42).toFixed(2);
   const monthlyAverage = parseFloat(items.totalSpent / monthsPassed).toFixed(2);
 
-  const start = new Date();
   const allTimeOptions = {
     chart: {
       type: 'column',
       zoomType: 'x',
-      events: {
-        render: function () {
-          this.setTitle(null, {
-            text: 'Rendered chart in ' + (new Date() - start) + 'ms'
-          });
-        }
-      },
     },
     title: {
       text: 'Monthly Totals'
