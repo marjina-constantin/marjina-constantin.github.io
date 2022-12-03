@@ -409,7 +409,7 @@
     }
   ],
   "start_url": ".",
-  "display": "browser",
+  "display": "minimal-ui",
   "theme_color": "#282a36",
   "background_color": "#ffffff"
 }
