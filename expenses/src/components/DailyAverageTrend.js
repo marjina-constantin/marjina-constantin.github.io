@@ -65,8 +65,11 @@ export default function DailyAverageTrend() {
 
   const dailyAverageOptions = {
     chart: {
-      type: 'spline',
+      type: 'line',
       zoomType: 'x',
+    },
+    boost: {
+      useGPUTranslations: true,
     },
     title: {
       text: 'Daily average trends'

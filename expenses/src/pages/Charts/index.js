@@ -10,7 +10,9 @@ import LastMonth from "../../components/LastMonth";
 import AllTimeSpendings from "../../components/AllTimeSpendings";
 import DailyAverage from "../../components/DailyAverage";
 import LastTwoMonthsAverage from "../../components/LastTwoMonthsAverage";
+import Boost from "highcharts/modules/boost";
 
+Boost(Highcharts);
 DarkUnica(Highcharts);
 
 Highcharts.theme = {
@@ -44,7 +46,8 @@ Highcharts.setOptions({
 Highcharts.setOptions({
   plotOptions: {
     series: {
-      animation: false
+      animation: false,
+      boostThreshold: 400,
     }
   }
 });
