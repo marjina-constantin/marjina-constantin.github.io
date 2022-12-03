@@ -15,7 +15,7 @@ export default function DailyAverageTrend() {
   const firstDay = new Date(data.raw[data.raw.length - 1]?.dt);
   const getNrOfDaysFromStart = (endDate) => {
     let difference = endDate.getTime() - firstDay.getTime();
-    return (difference / (1000 * 3600 * 24)) + 1;
+    return parseInt((difference / (1000 * 3600 * 24))) + 1;
   }
 
   let dailyExpenses = {};
@@ -50,10 +50,27 @@ export default function DailyAverageTrend() {
     dailyIncomes.splice(0, 14);
   }
 
+  const previousItem = dailyExpenses[dailyExpenses.length - 32];
+  const currentItem = dailyExpenses[dailyExpenses.length - 1];
+  const daysDifference = (currentItem[0] - previousItem[0]) / (1000 * 3600 * 24);
+  const expensesDelta = (currentItem[1] - previousItem[1]) / daysDifference;
+
+  for (let daysInterval = 1; daysInterval <= 30; daysInterval++) {
+    dailyExpenses.push([
+      new Date(new Date().setDate(new Date().getDate() + daysInterval)).setHours(0,0,0,0),
+      parseFloat(parseFloat(currentItem[1] + (expensesDelta * daysInterval)).toFixed(2)),
+    ]);
+  }
+
   const series = [
     {
       name: 'Daily expenses',
-      data: dailyExpenses
+      data: dailyExpenses,
+      zoneAxis: 'x',
+      zones: [
+        { value: currentItem[0] },
+        { dashStyle: 'dot'}
+      ]
     }
   ];
   if (!isFiltered) {
