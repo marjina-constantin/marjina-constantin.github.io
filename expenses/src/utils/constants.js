@@ -11,6 +11,8 @@ export const categories = [
   {value: '9', label: 'Transportation'},
   {value: '10', label: 'Utilities'},
   {value: '11', label: 'Travel'},
+  {value: '12', label: 'Family'},
+  {value: '13', label: 'Investment'},
 ];
 
 export const currencies = {
