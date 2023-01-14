@@ -78,19 +78,29 @@ export default function MonthlyTotals() {
         borderWidth: 0,
         stacking: 'normal',
         groupPadding: 0,
-      },
-      series: {
-        colorByPoint: true,
       }
     },
     credits: {
       enabled: false
     },
-    series: [{
-      name: data.category ? categories.find(element => element.value === data.category).label : 'Monthly totals',
-      data: items.totals ? Object.values(items.totals).reverse() : []
-
-    }],
+    tooltip: {
+      shared: true
+    },
+    series: [
+      {
+        name: data.category ? categories.find(element => element.value === data.category).label : 'Monthly totals',
+        data: items.totals ? Object.values(items.totals).reverse() : [],
+        colorByPoint: true,
+      },
+      {
+        name: 'Income',
+        type: 'spline',
+        color: '#4DD0E1',
+        visible: false,
+        data: items.incomeTotals ? Object.values(items.incomeTotals).reverse().map(function (item) {
+          return parseFloat(item);
+        }) : [],
+      }],
   }
 
   return (
