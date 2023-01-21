@@ -71,3 +71,11 @@ self.addEventListener('message', (event) => {
 
 // Any other custom service worker logic can go here.
 self.skipWaiting();
+
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.match(event.request).then(function(response) {
+      return response || fetch(event.request);
+    })
+  );
+});
