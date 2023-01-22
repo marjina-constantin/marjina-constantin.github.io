@@ -45,7 +45,7 @@ export default function Navbar() {
             // onClick={() => setCssClass('closed')}
             activeClassName="selected"
             className="not-selected"
-            to="/expenses"
+            to="/expenses/"
             exact
           ><FaHome /></NavLink>
         </li>
