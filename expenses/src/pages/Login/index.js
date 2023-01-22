@@ -9,7 +9,7 @@ const Login = () => {
   const { loading, errorMessage, userIsLoggedIn } = useAuthState();
 
   if (userIsLoggedIn) {
-    history.push('/expenses/home');
+    history.push('/expenses');
   }
 
   const handleLogin = async (googleResponse) => {
@@ -20,7 +20,7 @@ const Login = () => {
         return;
       }
 
-      history.push(`/expenses/home`);
+      history.push(`/expenses`);
     } catch (error) {
       console.log(error)
     }
