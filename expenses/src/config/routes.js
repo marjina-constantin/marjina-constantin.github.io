@@ -17,7 +17,7 @@ const routes = [
     isPrivate: true,
   },
   {
-    path:'/expenses/home',
+    path:'/expenses',
     component: Home,
     isPrivate: true,
   },

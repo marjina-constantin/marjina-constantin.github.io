@@ -9,7 +9,7 @@ import AppRoute from './components/AppRoute';
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <Router basename="/expenses">
         <Navbar />
 
         <Switch>

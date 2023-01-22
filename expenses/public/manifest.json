@@ -408,8 +408,8 @@
       "sizes": "16x16"
     }
   ],
-  "start_url": ".",
-  "scope": "/",
+  "start_url": "/expenses/",
+  "scope": "/expenses/",
   "display": "standalone",
   "theme_color": "#282a36",
   "background_color": "#ffffff"
