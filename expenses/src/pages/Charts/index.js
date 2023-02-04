@@ -87,11 +87,11 @@ const Charts = () => {
           </div>
 
           <div className="charts-section">
-            <DailyAverage />
+            <MonthlyAverage />
           </div>
 
           <div className="charts-section">
-            <MonthlyAverage />
+            <DailyAverage />
           </div>
 
           <div className="charts-section">
