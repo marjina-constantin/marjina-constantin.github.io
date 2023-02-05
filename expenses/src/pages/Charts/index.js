@@ -8,6 +8,7 @@ import MonthlyTotals from "../../components/MonthlyTotals";
 import LastMonth from "../../components/LastMonth";
 import AllTimeSpendings from "../../components/AllTimeSpendings";
 import DailyAverage from "../../components/DailyAverage";
+import MonthlyAverage from "../../components/MonthlyAverage";
 import LastTwoMonthsAverage from "../../components/LastTwoMonthsAverage";
 import Boost from "highcharts/modules/boost";
 
@@ -83,6 +84,10 @@ const Charts = () => {
 
           <div className="charts-section">
             <AllTimeSpendings />
+          </div>
+
+          <div className="charts-section">
+            <MonthlyAverage />
           </div>
 
           <div className="charts-section">
