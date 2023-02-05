@@ -70,7 +70,7 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
-// self.skipWaiting();
+self.skipWaiting();
 //
 // self.addEventListener('fetch', function(event) {
 //   event.respondWith(
