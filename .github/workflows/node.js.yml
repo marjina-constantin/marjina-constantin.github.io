@@ -23,7 +23,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
       - name: Build
         run: cd expenses && CI=false && yarn && yarn build && cp home/index.html ../404.html && mv home/* .
       - name: Deploy
