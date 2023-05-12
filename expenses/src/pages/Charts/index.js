@@ -11,6 +11,7 @@ import DailyAverage from "../../components/DailyAverage";
 import MonthlyAverage from "../../components/MonthlyAverage";
 import LastTwoMonthsAverage from "../../components/LastTwoMonthsAverage";
 import Boost from "highcharts/modules/boost";
+import SavingsHistory from "../../components/SavingsHistory";
 
 Boost(Highcharts);
 DarkUnica(Highcharts);
@@ -97,6 +98,12 @@ const Charts = () => {
           <div className="charts-section">
             <Suspense fallback=''>
               <DailyAverageTrend />
+            </Suspense>
+          </div>
+
+          <div className="charts-section">
+            <Suspense fallback=''>
+              <SavingsHistory />
             </Suspense>
           </div>
 
