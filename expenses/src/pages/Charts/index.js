@@ -58,6 +58,7 @@ const Charts = () => {
 
   const { data, dataDispatch } = useData();
   const noData = data.groupedData === null;
+  const noEntries = Object.keys(data.raw).length === 0;
   const { token } = useAuthState();
   const loading = data.loading;
   const dispatch = useAuthDispatch();
@@ -72,7 +73,7 @@ const Charts = () => {
     <div>
       <h2>Charts page</h2>
       <Filters />
-      {loading ? <div className="lds-ripple"><div></div><div></div></div> : !noData &&
+      {loading ? <div className="lds-ripple"><div></div><div></div></div> : !noEntries &&
         <div className="charts-page">
 
           <div className="charts-section">

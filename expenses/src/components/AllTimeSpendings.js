@@ -11,7 +11,9 @@ export default function AllTimeSpendings() {
   // Re-render the component only when dependencies are changed.
   useEffect(() => {}, [data.groupedData, data.categoryTotals, data.totalSpent, currency]);
 
-  const nrOfMonths = data.groupedData ? Object.keys(data.groupedData).length : 0;
+  const firstDay = data.raw[data.raw.length - 1]?.dt;
+  const daysPassed = parseInt((new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1);
+  const monthsPassed = daysPassed ? parseFloat(daysPassed / 30.42).toFixed(2) : 0;
   const allTimeSpendings = {
     chart: {
       type: 'pie'
@@ -42,7 +44,7 @@ export default function AllTimeSpendings() {
         options={allTimeSpendings}
       />
       <div className="average-spending">
-        Total spent: {data.totalSpent} {currency} in {nrOfMonths} months
+        Total spent: {data.totalSpent} {currency} in {monthsPassed} months
       </div>
     </>
   )
