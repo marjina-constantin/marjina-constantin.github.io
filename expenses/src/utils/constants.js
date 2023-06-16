@@ -187,3 +187,42 @@ export const currencies = {
   "ZMW": "Zambian Kwacha",
   "ZWL": "Zimbabwean Dollar"
 };
+
+export const suggestions = {
+  '1': [
+    'haine', 'incaltaminte', 'pantalani', 'tricouri'
+  ],
+  '2': [
+    'happy hour', 'benzinarie', 'ceai/cafea parc', 'restaurant', 'ingetata', 'ciocolata', 'parc', 'wiskey + cola', 'cinema'
+  ],
+  '3': [
+    'nr1', 'fourchette', 'kaufland', 'lunch', 'pegas', 'apa', 'inghetata', 'straus/glovo food',
+  ],
+  '4': [
+    'flori'
+  ],
+  '5': [
+    'hartie igienica', 'sapun', 'praf de spalat', 'scutece', 'pasta de dinti', 'sampon', 'servetele'
+  ],
+  '6': [
+    'apartment rent'
+  ],
+  '7': [
+    'farmacie', 'stomatolog', 'pediatru'
+  ],
+  '8': [
+    'haircut', 'nails'
+  ],
+  '9': [
+    'benzina', 'motorina', 'car service', 'lichid parbriz', 'car wash', 'taxi', 'parcare',
+  ],
+  '10': [
+    'gaz', 'lumina', 'starnet', 'infocom', 'orange', 'infobon'
+  ],
+  '12': [
+    'Nelea'
+  ],
+  '13': [
+    'nunta', 'cumatrie'
+  ]
+};

@@ -1,7 +1,7 @@
-import React, {useState} from "react";
-import {fetchRequest} from '../utils/utils'
-import {useAuthDispatch, useAuthState, useData} from "../context";
-import {categories} from '../utils/constants'
+import React, {useState, useRef} from 'react';
+import {fetchRequest} from '../utils/utils';
+import {useAuthDispatch, useAuthState, useData} from '../context';
+import {categories, suggestions} from '../utils/constants';
 
 const TransactionForm = ({formType, values, onSuccess}) => {
   const dispatch = useAuthDispatch();
@@ -63,6 +63,28 @@ const TransactionForm = ({formType, values, onSuccess}) => {
   const offset = today.getTimezoneOffset();
   today = new Date(today.getTime() - (offset*60*1000)).toISOString().split('T')[0];
 
+  const [suggestionData, setSuggestionData] = useState([]);
+  const suggestionsRef = useRef(null);
+  const inputRef = useRef(null);
+  const handleInputFocus = () => {
+    setSuggestionData(suggestions[formState?.field_category]);
+  };
+
+  const handleInputBlur = (event) => {
+    // Check if the blur event target is within the suggestions container
+    if (!suggestionsRef?.current?.contains(event?.relatedTarget)) {
+      setSuggestionData([]);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setFormState({
+      ...formState,
+      field_description: formState?.field_description ? formState.field_description + ` ${suggestion}` : suggestion
+    });
+    // Return focus to the text input after selecting a suggestion
+    inputRef.current.focus();
+  };
   return (
     <div>
       <h2>{formType === 'add' ? 'Add transaction' : 'Edit transaction'}</h2>
@@ -74,7 +96,31 @@ const TransactionForm = ({formType, values, onSuccess}) => {
             <option key={id} value={category.value}>{category.label}</option>
           ))}
         </select>
-        <textarea placeholder="Description" name="field_description" rows="3" value={formState.field_description} onChange={handleChange} />
+        <textarea
+          placeholder="Description"
+          name="field_description"
+          rows="3"
+          value={formState.field_description}
+          onChange={handleChange}
+          onFocus={handleInputFocus}
+          ref={inputRef}
+          onBlur={handleInputBlur}
+        />
+        {suggestionData && suggestionData.length ? (
+          <ul
+            className="suggestions"
+            ref={suggestionsRef}
+            tabIndex={0}
+          >
+            {suggestionData.map((suggestion, index) => (
+              <li key={index} tabIndex={-1} onClick={() => {
+                handleSuggestionClick(suggestion)
+              }}>
+                {suggestion}
+              </li>
+            ))}
+          </ul>
+        ) : null}
         <button type="submit" disabled={isSubmitting} className="button w-100">
           {isSubmitting ? (
             <div className="loader">
