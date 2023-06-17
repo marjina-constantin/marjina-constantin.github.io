@@ -189,8 +189,9 @@ export const currencies = {
 };
 
 export const suggestions = {
+  '': [],
   '1': [
-    'haine', 'incaltaminte', 'pantalani', 'tricouri'
+    'haine', 'incaltaminte', 'pantaloni', 'tricouri'
   ],
   '2': [
     'happy hour', 'benzinarie', 'ceai/cafea parc', 'restaurant', 'ingetata', 'ciocolata', 'parc', 'wiskey + cola', 'cinema'
@@ -219,6 +220,7 @@ export const suggestions = {
   '10': [
     'gaz', 'lumina', 'starnet', 'infocom', 'orange', 'infobon'
   ],
+  '11': [],
   '12': [
     'Nelea'
   ],

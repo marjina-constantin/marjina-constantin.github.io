@@ -20,6 +20,9 @@ const TransactionForm = ({formType, values, onSuccess}) => {
       ...formState,
       [event.target.name]: value
     });
+    if (event.target.name === 'field_category') {
+      setSuggestionData(suggestions[value]);
+    }
   };
   const [isSubmitting, setIsSubmitting] = useState(false);
   const handleSubmit = (event) => {
@@ -63,27 +66,13 @@ const TransactionForm = ({formType, values, onSuccess}) => {
   const offset = today.getTimezoneOffset();
   today = new Date(today.getTime() - (offset*60*1000)).toISOString().split('T')[0];
 
-  const [suggestionData, setSuggestionData] = useState([]);
-  const suggestionsRef = useRef(null);
-  const inputRef = useRef(null);
-  const handleInputFocus = () => {
-    setSuggestionData(suggestions[formState?.field_category]);
-  };
-
-  const handleInputBlur = (event) => {
-    // Check if the blur event target is within the suggestions container
-    if (!suggestionsRef?.current?.contains(event?.relatedTarget)) {
-      setSuggestionData([]);
-    }
-  };
+  const [suggestionData, setSuggestionData] = useState(suggestions[formState.field_category]);
 
   const handleSuggestionClick = (suggestion) => {
     setFormState({
       ...formState,
       field_description: formState?.field_description ? formState.field_description + ` ${suggestion}` : suggestion
     });
-    // Return focus to the text input after selecting a suggestion
-    inputRef.current.focus();
   };
   return (
     <div>
@@ -102,18 +91,11 @@ const TransactionForm = ({formType, values, onSuccess}) => {
           rows="3"
           value={formState.field_description}
           onChange={handleChange}
-          onFocus={handleInputFocus}
-          ref={inputRef}
-          onBlur={handleInputBlur}
         />
-        {suggestionData && suggestionData.length ? (
-          <ul
-            className="suggestions"
-            ref={suggestionsRef}
-            tabIndex={0}
-          >
+        {suggestionData.length ? (
+          <ul className="suggestions">
             {suggestionData.map((suggestion, index) => (
-              <li key={index} tabIndex={-1} onClick={() => {
+              <li key={index} onClick={() => {
                 handleSuggestionClick(suggestion)
               }}>
                 {suggestion}

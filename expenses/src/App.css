@@ -401,3 +401,19 @@ button:hover {
 @keyframes preloader {
   100% { transform: scale(2); }
 }
+
+ul.suggestions {
+  list-style: none;
+  padding: 0;
+}
+ul.suggestions li {
+  display: inline-block;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 20px;
+  background: #3d3e49;
+}
+ul.suggestions li:hover {
+  cursor: pointer;
+  background: #323440;
+}
