@@ -412,8 +412,17 @@ ul.suggestions li {
   margin: 5px;
   border-radius: 20px;
   background: #3d3e49;
+  animation: bubble-up .3s;
 }
 ul.suggestions li:hover {
   cursor: pointer;
   background: #323440;
+}
+@keyframes bubble-up {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
