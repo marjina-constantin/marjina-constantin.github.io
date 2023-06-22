@@ -54,6 +54,7 @@ const TransactionForm = ({formType, values, onSuccess}) => {
         alert('Success!');
         setIsSubmitting(false);
         setFormState(initialState);
+        setSuggestionData([]);
       }
       else {
         alert('Something went wrong, please contact Constantin :)');
