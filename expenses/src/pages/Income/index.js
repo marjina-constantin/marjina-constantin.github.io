@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from "react";
-import IncomeForm from "../../components/IncomeForm";
+import IncomeForm from '../../components/IncomeForm';
 import {deleteNode, fetchData} from '../../utils/utils';
-import {useAuthDispatch, useAuthState, useData} from "../../context";
-import Modal from "../../components/Modal";
-import IncomeTable from "../../components/IncomeTable";
+import {useAuthDispatch, useAuthState, useData, useNotification} from '../../context';
+import Modal from '../../components/Modal';
+import IncomeTable from '../../components/IncomeTable';
 
 const Income = () => {
+  const showNotification = useNotification();
   const { token } = useAuthState();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -33,11 +34,11 @@ const Income = () => {
     setIsSubmitting(true);
     deleteNode(showDeleteModal, token, (response) => {
       if (response.ok) {
-        alert('Income was successfully deleted.');
+        showNotification('Income was successfully deleted.', 'success');
         setIsSubmitting(false);
       }
       else {
-        alert('Something went wrong.');
+        showNotification('Something went wrong.', 'error');
         setIsSubmitting(false);
       }
       setShowDeleteModal(false);

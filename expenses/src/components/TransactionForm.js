@@ -1,9 +1,10 @@
-import React, {useState, useRef} from 'react';
+import React, {useState} from 'react';
 import {fetchRequest} from '../utils/utils';
-import {useAuthDispatch, useAuthState, useData} from '../context';
+import {useAuthDispatch, useAuthState, useData, useNotification} from '../context';
 import {categories, suggestions} from '../utils/constants';
 
 const TransactionForm = ({formType, values, onSuccess}) => {
+  const showNotification = useNotification();
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
   const initialState = {
@@ -51,13 +52,13 @@ const TransactionForm = ({formType, values, onSuccess}) => {
     fetchRequest(url, fetchOptions, dataDispatch, dispatch, (data) => {
       if (data.nid) {
         onSuccess();
-        alert('Success!');
+        showNotification('Success!', 'success');
         setIsSubmitting(false);
         setFormState(initialState);
         setSuggestionData([]);
       }
       else {
-        alert('Something went wrong, please contact Constantin :)');
+        showNotification('Something went wrong, please contact Constantin :)', 'error');
         setIsSubmitting(false);
       }
     })

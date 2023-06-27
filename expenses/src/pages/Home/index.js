@@ -1,12 +1,13 @@
-import React, {useEffect, useState} from "react";
-import {useAuthDispatch, useAuthState, useData} from '../../context';
+import React, {useEffect, useState} from 'react';
+import {useAuthDispatch, useAuthState, useData, useNotification} from '../../context';
 import {deleteNode, fetchData} from '../../utils/utils';
 import Modal from '../../components/Modal';
-import TransactionForm from "../../components/TransactionForm";
-import TransactionsTable from "../../components/TransactionsTable";
-import Filters from "../../components/Filters";
+import TransactionForm from '../../components/TransactionForm';
+import TransactionsTable from '../../components/TransactionsTable';
+import Filters from '../../components/Filters';
 
 const Home = () => {
+  const showNotification = useNotification();
   const { token } = useAuthState();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -34,11 +35,11 @@ const Home = () => {
     setIsSubmitting(true);
     deleteNode(showDeleteModal, token, (response) => {
       if (response.ok) {
-        alert('Transaction was successfully deleted.');
+        showNotification('Transaction was successfully deleted.', 'success');
         setIsSubmitting(false);
       }
       else {
-        alert('Something went wrong.');
+        showNotification('omething went wrong.', 'error');
         setIsSubmitting(false);
       }
       setShowDeleteModal(false);
