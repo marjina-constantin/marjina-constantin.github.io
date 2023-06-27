@@ -4,6 +4,7 @@ import {useHistory} from 'react-router-dom';
 import {currencies} from '../../utils/constants';
 import {FaUserCircle} from 'react-icons/fa';
 import {fetchRequest} from '../../utils/utils';
+import {notificationType} from '../../utils/constants';
 
 const Profile = () => {
   const showNotification = useNotification();
@@ -37,7 +38,7 @@ const Profile = () => {
         setTimeout(() => setBlink(false), 2000);
       }
       else {
-        showNotification('Something went wrong, please contact Constantin :)', 'error');
+        showNotification('Something went wrong, please contact Constantin :)', notificationType.ERROR);
       }
     })
   };

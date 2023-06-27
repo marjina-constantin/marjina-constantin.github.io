@@ -5,6 +5,7 @@ import Modal from '../../components/Modal';
 import TransactionForm from '../../components/TransactionForm';
 import TransactionsTable from '../../components/TransactionsTable';
 import Filters from '../../components/Filters';
+import {notificationType} from '../../utils/constants';
 
 const Home = () => {
   const showNotification = useNotification();
@@ -35,11 +36,11 @@ const Home = () => {
     setIsSubmitting(true);
     deleteNode(showDeleteModal, token, (response) => {
       if (response.ok) {
-        showNotification('Transaction was successfully deleted.', 'success');
+        showNotification('Transaction was successfully deleted.', notificationType.SUCCESS);
         setIsSubmitting(false);
       }
       else {
-        showNotification('omething went wrong.', 'error');
+        showNotification('Something went wrong.', notificationType.ERROR);
         setIsSubmitting(false);
       }
       setShowDeleteModal(false);

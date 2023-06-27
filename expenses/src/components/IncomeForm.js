@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {fetchRequest} from '../utils/utils'
 import {useAuthDispatch, useAuthState, useData, useNotification} from '../context';
+import {notificationType} from '../utils/constants';
 
 const IncomeForm = ({formType, values, onSuccess}) => {
   const showNotification = useNotification();
@@ -46,12 +47,12 @@ const IncomeForm = ({formType, values, onSuccess}) => {
     fetchRequest(url, fetchOptions, dataDispatch, dispatch, (data) => {
       if (data.nid) {
         onSuccess();
-        showNotification('Success!', 'success');
+        showNotification('Success!', notificationType.SUCCESS);
         setIsSubmitting(false);
         setFormState(initialState);
       }
       else {
-        showNotification('Something went wrong, please contact Sergiu S :)', 'error');
+        showNotification('Something went wrong, please contact Sergiu S :)', notificationType.ERROR);
         setIsSubmitting(false);
       }
     })

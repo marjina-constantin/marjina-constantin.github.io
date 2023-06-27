@@ -4,6 +4,7 @@ import {deleteNode, fetchData} from '../../utils/utils';
 import {useAuthDispatch, useAuthState, useData, useNotification} from '../../context';
 import Modal from '../../components/Modal';
 import IncomeTable from '../../components/IncomeTable';
+import {notificationType} from '../../utils/constants';
 
 const Income = () => {
   const showNotification = useNotification();
@@ -34,11 +35,11 @@ const Income = () => {
     setIsSubmitting(true);
     deleteNode(showDeleteModal, token, (response) => {
       if (response.ok) {
-        showNotification('Income was successfully deleted.', 'success');
+        showNotification('Income was successfully deleted.', notificationType.SUCCESS);
         setIsSubmitting(false);
       }
       else {
-        showNotification('Something went wrong.', 'error');
+        showNotification('Something went wrong.', notificationType.ERROR);
         setIsSubmitting(false);
       }
       setShowDeleteModal(false);
