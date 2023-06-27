@@ -426,3 +426,18 @@ ul.suggestions li:hover {
     transform: scale(1);
   }
 }
+.notification {
+  position: fixed;
+  bottom: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  padding: 10px;
+  border-radius: 15px;
+}
+.notification.success {
+  background-color: #00a8ad;
+}
+.notification.error {
+  background-color: #f13636;
+}

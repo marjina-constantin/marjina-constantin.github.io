@@ -1,11 +1,13 @@
-import React, {useState} from "react";
-import {logout, useAuthDispatch, useAuthState, useData} from "../../context";
-import {useHistory} from "react-router-dom";
-import {currencies} from "../../utils/constants";
-import {FaUserCircle} from "react-icons/fa";
-import {fetchRequest} from "../../utils/utils";
+import React, {useState} from 'react';
+import {logout, useAuthDispatch, useAuthState, useData, useNotification} from '../../context';
+import {useHistory} from 'react-router-dom';
+import {currencies} from '../../utils/constants';
+import {FaUserCircle} from 'react-icons/fa';
+import {fetchRequest} from '../../utils/utils';
+import {notificationType} from '../../utils/constants';
 
 const Profile = () => {
+  const showNotification = useNotification();
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
   const { userDetails, token, currency } = useAuthState();
@@ -36,7 +38,7 @@ const Profile = () => {
         setTimeout(() => setBlink(false), 2000);
       }
       else {
-        alert('Something went wrong, please contact Constantin :)')
+        showNotification('Something went wrong, please contact Constantin :)', notificationType.ERROR);
       }
     })
   };

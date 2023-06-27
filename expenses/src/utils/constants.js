@@ -228,3 +228,8 @@ export const suggestions = {
     'nunta', 'cumatrie'
   ]
 };
+
+export const notificationType = {
+  SUCCESS: 'success',
+  ERROR: 'error',
+}
