@@ -14,7 +14,7 @@ export const NotificationProvider = ({children}) => {
     // Clear the notification after a certain duration (e.g., 3 seconds)
     setTimeout(() => {
       setNotification(null);
-    }, 3000);
+    }, 1000);
   };
 
   return (
