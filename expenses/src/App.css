@@ -434,6 +434,7 @@ ul.suggestions li:hover {
   color: white;
   padding: 10px;
   border-radius: 15px;
+  z-index: 9999;
 }
 .notification.success {
   background-color: #00a8ad;
