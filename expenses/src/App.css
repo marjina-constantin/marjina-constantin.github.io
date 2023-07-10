@@ -161,6 +161,20 @@ input[type=submit] {
 .expenses-table thead {
   box-shadow: 0 19px 38px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
   background-color:#3e3f4a;
+  opacity: 0;
+  animation: showTable .66s linear forwards;
+}
+@keyframes showTable {
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.expenses-table tbody {
+  opacity: 0;
+  animation: showTable .66s linear forwards;
 }
 .expenses-table th {
   padding: 0 8px;
@@ -202,10 +216,50 @@ input[type=submit] {
   margin-top: 20px;
   display: block;
   color: #282a36;
-  background: #00a8ad;
   padding: 10px;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
+  background: transparent;
+  position: relative;
+  animation: showBadgeBackground .66s linear forwards;
+}
+@keyframes showBadgeBackground {
+  50% {
+    background: transparent;
+  }
+  100% {
+    background: #00a8ad;
+  }
+}
+.month-badge:after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  top: 0;
+  bottom: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top: 1px solid #00a8ad;
+  border-left: none;
+  border-right: none;
+  animation: expandBorder .33s linear forwards;
+}
+@keyframes expandBorder {
+  99% {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  100% {
+    left: 0;
+    right: 0;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-left: 1px solid #00a8ad;
+    border-right: 1px solid #00a8ad;
+  }
 }
 .btn-outline {
   background: none;
