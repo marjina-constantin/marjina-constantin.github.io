@@ -110,13 +110,13 @@ const Charts = () => {
           </div>
 
           <div className="charts-section">
-            <LastTwoMonthsAverage />
-          </div>
-
-          <div className="charts-section">
             <Suspense fallback=''>
               <YearAverageTrend />
             </Suspense>
+          </div>
+
+          <div className="charts-section">
+            <LastTwoMonthsAverage />
           </div>
 
         </div>

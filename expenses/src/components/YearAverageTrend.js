@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {useData} from "../context";
+import {useAuthState, useData} from "../context";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 
@@ -44,6 +44,7 @@ function formatDataForChart(data) {
 
 export default function YearAverageTrend() {
   const { data } = useData();
+  const { currency } = useAuthState();
   const items = data?.filtered?.totalsPerYearAndMonth || data?.totalsPerYearAndMonth;
 
   // Re-render the component only when dependencies are changed.
@@ -81,9 +82,24 @@ export default function YearAverageTrend() {
   };
 
   return (
-    <HighchartsReact
-      highcharts={Highcharts}
-      options={dailyAverageOptions}
-    />
+    <>
+      <HighchartsReact
+        highcharts={Highcharts}
+        options={dailyAverageOptions}
+      />
+      <span className="heading">Total spent per year:</span>
+      <table className="daily-average">
+        <tbody>
+        {Object.entries(items).map((item, key) => {
+          const sum = Object.values(item[1]).reduce((total, value) => total + value, 0);
+          return (
+          <tr key={key}>
+            <td>{item[0]}</td>
+            <td>{sum} {currency}</td>
+          </tr>
+        )})}
+        </tbody>
+      </table>
+    </>
   );
 }
