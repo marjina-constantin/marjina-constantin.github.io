@@ -51,6 +51,7 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
   };
   fetchRequest('https://dev-expenses-api.pantheonsite.io/user-expenses?_format=json', fetchOptions, dataDispatch, dispatch, (data) => {
     let groupedData = {};
+    const totalsPerYearAndMonth = {};
     let incomeData = [];
     let monthsTotals = {};
     let incomeTotals = {};
@@ -63,7 +64,14 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
       data.forEach(item => {
         const date = new Date(item.dt);
         const category = item.cat;
-        const month = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+        const year = date.getFullYear();
+        const month = `${monthNames[date.getMonth()]} ${year}`;
+        if (!totalsPerYearAndMonth[year]) {
+          totalsPerYearAndMonth[year] = {};
+        }
+        if (!totalsPerYearAndMonth[year][month]) {
+          totalsPerYearAndMonth[year][month] = 0;
+        }
         if (!groupedData[month]) {
           groupedData[month] = [];
         }
@@ -89,6 +97,7 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
           categoryTotals[category].name = categories[category].label;
           categoryTotals[category].y = parseFloat((parseFloat(categoryTotals[category].y) + parseFloat(item.sum)).toFixed(2));
           totalSpent = (parseFloat(totalSpent) + parseFloat(item.sum)).toFixed(2);
+          totalsPerYearAndMonth[year][month] += parseFloat(item.sum);
         }
       });
     }
@@ -101,6 +110,7 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
       incomeTotals: incomeTotals,
       categoryTotals: categoryTotals,
       loading: false,
+      totalsPerYearAndMonth,
       totalSpent,
     });
     if (category) {

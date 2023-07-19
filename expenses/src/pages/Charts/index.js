@@ -55,6 +55,7 @@ Highcharts.setOptions({
 
 const Charts = () => {
   const DailyAverageTrend = React.lazy(() => import("../../components/DailyAverageTrend"));
+  const YearAverageTrend = React.lazy(() => import("../../components/YearAverageTrend"));
 
   const { data, dataDispatch } = useData();
   const noData = data.groupedData === null;
@@ -110,6 +111,12 @@ const Charts = () => {
 
           <div className="charts-section">
             <LastTwoMonthsAverage />
+          </div>
+
+          <div className="charts-section">
+            <Suspense fallback=''>
+              <YearAverageTrend />
+            </Suspense>
           </div>
 
         </div>

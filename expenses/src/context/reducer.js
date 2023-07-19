@@ -79,6 +79,7 @@ export const DataReducer = (initialState, action) => {
         categoryTotals: action.categoryTotals,
         loading: action.loading,
         totalSpent: action.totalSpent,
+        totalsPerYearAndMonth: action.totalsPerYearAndMonth,
       };
 
     case "FILTER_DATA":
@@ -87,12 +88,20 @@ export const DataReducer = (initialState, action) => {
         let groupedData = {};
         let monthsTotals = {};
         let totalSpent = 0;
+        const totalsPerYearAndMonth = {};
         const monthNames = ["January", "February", "March", "April", "May", "June",
           "July", "August", "September", "October", "November", "December"
         ];
         filtered.forEach(item => {
           const date = new Date(item.dt);
-          const month = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+          const year = date.getFullYear();
+          const month = `${monthNames[date.getMonth()]} ${year}`;
+          if (!totalsPerYearAndMonth[year]) {
+            totalsPerYearAndMonth[year] = {};
+          }
+          if (!totalsPerYearAndMonth[year][month]) {
+            totalsPerYearAndMonth[year][month] = 0;
+          }
           if (!groupedData[month]) {
             groupedData[month] = [];
           }
@@ -102,11 +111,13 @@ export const DataReducer = (initialState, action) => {
           groupedData[month].push(item);
           monthsTotals[month] = parseFloat((parseFloat(monthsTotals[month]) + parseFloat(item.sum)).toFixed(2));
           totalSpent = (parseFloat(totalSpent) + parseFloat(item.sum)).toFixed(2);
+          totalsPerYearAndMonth[year][month] += parseFloat(item.sum);
         });
         const newState = {
           groupedData: groupedData,
           totals: monthsTotals,
-          totalSpent
+          totalsPerYearAndMonth,
+          totalSpent,
         };
         return {
           ...initialState,
