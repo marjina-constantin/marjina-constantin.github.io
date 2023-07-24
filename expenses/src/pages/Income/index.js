@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React, {Suspense, useEffect, useState} from "react";
 import IncomeForm from '../../components/IncomeForm';
 import {deleteNode, fetchData} from '../../utils/utils';
 import {useAuthDispatch, useAuthState, useData, useNotification} from '../../context';
 import Modal from '../../components/Modal';
 import IncomeTable from '../../components/IncomeTable';
 import {notificationType} from '../../utils/constants';
+import YearIncomeAverageTrend from "../../components/YearIncomeAverageTrend";
 
 const Income = () => {
   const showNotification = useNotification();
@@ -83,6 +84,11 @@ const Income = () => {
 
         </div>
       }
+      <div className="charts-section">
+        <Suspense fallback=''>
+          <YearIncomeAverageTrend />
+        </Suspense>
+      </div>
     </div>
   );
 };

@@ -18,6 +18,45 @@ const handleErrors = (response, options, dataDispatch, dispatch) => {
   return response.json();
 }
 
+export const formatDataForChart = (data) => {
+  const seriesData = [];
+
+  const monthOrder = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  for (const year in data) {
+    const yearSeries = {
+      name: year,
+      data: [],
+    };
+
+    for (const month of monthOrder) {
+      if (data[year][`${month} ${year}`]) {
+        const monthValue = data[year][`${month} ${year}`];
+        yearSeries.data.push([month, monthValue]);
+      }
+    }
+
+    if (yearSeries.data.length > 0) {
+      seriesData.push(yearSeries);
+    }
+  }
+
+  return {seriesData, monthOrder};
+}
+
 export const fetchRequest = (url, options, dataDispatch, dispatch, callback) => {
   fetch(url, options)
     .then(response => handleErrors(response, options, dataDispatch, dispatch))
@@ -55,6 +94,8 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
     let incomeData = [];
     let monthsTotals = {};
     let incomeTotals = {};
+    let totalIncomePerYear = {};
+    let totalIncomePerYearAndMonth = {};
     let categoryTotals = {};
     let totalSpent = 0;
     if (data) {
@@ -81,6 +122,15 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
         if (!incomeTotals[month]) {
           incomeTotals[month] = 0;
         }
+        if (!totalIncomePerYearAndMonth[year]) {
+          totalIncomePerYearAndMonth[year] = {};
+        }
+        if (!totalIncomePerYearAndMonth[year][month]) {
+          totalIncomePerYearAndMonth[year][month] = 0;
+        }
+        if (!totalIncomePerYear[year]) {
+          totalIncomePerYear[year] = 0;
+        }
         if (!categoryTotals[category] && category) {
           categoryTotals[category] = {
             name: '',
@@ -89,6 +139,8 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
         }
 
         if (item.type === 'incomes') {
+          totalIncomePerYear[year] = (parseFloat(totalIncomePerYear[year]) + parseFloat(item.sum)).toFixed(2);
+          totalIncomePerYearAndMonth[year][month] += parseFloat(item.sum);
           incomeData.push(item)
           incomeTotals[month] = (parseFloat(incomeTotals[month]) + parseFloat(item.sum)).toFixed(2);
         } else {
@@ -111,6 +163,8 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
       categoryTotals: categoryTotals,
       loading: false,
       totalsPerYearAndMonth,
+      totalIncomePerYear,
+      totalIncomePerYearAndMonth,
       totalSpent,
     });
     if (category) {

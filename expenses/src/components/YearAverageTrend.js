@@ -2,45 +2,7 @@ import React, {useEffect} from "react";
 import {useAuthState, useData} from "../context";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-
-function formatDataForChart(data) {
-  const seriesData = [];
-
-  const monthOrder = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
-  for (const year in data) {
-    const yearSeries = {
-      name: year,
-      data: [],
-    };
-
-    for (const month of monthOrder) {
-      if (data[year][`${month} ${year}`]) {
-        const monthValue = data[year][`${month} ${year}`];
-        yearSeries.data.push([month, monthValue]);
-      }
-    }
-
-    if (yearSeries.data.length > 0) {
-      seriesData.push(yearSeries);
-    }
-  }
-
-  return {seriesData, monthOrder};
-}
+import {formatDataForChart} from "../utils/utils";
 
 export default function YearAverageTrend() {
   const { data } = useData();

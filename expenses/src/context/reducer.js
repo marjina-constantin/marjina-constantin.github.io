@@ -80,6 +80,8 @@ export const DataReducer = (initialState, action) => {
         loading: action.loading,
         totalSpent: action.totalSpent,
         totalsPerYearAndMonth: action.totalsPerYearAndMonth,
+        totalIncomePerYear: action.totalIncomePerYear,
+        totalIncomePerYearAndMonth: action.totalIncomePerYearAndMonth,
       };
 
     case "FILTER_DATA":
