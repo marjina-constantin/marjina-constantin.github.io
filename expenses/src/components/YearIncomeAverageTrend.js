@@ -9,6 +9,7 @@ export default function YearIncomeAverageTrend() {
   const { currency } = useAuthState();
 
   const totalIncomePerYear = data?.totalIncomePerYear || {};
+  const totalPerYear = data?.totalPerYear || {};
 
   const formattedIncomeData = formatDataForChart(data?.totalIncomePerYearAndMonth);
 
@@ -48,13 +49,24 @@ export default function YearIncomeAverageTrend() {
         options={yearIncomeAverageOptions}
       />
       <span className="heading">Total income per year:</span>
-      <table className="daily-average">
+      <table className="expenses-table">
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Income</th>
+            <th>Spent</th>
+            <th>Remaining Amount</th>
+          </tr>
+        </thead>
         <tbody>
         {Object.entries(totalIncomePerYear).map((item, key) => {
+          const diff = parseInt(item[1]) - parseInt(totalPerYear[item[0]]);
           return (
             <tr key={key}>
               <td>{item[0]}</td>
               <td>{item[1]} {currency}</td>
+              <td>{totalPerYear[item[0]]} {currency}</td>
+              <td>{diff} {currency}</td>
             </tr>
           )})}
         </tbody>

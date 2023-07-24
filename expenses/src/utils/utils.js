@@ -91,6 +91,7 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
   fetchRequest('https://dev-expenses-api.pantheonsite.io/user-expenses?_format=json', fetchOptions, dataDispatch, dispatch, (data) => {
     let groupedData = {};
     const totalsPerYearAndMonth = {};
+    const totalPerYear = {};
     let incomeData = [];
     let monthsTotals = {};
     let incomeTotals = {};
@@ -131,6 +132,9 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
         if (!totalIncomePerYear[year]) {
           totalIncomePerYear[year] = 0;
         }
+        if (!totalPerYear[year]) {
+          totalPerYear[year] = 0;
+        }
         if (!categoryTotals[category] && category) {
           categoryTotals[category] = {
             name: '',
@@ -150,6 +154,7 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
           categoryTotals[category].y = parseFloat((parseFloat(categoryTotals[category].y) + parseFloat(item.sum)).toFixed(2));
           totalSpent = (parseFloat(totalSpent) + parseFloat(item.sum)).toFixed(2);
           totalsPerYearAndMonth[year][month] += parseFloat(item.sum);
+          totalPerYear[year] = (parseFloat(totalPerYear[year]) + parseFloat(item.sum)).toFixed(2);
         }
       });
     }
@@ -165,6 +170,7 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
       totalsPerYearAndMonth,
       totalIncomePerYear,
       totalIncomePerYearAndMonth,
+      totalPerYear,
       totalSpent,
     });
     if (category) {

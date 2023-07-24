@@ -8,9 +8,15 @@ export default function YearAverageTrend() {
   const { data } = useData();
   const { currency } = useAuthState();
   const items = data?.filtered?.totalsPerYearAndMonth || data?.totalsPerYearAndMonth;
+  const totalPerYear = data?.filtered?.totalPerYear || data?.totalPerYear;
 
   // Re-render the component only when dependencies are changed.
-  useEffect(() => {}, [data?.totalsPerYearAndMonth, data?.filtered?.totalsPerYearAndMonth]);
+  useEffect(() => {}, [
+    data?.totalsPerYearAndMonth,
+    data?.filtered?.totalsPerYearAndMonth,
+    data?.totalPerYear,
+    data?.filtered?.totalPerYear
+  ]);
 
   const formattedData = formatDataForChart(items);
 
@@ -52,12 +58,11 @@ export default function YearAverageTrend() {
       <span className="heading">Total spent per year:</span>
       <table className="daily-average">
         <tbody>
-        {Object.entries(items).map((item, key) => {
-          const sum = Object.values(item[1]).reduce((total, value) => total + value, 0);
+        {Object.entries(totalPerYear).map((item, key) => {
           return (
           <tr key={key}>
             <td>{item[0]}</td>
-            <td>{sum} {currency}</td>
+            <td>{item[1]} {currency}</td>
           </tr>
         )})}
         </tbody>
