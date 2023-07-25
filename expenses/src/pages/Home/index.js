@@ -53,7 +53,7 @@ const Home = () => {
   const [nrOfMonths, setNrOfMonths] = useState(2)
 
   return (
-    <div>
+    <div className="home-page">
       <Modal show={showDeleteModal} onClose={(e) => {e.preventDefault(); setShowDeleteModal(false)}}>
         <h3>Are you sure you want to delete the transaction?</h3>
         <button onClick={() => handleDelete(showDeleteModal, token)} className="button wide">

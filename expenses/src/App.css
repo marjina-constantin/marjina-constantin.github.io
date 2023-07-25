@@ -152,7 +152,6 @@ input[type=submit] {
 .table-wrapper {
   overflow-x: auto;
   margin-top: 30px;
-  padding: 0 25px;
 }
 .expenses-table {
   width: 100%;
@@ -318,7 +317,7 @@ button:hover {
   padding: 10px;
   border-radius: 20px;
 }
-.charts-page, .incomes-page {
+.charts-page, .incomes-page, .home-page {
   padding: 0 25px;
   /*animation: fadeIn 0.4s;*/
 }

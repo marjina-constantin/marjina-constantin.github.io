@@ -71,7 +71,7 @@ const Charts = () => {
   }, [data, dataDispatch, noData, token, dispatch]);
 
   return (
-    <div>
+    <div className="incomes-page">
       <h2>Charts page</h2>
       <Filters />
       {loading ? <div className="lds-ripple"><div></div><div></div></div> : !noEntries &&
