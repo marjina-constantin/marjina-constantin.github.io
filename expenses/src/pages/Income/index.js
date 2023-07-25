@@ -49,7 +49,7 @@ const Income = () => {
   };
 
   return (
-    <div className="incomes-page">
+    <div>
       <Modal show={showDeleteModal} onClose={(e) => {e.preventDefault(); setShowDeleteModal(false)}}>
         <h3>Are you sure you want to delete the income?</h3>
         <button onClick={() => handleDelete(showDeleteModal, token)} className="button wide">
