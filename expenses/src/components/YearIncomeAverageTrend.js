@@ -62,12 +62,13 @@ export default function YearIncomeAverageTrend() {
           <tbody>
           {Object.entries(totalIncomePerYear).map((item, key) => {
             const diff = parseInt(item[1]) - parseInt(totalPerYear[item[0]]);
+            const savingsPercent = parseFloat(parseFloat(((totalPerYear[item[0]] / item[1]) - 1) * -100).toFixed(2));
             return (
               <tr key={key}>
                 <td>{item[0]}</td>
                 <td>{item[1]} {currency}</td>
                 <td>{totalPerYear[item[0]]} {currency}</td>
-                <td>{diff} {currency}</td>
+                <td>{diff} {currency} ({savingsPercent}%)</td>
               </tr>
             )})}
           </tbody>
