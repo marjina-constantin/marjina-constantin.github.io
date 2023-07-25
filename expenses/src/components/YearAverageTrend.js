@@ -29,7 +29,7 @@ export default function YearAverageTrend() {
       useGPUTranslations: true,
     },
     title: {
-      text: 'Monthly average trends',
+      text: 'Years in review',
     },
     xAxis: {
       type: "category",
@@ -37,7 +37,7 @@ export default function YearAverageTrend() {
     },
     yAxis: {
       title: {
-        text: 'Money',
+        text: currency,
       },
     },
     tooltip: {

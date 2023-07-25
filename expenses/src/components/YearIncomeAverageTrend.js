@@ -22,7 +22,7 @@ export default function YearIncomeAverageTrend() {
       useGPUTranslations: true,
     },
     title: {
-      text: 'Monthly income average trends',
+      text: 'Years in review',
     },
     xAxis: {
       type: "category",
@@ -30,7 +30,7 @@ export default function YearIncomeAverageTrend() {
     },
     yAxis: {
       title: {
-        text: 'Money',
+        text: currency,
       },
     },
     tooltip: {
@@ -49,28 +49,30 @@ export default function YearIncomeAverageTrend() {
         options={yearIncomeAverageOptions}
       />
       <span className="heading">Total income per year:</span>
-      <table className="expenses-table">
-        <thead>
-          <tr>
-            <th>Year</th>
-            <th>Income</th>
-            <th>Spent</th>
-            <th>Remaining Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-        {Object.entries(totalIncomePerYear).map((item, key) => {
-          const diff = parseInt(item[1]) - parseInt(totalPerYear[item[0]]);
-          return (
-            <tr key={key}>
-              <td>{item[0]}</td>
-              <td>{item[1]} {currency}</td>
-              <td>{totalPerYear[item[0]]} {currency}</td>
-              <td>{diff} {currency}</td>
+      <div className="table-wrapper">
+        <table className="expenses-table" cellSpacing="0" cellPadding="0">
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Income</th>
+              <th>Spent</th>
+              <th>Savings</th>
             </tr>
-          )})}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+          {Object.entries(totalIncomePerYear).map((item, key) => {
+            const diff = parseInt(item[1]) - parseInt(totalPerYear[item[0]]);
+            return (
+              <tr key={key}>
+                <td>{item[0]}</td>
+                <td>{item[1]} {currency}</td>
+                <td>{totalPerYear[item[0]]} {currency}</td>
+                <td>{diff} {currency}</td>
+              </tr>
+            )})}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }

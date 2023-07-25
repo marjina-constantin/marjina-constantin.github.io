@@ -318,7 +318,7 @@ button:hover {
   padding: 10px;
   border-radius: 20px;
 }
-.charts-page {
+.charts-page, .incomes-page {
   padding: 0 25px;
   /*animation: fadeIn 0.4s;*/
 }
