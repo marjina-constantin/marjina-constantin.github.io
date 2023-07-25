@@ -305,7 +305,6 @@ button:hover {
 }
 .filters {
   text-align: left;
-  padding: 0 25px;
   margin-top: 30px;
 }
 .filters select, .user-currency select {
