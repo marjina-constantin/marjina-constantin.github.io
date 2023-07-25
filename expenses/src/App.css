@@ -152,6 +152,7 @@ input[type=submit] {
 .table-wrapper {
   overflow-x: auto;
   margin-top: 30px;
+  padding: 0 25px;
 }
 .expenses-table {
   width: 100%;
@@ -305,6 +306,7 @@ button:hover {
 }
 .filters {
   text-align: left;
+  padding: 0 25px;
   margin-top: 30px;
 }
 .filters select, .user-currency select {
@@ -316,7 +318,7 @@ button:hover {
   padding: 10px;
   border-radius: 20px;
 }
-.charts-page, .incomes-page, .home-page {
+.charts-page {
   padding: 0 25px;
   /*animation: fadeIn 0.4s;*/
 }
@@ -380,6 +382,12 @@ button:hover {
 .charts-section {
   padding: 25px 0;
   border-bottom: 1px solid #E0E0E3;
+}
+.incomes-page .charts-section {
+  padding: 25px 25px;
+}
+.incomes-page .charts-section .table-wrapper {
+  padding: 0;
 }
 .charts-section .heading {
   color: #E0E0E3;
