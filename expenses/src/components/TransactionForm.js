@@ -70,12 +70,18 @@ const TransactionForm = ({formType, values, onSuccess}) => {
   today = new Date(today.getTime() - (offset*60*1000)).toISOString().split('T')[0];
 
   const [suggestionData, setSuggestionData] = useState(suggestions[formState.field_category]);
+  const [selectedIndices, setSelectedIndices] = useState([]);
 
-  const handleSuggestionClick = (suggestion) => {
+  const handleSuggestionClick = (suggestion, index) => {
     setFormState({
       ...formState,
       field_description: formState?.field_description ? formState.field_description + ` ${suggestion}` : suggestion
     });
+    const isSelected = selectedIndices.includes(index);
+    if (isSelected) {
+      return;
+    }
+    setSelectedIndices([...selectedIndices, index]);
   };
   return (
     <div>
@@ -98,9 +104,9 @@ const TransactionForm = ({formType, values, onSuccess}) => {
         {suggestionData.length ? (
           <ul className="suggestions">
             {suggestionData.map((suggestion, index) => (
-              <li key={index} onClick={() => {
-                handleSuggestionClick(suggestion)
-              }}>
+              <li key={`${index}-${suggestion}`} onClick={() => {
+                handleSuggestionClick(suggestion, `${index}-${suggestion}`)
+              }} className={selectedIndices.includes(`${index}-${suggestion}`) ? 'selected-suggestion' : ''}>
                 {suggestion}
               </li>
             ))}

@@ -502,3 +502,7 @@ ul.suggestions li:hover {
 .notification.error {
   background-color: #f13636;
 }
+
+li.selected-suggestion {
+  border: 4px solid #00a8ad;
+}
