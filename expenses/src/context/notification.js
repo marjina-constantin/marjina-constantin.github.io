@@ -1,5 +1,6 @@
 import React, {createContext, useContext, useState} from 'react';
 import Notification from '../components/Notification';
+import {notificationType} from '../utils/constants';
 
 const NotificationContext = createContext();
 
@@ -10,11 +11,16 @@ export const NotificationProvider = ({children}) => {
 
   const showNotification = (message, type) => {
     setNotification({message, type});
+    let timeout = 2000;
+    if (type === notificationType.ERROR) {
+      // increase it to have time to read ))
+      timeout = 4000;
+    }
 
     // Clear the notification after a certain duration (e.g., 3 seconds)
     setTimeout(() => {
       setNotification(null);
-    }, 2000);
+    }, timeout);
   };
 
   return (
