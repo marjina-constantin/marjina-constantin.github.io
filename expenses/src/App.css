@@ -504,5 +504,5 @@ ul.suggestions li:hover {
 }
 
 li.selected-suggestion {
-  border: 4px solid #00a8ad;
+  border: 1px solid #00a8ad;
 }
