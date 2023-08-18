@@ -48,28 +48,6 @@ export default function MonthlyTotals() {
         width: '1',
         zIndex: 4,
         dashStyle: 'ShortDot',
-        events: {
-          mouseover: function(e) {
-            const series = this.axis?.series[0];
-            series.name = 'Average';
-            const chart = series?.chart,
-              PointClass = series?.pointClass,
-              tooltip = chart?.tooltip,
-              point = (new PointClass()).init(
-                series, [parseInt(monthlyAverage)]
-              ),
-              normalizedEvent = chart?.pointer?.normalize(e);
-
-            point.tooltipPos = [
-              normalizedEvent.chartX - chart?.plotLeft,
-              normalizedEvent.chartY - chart?.plotTop
-            ];
-            tooltip.refresh(point);
-          },
-          mouseout: function() {
-            this.axis?.chart?.tooltip?.hide();
-          },
-        }
       }]
     },
     plotOptions: {
