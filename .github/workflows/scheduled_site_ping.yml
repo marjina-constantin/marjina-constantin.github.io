@@ -11,4 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: cURL request
-        run: curl -I https://dev-expenses-api.pantheonsite.io/github-action-ping
+        run: |
+          curl -I https://dev-expenses-api.pantheonsite.io/github-action-ping
+          curl -I https://dev-zepto-cms.pantheonsite.io/github-action-ping
