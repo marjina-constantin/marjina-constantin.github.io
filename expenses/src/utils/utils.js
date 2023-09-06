@@ -88,7 +88,7 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
       'JWT-Authorization': 'Bearer ' + token
     }),
   };
-  fetchRequest('https://dev-expenses-api.pantheonsite.io/user-expenses?_format=json', fetchOptions, dataDispatch, dispatch, (data) => {
+  fetchRequest('https://dev-expenses-api.pantheonsite.io/api/expenses', fetchOptions, dataDispatch, dispatch, (data) => {
     let groupedData = {};
     const totalsPerYearAndMonth = {};
     const totalPerYear = {};
