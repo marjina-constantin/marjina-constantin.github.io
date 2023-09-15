@@ -210,8 +210,7 @@ input[type=submit] {
   height: 50px;
 }
 .expenses-table tr:nth-of-type(even) {
-  /*background-color:#3e3f4a;*/
-  background: radial-gradient(circle, #3e3f4a 0%, #3e3f4a 75%, #3e3f4a42 100%);
+  background-color:#3e3f4a;
 }
 .month-badge {
   margin-top: 20px;
