@@ -4,6 +4,9 @@ let user = localStorage.getItem("currentUser")
 let token = localStorage.getItem("currentUser")
   ? JSON.parse(localStorage.getItem("currentUser")).jwt_token
   : "";
+let theme = localStorage.getItem("theme")
+  ? JSON.parse(localStorage.getItem("theme"))
+  : "";
 
 export const initialState = {
   userDetails: "" || user,
@@ -11,7 +14,8 @@ export const initialState = {
   loading: false,
   errorMessage: null,
   userIsLoggedIn: !!user,
-  currency: user?.current_user?.currency || 'MDL'
+  currency: user?.current_user?.currency || 'MDL',
+  theme: theme || 'bondi-blue'
 };
 
 export const initialData = {

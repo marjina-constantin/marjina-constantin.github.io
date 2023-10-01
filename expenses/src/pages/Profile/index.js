@@ -10,7 +10,7 @@ const Profile = () => {
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
-  const { userDetails, token, currency } = useAuthState();
+  const { userDetails, token, currency, theme } = useAuthState();
   const history = useHistory();
   const handleLogout = (e) => {
     e.preventDefault();
@@ -43,6 +43,11 @@ const Profile = () => {
     })
   };
 
+  const handleThemeChange = (event) => {
+    localStorage.setItem('theme', JSON.stringify(event.target.value));
+    dispatch({ type: 'UPDATE_USER', payload: {theme: event.target.value} });
+  };
+
   const sortedCurrencies = Object.entries(currencies).sort((a,b) => { return a[1] < b[1] ? -1 : 1 });
   const [blink, setBlink] = useState(false);
 
@@ -55,6 +60,13 @@ const Profile = () => {
           {sortedCurrencies.map(([id, currency]) => (
             <option key={id} value={id}>{currency}</option>
           ))}
+        </select>
+      </div>
+      <div className="user-theme">
+        <select value={theme} className="theme" name="theme" onChange={handleThemeChange}>
+          <option key="bondi-blue" value="bondi-blue">Bondi blue</option>
+          <option key="maximum-green-yellow" value="maximum-green-yellow">Maximum green yellow</option>
+          <option key="indian-red" value="indian-red">Indian red</option>
         </select>
       </div>
       <button className="button logout" onClick={handleLogout}>Logout</button>
