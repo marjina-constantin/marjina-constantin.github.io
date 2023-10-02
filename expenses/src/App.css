@@ -1,11 +1,19 @@
+:root {
+  --bondi-blue-accent-color: #00a8ad;
+  --bondi-blue-bg-color: #282a36;
+  --maximum-green-yellow-accent-color: #cdf05d;
+  --maximum-green-yellow-bg-color: #282a36;
+  --indian-red-accent-color: #db5463;
+  --indian-red-bg-color: #282a36;
+}
 .bondi-blue {
-  --accent-color: #00a8ad;
+  --accent-color: var(--bondi-blue-accent-color);
 }
 .maximum-green-yellow {
-  --accent-color: #cdf05d;
+  --accent-color: var(--maximum-green-yellow-accent-color);
 }
 .indian-red {
-  --accent-color: #db5463;
+  --accent-color: var(--indian-red-accent-color);
 }
 
 html {
@@ -19,6 +27,15 @@ body {
   color: #fff;
   background: #282a36;
   padding-bottom: 100px;
+}
+body:has(.bondi-blue) {
+  background: var(--bondi-blue-bg-color);
+}
+body:has(.maximum-green-yellow) {
+  background: var(--maximum-green-yellow-bg-color);
+}
+body:has(.indian-red) {
+  background: var(--indian-red-bg-color);
 }
 .navbar {
   position: fixed;
