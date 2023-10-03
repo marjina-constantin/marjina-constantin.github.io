@@ -6,6 +6,7 @@ import TransactionForm from '../../components/TransactionForm';
 import TransactionsTable from '../../components/TransactionsTable';
 import Filters from '../../components/Filters';
 import {notificationType} from '../../utils/constants';
+import {FaArrowLeft, FaArrowRight} from "react-icons/fa";
 
 const Home = () => {
   const showNotification = useNotification();
@@ -50,7 +51,9 @@ const Home = () => {
 
   const items = data.filtered || data;
 
-  const [nrOfMonths, setNrOfMonths] = useState(2)
+  const months = items.groupedData ? Object.keys(items.groupedData) : [];
+  const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
+  const currentMonth = months[currentMonthIndex];
 
   return (
     <div>
@@ -77,21 +80,31 @@ const Home = () => {
       <Filters />
       {loading ? <div className="lds-ripple"><div></div><div></div></div> : noData ? '' :
         <div>
-          {Object.keys(items.groupedData).map((monthName, id) => (
-            id < nrOfMonths ?
+          {Object.keys(items.groupedData).length ?
+            <>
               <TransactionsTable
-                key={id}
-                total={items.totals[monthName]}
-                month={monthName}
+                total={items.totals[currentMonth]}
+                month={currentMonth}
                 incomeTotals={items.incomeTotals}
-                items={items.groupedData[monthName]}
+                items={items.groupedData[currentMonth]}
                 handleEdit={handleEdit}
                 setShowDeleteModal={setShowDeleteModal}
               />
-              : ''
-          ))}
-          {Object.keys(items.groupedData).length > nrOfMonths ?
-            <div className="load-more"><button onClick={() => setNrOfMonths(nrOfMonths + 1)} className="btn-outline">Load more</button></div>
+              <div className="pager-navigation">
+                <button
+                  disabled={!months[currentMonthIndex + 1]}
+                  onClick={() => setCurrentMonthIndex(currentMonthIndex + 1)}
+                >
+                  <FaArrowLeft />
+                </button>
+                <button
+                  disabled={!months[currentMonthIndex - 1]}
+                  onClick={() => setCurrentMonthIndex(currentMonthIndex - 1)}
+                >
+                  <FaArrowRight />
+                </button>
+              </div>
+            </>
             : ''
           }
         </div>

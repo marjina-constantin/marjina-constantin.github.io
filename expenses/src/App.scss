@@ -43,6 +43,7 @@ $color-map: (
   .#{$class} {
     --accent-color: #{map-get($colors, accent-color)};
     --secondary-color: #{map-get($colors, secondary-color)};
+    --bg-color: #{map-get($colors, bg-color)};
     --text-color: #{map-get($colors, text-color)};
   }
   body:has(.#{$class}) {
@@ -505,4 +506,37 @@ ul.suggestions li:hover {
 
 li.selected-suggestion {
   border: 1px solid var(--accent-color);
+}
+
+.pager-navigation {
+  position: fixed;
+  bottom: 51px;
+  width: 100%;
+  height: 30px;
+
+  button {
+    width: 50%;
+    height: 100%;
+    background: transparent;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    box-shadow: inset 0 0 0 200px rgba(255,255,255,0.08);
+    border: none;
+
+    &:first-child {
+      border-right: 2px solid var(--bg-color);
+    }
+
+    &:disabled {
+      svg {
+        fill: rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    svg {
+      width: 20px;
+      height: auto;
+      fill: var(--accent-color);
+    }
+  }
 }
