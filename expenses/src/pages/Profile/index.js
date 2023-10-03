@@ -67,6 +67,9 @@ const Profile = () => {
           <option key="bondi-blue" value="bondi-blue">Bondi blue</option>
           <option key="maximum-green-yellow" value="maximum-green-yellow">Maximum green yellow</option>
           <option key="indian-red" value="indian-red">Indian red</option>
+          <option key="carrot-orange" value="carrot-orange">Carrot Orange</option>
+          <option key="saffron" value="saffron">Saffron</option>
+          <option key="inchworm" value="inchworm">Inchworm</option>
         </select>
       </div>
       <button className="button logout" onClick={handleLogout}>Logout</button>

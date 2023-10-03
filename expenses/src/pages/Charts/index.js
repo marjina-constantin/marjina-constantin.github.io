@@ -16,9 +16,15 @@ import SavingsHistory from "../../components/SavingsHistory";
 Boost(Highcharts);
 DarkUnica(Highcharts);
 
+const bgColors = {
+  'carrot-orange': '#102433',
+  'inchworm': '#201f1e',
+}
+const theme = localStorage.getItem('theme');
+
 Highcharts.theme = {
   chart: {
-    backgroundColor: '#282a36',
+    backgroundColor: theme ? bgColors[theme] : '#282a36',
   },
   tooltip: {
     style: {
