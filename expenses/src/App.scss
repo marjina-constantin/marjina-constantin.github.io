@@ -1,19 +1,26 @@
-:root {
-  --bondi-blue-accent-color: #00a8ad;
-  --bondi-blue-bg-color: #282a36;
-  --maximum-green-yellow-accent-color: #cdf05d;
-  --maximum-green-yellow-bg-color: #282a36;
-  --indian-red-accent-color: #db5463;
-  --indian-red-bg-color: #282a36;
-}
-.bondi-blue {
-  --accent-color: var(--bondi-blue-accent-color);
-}
-.maximum-green-yellow {
-  --accent-color: var(--maximum-green-yellow-accent-color);
-}
-.indian-red {
-  --accent-color: var(--indian-red-accent-color);
+@use "sass:map";
+$color-map: (
+  bondi-blue: (
+    accent-color: #00a8ad,
+    bg-color: #282a36
+  ),
+  maximum-green-yellow: (
+    accent-color: #cdf05d,
+    bg-color: #282a36
+  ),
+  indian-red: (
+    accent-color: #db5463,
+    bg-color: #282a36
+  )
+);
+
+@each $class, $colors in $color-map {
+  .#{$class} {
+    --accent-color: map.get($colors, accent-color);
+  }
+  body:has(.#{$class}) {
+    background: map.get($colors, bg-color);
+  }
 }
 
 html {
@@ -27,15 +34,6 @@ body {
   color: #fff;
   background: #282a36;
   padding-bottom: 100px;
-}
-body:has(.bondi-blue) {
-  background: var(--bondi-blue-bg-color);
-}
-body:has(.maximum-green-yellow) {
-  background: var(--maximum-green-yellow-bg-color);
-}
-body:has(.indian-red) {
-  background: var(--indian-red-bg-color);
 }
 .navbar {
   position: fixed;
