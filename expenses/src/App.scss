@@ -1,4 +1,3 @@
-@use "sass:map";
 $color-map: (
   bondi-blue: (
     accent-color: #00a8ad,
@@ -16,10 +15,10 @@ $color-map: (
 
 @each $class, $colors in $color-map {
   .#{$class} {
-    --accent-color: map.get($colors, accent-color);
+    --accent-color: #{map-get($colors, accent-color)};
   }
   body:has(.#{$class}) {
-    background: map.get($colors, bg-color);
+    background: #{map-get($colors, bg-color)};
   }
 }
 
