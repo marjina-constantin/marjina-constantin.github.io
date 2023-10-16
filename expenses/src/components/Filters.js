@@ -7,7 +7,7 @@ export default function Filters() {
 
   const [state, setState] = useState({
     category: data.category ?? '',
-    textFilter: '',
+    textFilter: data.textFilter ?? '',
   });
 
   const prevFilterState = useRef(state);
