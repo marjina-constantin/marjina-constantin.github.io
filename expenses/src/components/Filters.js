@@ -5,11 +5,10 @@ import {useData} from "../context";
 export default function Filters() {
   const { data, dataDispatch } = useData();
 
-  const defaultState = {
+  const [state, setState] = useState({
     category: data.category ?? '',
     textFilter: '',
-  };
-  const [state, setState] = useState(defaultState);
+  });
 
   const prevFilterState = useRef(state);
 
@@ -30,7 +29,10 @@ export default function Filters() {
   };
 
   const handleClearFilters = () => {
-    setState(defaultState);
+    setState({
+      category: '',
+      textFilter: '',
+    });
   };
 
   useEffect(() => {
