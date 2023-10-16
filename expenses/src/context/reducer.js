@@ -90,8 +90,25 @@ export const DataReducer = (initialState, action) => {
       };
 
     case "FILTER_DATA":
-      if (action.category !== '' && initialState.raw) {
-        const filtered = initialState.raw.filter(item => item.cat === action.category);
+      if ((action.category !== '' || action.textFilter !== '') && initialState.raw) {
+        // Create separate filtered arrays for category and text filters.
+        let filteredByCategory = initialState.raw;
+        let filteredByText = initialState.raw;
+
+        if (action.category !== '') {
+          filteredByCategory = initialState.raw.filter(item => item.cat === action.category);
+        }
+
+        if (action.textFilter !== '') {
+          filteredByText = initialState.raw.filter(item =>
+            item.dsc?.toLowerCase()?.includes(action.textFilter?.toLowerCase())
+          );
+        }
+
+        // Merge the two filtered arrays (keeping items that satisfy both filters).
+        const filtered = filteredByCategory.filter(item =>
+          filteredByText.includes(item)
+        );
         let groupedData = {};
         let monthsTotals = {};
         let totalSpent = 0;

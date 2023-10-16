@@ -140,8 +140,9 @@ body {
   }
   .filters {
     text-align: center !important;
+    flex-direction: column;
   }
-  .filters select, .user-currency select {
+  .filters select, .user-currency select, .filters input, .filters button {
     width: 100%;
   }
 }
@@ -305,12 +306,25 @@ button:hover {
   text-decoration: none;
 }
 .filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  row-gap: 10px;
   text-align: left;
   padding: 0 25px;
   margin-top: 30px;
 }
 .filters select, .user-currency select, .user-theme select {
   height: 40px;
+  border: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-align: center;
+  padding: 10px;
+  border-radius: 20px;
+  min-width: 265px;
+}
+.filters input[type="text"] {
   border: none;
   -webkit-appearance: none;
   -moz-appearance: none;
