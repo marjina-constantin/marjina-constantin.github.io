@@ -9,7 +9,6 @@ export default function Filters() {
     category: data.category ?? '',
     textFilter: '',
   };
-  console.log(9, data)
   const [state, setState] = useState(defaultState);
 
   const handleCategoryChange = (event) => {
@@ -34,7 +33,7 @@ export default function Filters() {
 
   useEffect(() => {
     dataDispatch({ type: 'FILTER_DATA', category: state.category, textFilter: state.textFilter });
-  }, [state])
+  }, [state]);
 
   return (
     <div className="filters">
