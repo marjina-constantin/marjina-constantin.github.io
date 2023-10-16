@@ -144,6 +144,7 @@ export const DataReducer = (initialState, action) => {
           ...initialState,
           filtered: newState,
           category: action.category,
+          textFilter: action.textFilter,
           filtered_raw: filtered
         };
       }
@@ -151,6 +152,7 @@ export const DataReducer = (initialState, action) => {
         ...initialState,
         filtered: null,
         category: '',
+        textFilter: '',
         filtered_raw: null
       };
 

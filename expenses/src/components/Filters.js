@@ -51,7 +51,7 @@ export default function Filters() {
     <div className="filters">
       <input
         type="text"
-        value={state.textFilter}
+        value={data.textFilter}
         name="textFilter"
         onChange={handleTextFilterChange}
         placeholder="Filter by text"
