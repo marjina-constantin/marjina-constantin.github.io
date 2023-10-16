@@ -3,11 +3,10 @@ import {categories} from "../utils/constants";
 import {useData} from "../context";
 
 export default function Filters() {
-
   const { data, dataDispatch } = useData();
 
   const defaultState = {
-    category: '',
+    category: data.category,
     textFilter: '',
   };
   const [state, setState] = useState(defaultState);
