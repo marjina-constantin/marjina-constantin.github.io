@@ -6,9 +6,10 @@ export default function Filters() {
   const { data, dataDispatch } = useData();
 
   const defaultState = {
-    category: data.category,
+    category: data.category ?? '',
     textFilter: '',
   };
+  console.log(9, data)
   const [state, setState] = useState(defaultState);
 
   const handleCategoryChange = (event) => {
