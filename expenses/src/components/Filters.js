@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {categories} from "../utils/constants";
 import {useData} from "../context";
 
@@ -10,6 +10,8 @@ export default function Filters() {
     textFilter: '',
   };
   const [state, setState] = useState(defaultState);
+
+  const prevFilterState = useRef(state);
 
   const handleCategoryChange = (event) => {
     const category = event.target.value;
@@ -32,7 +34,15 @@ export default function Filters() {
   };
 
   useEffect(() => {
-    dataDispatch({ type: 'FILTER_DATA', category: state.category, textFilter: state.textFilter });
+    if (prevFilterState.current !== state) {
+      // Run the effect only when filterState changes
+      dataDispatch({
+        type: "FILTER_DATA",
+        category: state.category,
+        textFilter: state.textFilter,
+      });
+      prevFilterState.current = state;
+    }
   }, [state]);
 
   return (
