@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from "react";
 import {categories} from "../utils/constants";
 import {useData} from "../context";
+import {FaSearch} from "react-icons/fa";
 
 export default function Filters() {
   const { data, dataDispatch } = useData();
@@ -9,6 +10,7 @@ export default function Filters() {
     category: data.category ?? '',
     textFilter: data.textFilter ?? '',
   });
+  const [showTextFilter, setShowTextFilter] = useState(false);
 
   const prevFilterState = useRef(state);
 
@@ -33,6 +35,7 @@ export default function Filters() {
       category: '',
       textFilter: '',
     });
+    setShowTextFilter(false);
   };
 
   useEffect(() => {
@@ -49,13 +52,14 @@ export default function Filters() {
 
   return (
     <div className="filters">
-      <input
+      <FaSearch onClick={() => {setShowTextFilter(true)}}/>
+      {showTextFilter && (<input
         type="text"
         value={data.textFilter}
         name="textFilter"
         onChange={handleTextFilterChange}
         placeholder="Filter by text"
-      />
+      />)}
       <select value={data.category} name="category" onChange={handleCategoryChange}>
         {categories.map((category, id) => (
           <option key={id} value={category.value}>{category.label}</option>
