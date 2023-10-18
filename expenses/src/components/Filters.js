@@ -52,7 +52,7 @@ export default function Filters() {
 
   return (
     <div className="filters">
-      <FaSearch onClick={() => {setShowTextFilter(true)}}/>
+      {!showTextFilter && <FaSearch onClick={() => {setShowTextFilter(true)}}/>}
       {showTextFilter && (<input
         type="text"
         value={data.textFilter}
