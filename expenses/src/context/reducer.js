@@ -91,9 +91,9 @@ export const DataReducer = (initialState, action) => {
 
     case "FILTER_DATA":
       if ((action.category !== '' || action.textFilter !== '') && initialState.raw) {
-        let filtered = initialState.raw;
+        let filtered = initialState.raw?.filter(item => item.type === 'transaction');
         if (action.category !== '') {
-          filtered = initialState.raw.filter(item => item.cat === action.category);
+          filtered = filtered.filter(item => item.cat === action.category);
         }
         if (action.textFilter !== '') {
           filtered = filtered.filter(item =>
