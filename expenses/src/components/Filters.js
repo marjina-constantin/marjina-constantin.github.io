@@ -61,7 +61,7 @@ export default function Filters() {
           <option key={id} value={category.value}>{category.label}</option>
         ))}
       </select>
-      <button onClick={handleClearFilters} className="btn-outline">Clear Filters</button>
+      {(state.textFilter || state.category) && (<button onClick={handleClearFilters} className="btn-outline">Clear Filters</button>)}
     </div>
   );
 }
