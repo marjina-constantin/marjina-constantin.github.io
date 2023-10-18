@@ -308,7 +308,8 @@ button:hover {
 .filters {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-evenly;
+  align-items: center;
+  justify-content: space-between;
   row-gap: 10px;
   text-align: left;
   padding: 0 25px;
