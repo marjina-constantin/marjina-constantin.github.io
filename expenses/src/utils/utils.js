@@ -79,7 +79,7 @@ export const deleteNode = (nid, token, callback) => {
     });
 }
 
-export const fetchData = (token, dataDispatch, dispatch, category = null) => {
+export const fetchData = (token, dataDispatch, dispatch, category = null, textFilter = '') => {
   const fetchOptions = {
     method: 'GET',
     headers: new Headers({
@@ -173,8 +173,8 @@ export const fetchData = (token, dataDispatch, dispatch, category = null) => {
       totalPerYear,
       totalSpent,
     });
-    if (category) {
-      dataDispatch({ type: 'FILTER_DATA', category: category });
+    if (category || textFilter) {
+      dataDispatch({ type: 'FILTER_DATA', category: category, textFilter });
     }
   });
 }
