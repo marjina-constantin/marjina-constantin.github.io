@@ -119,6 +119,9 @@ body {
   .navbar ul li:first-child:nth-last-child(5) ~ li {
     width: 20%;
   }
+  .expenses-table td {
+    min-width: 100px;
+  }
 }
 .navbar ul li a {
   color: #607D8B;
@@ -144,6 +147,40 @@ body {
   }
   .filters select, .user-currency select, .filters input, .filters button {
     width: 100%;
+  }
+  .desktop-only {
+    display: none;
+  }
+  th.sortable {
+    min-width: 75px;
+  }
+  .action {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    box-shadow: inset 2px 5px 15px -5px rgba(0, 0, 0, 0.5), inset 2px -5px 15px -5px rgba(0, 0, 0, 0.5);
+    transition: all .15s ease-in-out;
+
+    &.delete {
+      justify-content: left;
+      background: indianred;
+    }
+
+    &.edit {
+      justify-content: right;
+      background: #a1c4fd;
+    }
+
+    svg {
+      padding: 0 20px;
+      transition: all .2s ease-in-out;
+
+      body.action-active & {
+        fill: var(--bg-color);
+      }
+    }
   }
 }
 
@@ -206,18 +243,19 @@ input[type=submit] {
 .table-wrapper {
   overflow-x: auto;
   margin-top: 30px;
-  padding: 0 25px;
+  padding: 0 15px;
 }
 .expenses-table {
   width: 100%;
   text-align: left;
+  margin-bottom: 20px;
 }
-.expenses-table thead {
-  box-shadow: 0 19px 38px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
+.expenses-table thead tr {
+  //box-shadow: 0 19px 38px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
   background-color: var(--secondary-color);
 }
 .expenses-table th {
-  padding: 0 8px;
+  padding: 0 5px;
   position: relative;
 }
 .expenses-table th.sortable:before,
@@ -243,11 +281,11 @@ input[type=submit] {
   border: none;
 }
 .expenses-table td {
-  min-width: 100px;
   padding: 0 8px;
 }
 .expenses-table tr {
   height: 50px;
+  background-color: var(--bg-color);
 }
 .expenses-table tr:nth-of-type(even) {
   background-color: var(--secondary-color);

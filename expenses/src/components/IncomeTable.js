@@ -1,7 +1,20 @@
-import React from "react";
+import React, {useRef} from "react";
+import useSwipeActions from "../hooks/useSwipeActions";
+import {FaPen, FaTrash} from "react-icons/fa";
 
 export default function IncomeTable({items, handleEdit, setShowDeleteModal}) {
   const total = items && items.length ? items.reduce((accumulator, curValue) => (parseFloat(accumulator) + (parseFloat(curValue['sum']) || 0)).toFixed(2), 0) : 0;
+
+  const tableRef = useRef(null);
+  const {
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    deleteVisible,
+    editVisible,
+    extraRowStyle,
+  } = useSwipeActions();
+
   return (
     <div className="table-wrapper">
       <div className="month-badge">Incomes: {total}</div>
@@ -11,41 +24,34 @@ export default function IncomeTable({items, handleEdit, setShowDeleteModal}) {
           <th>Date</th>
           <th>Amount</th>
           <th>Description</th>
-          <th></th>
-          <th></th>
+          <th className="desktop-only"></th>
+          <th className="desktop-only"></th>
         </tr>
         </thead>
-        <tbody>
+        <tbody ref={tableRef}>
         {items.map((element) => (
-          <tr key={element.id}>
+          <tr
+            key={element.id}
+            data-id={element.id}
+            onTouchStart={(e) => handleTouchStart(e, element.id, tableRef)}
+            onTouchMove={(e) => handleTouchMove(e, tableRef)}
+            onTouchEnd={() => handleTouchEnd(tableRef, element.id, handleEdit, setShowDeleteModal)}
+          >
             <td>{element.dt}</td>
             <td>{element.sum}</td>
             <td>{element.dsc}</td>
-            <td>
-              <button
-                data-values={JSON.stringify({
-                  nid: element.id,
-                  field_date: element.dt,
-                  field_amount: element.sum,
-                  field_description: element.dsc,
-                })}
-                onClick={handleEdit}
-                className="btn-outline">
-                Edit
-              </button>
+            <td className="desktop-only">
+              <button onClick={() => handleEdit(element.id)} className="btn-outline">Edit</button>
             </td>
-            <td>
-              <button
-                data-nid={element.id}
-                onClick={(e) => setShowDeleteModal(e.currentTarget.getAttribute("data-nid"))}
-                className="btn-outline">
-                Delete
-              </button>
+            <td className="desktop-only">
+              <button onClick={(e) => setShowDeleteModal(element.id)} className="btn-outline">Delete</button>
             </td>
           </tr>
         ))}
         </tbody>
       </table>
+      {deleteVisible && <div style={{ ...extraRowStyle }}><div className="action delete"><FaTrash /></div></div>}
+      {editVisible && <div style={{ ...extraRowStyle }}><div className="action edit"><FaPen /></div></div>}
     </div>
   )
 }

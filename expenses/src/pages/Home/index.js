@@ -25,11 +25,19 @@ const Home = () => {
     }
   }, [data, dataDispatch, token, noData, dispatch]);
 
+  const items = data.filtered || data;
+
   const [focusedItem, setFocusedItem] = useState({})
 
-  const handleEdit = (e) => {
-    const values = JSON.parse(e.currentTarget.getAttribute("data-values"));
-    setFocusedItem(values);
+  const handleEdit = (id) => {
+    const item = items.groupedData[currentMonth].find((item) => item.id === id);
+    setFocusedItem({
+      nid: item.id,
+      field_date: item.dt,
+      field_amount: item.sum,
+      field_category: item.cat,
+      field_description: item.dsc
+    });
     setShowEditModal(true);
   }
 
@@ -48,8 +56,6 @@ const Home = () => {
       fetchData(token, dataDispatch, dispatch, data.category, data.textFilter);
     });
   };
-
-  const items = data.filtered || data;
 
   const months = items.groupedData ? Object.keys(items.groupedData) : [];
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
