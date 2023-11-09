@@ -26,9 +26,15 @@ const Income = () => {
 
   const [focusedItem, setFocusedItem] = useState({})
 
-  const handleEdit = (e) => {
-    const values = JSON.parse(e.currentTarget.getAttribute("data-values"));
-    setFocusedItem(values);
+  const handleEdit = (id) => {
+    const item = data.incomeData.find((item) => item.id === id);
+    setFocusedItem({
+      nid: item.id,
+      field_date: item.dt,
+      field_amount: item.sum,
+      field_category: item.cat,
+      field_description: item.dsc
+    });
     setShowEditModal(true);
   }
 
