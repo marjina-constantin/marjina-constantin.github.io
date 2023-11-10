@@ -23,7 +23,10 @@ export default function AllTimeSpendings() {
     },
     plotOptions: {
       pie: {
-        borderWidth: 0
+        borderWidth: 0,
+        dataLabels: {
+          format: '{point.name}: ({point.percentage:.1f}%)'
+        }
       },
 
     },
