@@ -54,7 +54,7 @@ const useSwipeActions = () => {
       const absDiff = Math.abs(e.touches[0].clientX - startX);
       const diffPercentage = (absDiff / trWidth) * 100;
       const body = document.querySelector('body');
-      if (diffPercentage > 33) {
+      if (diffPercentage > 40) {
         body.classList.add('action-active');
       }
       else {
@@ -79,7 +79,7 @@ const useSwipeActions = () => {
       const diff = Math.abs(endX - startX);
       const trWidth = trElement.getBoundingClientRect().width;
       const diffPercentage = (diff / trWidth) * 100;
-      if (diffPercentage > 33) {
+      if (diffPercentage > 40) {
         if (endX > startX) {
           // Right swipe, trigger delete action.
           setShowDeleteModal(id);
