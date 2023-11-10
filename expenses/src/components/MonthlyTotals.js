@@ -27,7 +27,8 @@ export default function MonthlyTotals() {
       text: 'Monthly Totals'
     },
     xAxis: {
-      categories: items.totals ? Object.keys(items.totals).reverse() : []
+      categories: items.totals ? Object.keys(items.totals).reverse() : [],
+      crosshair: true,
     },
     yAxis: {
       min: 0,

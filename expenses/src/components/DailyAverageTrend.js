@@ -82,6 +82,7 @@ export default function DailyAverageTrend() {
     },
     xAxis: {
       type: 'datetime',
+      crosshair: true,
     },
     tooltip: {
       xDateFormat: '%Y-%m-%d',
