@@ -11,7 +11,6 @@ import DailyAverage from "../../components/DailyAverage";
 import MonthlyAverage from "../../components/MonthlyAverage";
 import LastTwoMonthsAverage from "../../components/LastTwoMonthsAverage";
 import Boost from "highcharts/modules/boost";
-import SavingsHistory from "../../components/SavingsHistory";
 
 Boost(Highcharts);
 DarkUnica(Highcharts);
@@ -62,6 +61,7 @@ Highcharts.setOptions({
 const Charts = () => {
   const DailyAverageTrend = React.lazy(() => import("../../components/DailyAverageTrend"));
   const YearAverageTrend = React.lazy(() => import("../../components/YearAverageTrend"));
+  const SavingsHistory = React.lazy(() => import("../../components/SavingsHistory"));
 
   const { data, dataDispatch } = useData();
   const noData = data.groupedData === null;
