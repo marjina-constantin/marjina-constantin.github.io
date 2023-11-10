@@ -21,14 +21,13 @@ export default function AllTimeSpendings() {
     title: {
       text: 'All time spendings'
     },
+    tooltip: {
+      pointFormat: `{point.y} {series.name} ({point.percentage:.1f})%`
+    },
     plotOptions: {
       pie: {
         borderWidth: 0,
-        dataLabels: {
-          format: '{point.name}: ({point.percentage:.1f}%)'
-        }
       },
-
     },
     series: [{
       name: currency,
@@ -50,5 +49,5 @@ export default function AllTimeSpendings() {
         Total spent: {data.totalSpent} {currency} in {monthsPassed} months
       </div>
     </>
-  )
+  );
 }
