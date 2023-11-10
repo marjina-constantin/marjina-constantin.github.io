@@ -5,7 +5,7 @@ import {useAuthDispatch, useAuthState, useData} from "../../context";
 import {fetchData} from "../../utils/utils";
 import Filters from "../../components/Filters";
 import MonthlyTotals from "../../components/MonthlyTotals";
-import LastMonth from "../../components/LastMonth";
+// import LastMonth from "../../components/LastMonth";
 import AllTimeSpendings from "../../components/AllTimeSpendings";
 import DailyAverage from "../../components/DailyAverage";
 import MonthlyAverage from "../../components/MonthlyAverage";
@@ -87,8 +87,14 @@ const Charts = () => {
             <MonthlyTotals />
           </div>
 
+          {/*<div className="charts-section">*/}
+          {/*  <LastMonth />*/}
+          {/*</div>*/}
+
           <div className="charts-section">
-            <LastMonth />
+            <Suspense fallback=''>
+              <YearAverageTrend />
+            </Suspense>
           </div>
 
           <div className="charts-section">
@@ -112,12 +118,6 @@ const Charts = () => {
           <div className="charts-section">
             <Suspense fallback=''>
               <DailyAverageTrend />
-            </Suspense>
-          </div>
-
-          <div className="charts-section">
-            <Suspense fallback=''>
-              <YearAverageTrend />
             </Suspense>
           </div>
 
