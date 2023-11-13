@@ -20,11 +20,6 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
     ? `${month}: Income: ${income} - Expenses: ${total} = Profit: ${profit}`
     : `${month}: Expenses: ${total}`;
 
-  const handleEdit1 = (id) => {
-    const item = sortedItems.find((item) => item.id === id);
-    console.log('Edit triggered for item: ', item);
-  };
-
   const tableRef = useRef(null);
   const {
     handleTouchStart,
