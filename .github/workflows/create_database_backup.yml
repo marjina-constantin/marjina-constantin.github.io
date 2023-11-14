@@ -1,0 +1,21 @@
+name: Create database backup.
+
+on:
+  schedule:
+    - cron: '0 0 */2 * *' # Run every two days
+
+jobs:
+  build:
+    name: Create database backup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install terminus
+        run: |
+          mkdir -p ~/terminus && cd ~/terminus
+          curl -L https://github.com/pantheon-systems/terminus/releases/download/3.2.2/terminus.phar --output terminus
+          chmod +x terminus
+          sudo ln -s ~/terminus/terminus /usr/local/bin/terminus
+      - name: Login to terminus
+        run: terminus auth:login --machine-token=${{ secrets.TERMINUS_TOKEN }}
+      - name: Create database backup
+        run: terminus backup:create expenses-api.dev --element=db --keep-for=100
