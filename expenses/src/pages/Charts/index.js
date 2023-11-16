@@ -11,6 +11,7 @@ import DailyAverage from "../../components/DailyAverage";
 import MonthlyAverage from "../../components/MonthlyAverage";
 import LastTwoMonthsAverage from "../../components/LastTwoMonthsAverage";
 import Boost from "highcharts/modules/boost";
+import ExpenseCalendar from "../../components/ExpenseCalendar";
 
 Boost(Highcharts);
 DarkUnica(Highcharts);
@@ -123,6 +124,10 @@ const Charts = () => {
 
           <div className="charts-section">
             <LastTwoMonthsAverage />
+          </div>
+
+          <div>
+            <ExpenseCalendar />
           </div>
 
         </div>
