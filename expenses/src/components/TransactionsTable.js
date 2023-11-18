@@ -1,4 +1,4 @@
-import React, {useRef, useState} from "react";
+import React, {useRef} from "react";
 import { useSortableData } from '../utils/useSortableData';
 import { categories as categoriesArray } from '../utils/constants';
 import useSwipeActions from "../hooks/useSwipeActions";
@@ -11,7 +11,6 @@ const categories = categoriesArray.reduce((acc, item) => {
 
 const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal, incomeTotals }) => {
   const { sortedItems, requestSort, sortConfig } = useSortableData(items);
-  const [totalClone] = useState(total);
 
   const getClassNamesFor = (name) => (sortConfig && sortConfig.key === name) ? sortConfig.direction : '';
 
