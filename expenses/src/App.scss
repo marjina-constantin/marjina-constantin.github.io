@@ -659,6 +659,11 @@ li.selected-suggestion {
     position: relative;
     background: var(--bg-color);
 
+    h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
     body:has(.has-gradient-accent) & {
       border: none;
 
