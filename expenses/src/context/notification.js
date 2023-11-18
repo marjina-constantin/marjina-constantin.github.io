@@ -10,6 +10,7 @@ export const useNotification = () => useContext(NotificationContext);
 export const NotificationProvider = ({children}) => {
   const [notification, setNotification] = useState(null);
   const { theme } = useAuthState();
+  const gradientClass = theme === 'dj-alik' ? 'has-gradient-accent' : '';
 
   const showNotification = (message, type) => {
     setNotification({message, type});
@@ -26,7 +27,7 @@ export const NotificationProvider = ({children}) => {
   };
 
   return (
-    <div className={theme}>
+    <div className={`${theme} ${gradientClass}`}>
       <NotificationContext.Provider value={showNotification}>
         {children}
         {notification && (

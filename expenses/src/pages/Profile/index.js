@@ -69,6 +69,8 @@ const Profile = () => {
           <option key="saffron" value="saffron">Saffron</option>
           <option key="inchworm" value="inchworm">Inchworm</option>
           <option key="cadetblue" value="cadetblue">Cadetblue</option>
+          <option key="dj-alik" value="dj-alik">DJ Alik</option>
+          <option key="pearl-aqua" value="pearl-aqua">Pearl Aqua</option>
         </select>
         <button className="button logout" onClick={handleLogout}>Logout</button>
       </div>
