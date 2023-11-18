@@ -82,7 +82,7 @@ const Home = () => {
           fetchData(token, dataDispatch, dispatch, data.category, data.textFilter);
         }} />
       </Modal>
-      <h2>Expenses</h2>
+      <h2>{currentMonth || 'Expenses'}</h2>
       <Filters />
       {loading ? <div className="lds-ripple"><div></div><div></div></div> : noData ? '' :
         <div>

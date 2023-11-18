@@ -15,7 +15,7 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
   const getClassNamesFor = (name) => (sortConfig && sortConfig.key === name) ? sortConfig.direction : '';
 
   const income = incomeTotals ? incomeTotals[month] : -1;
-  const profit = (income - total).toFixed(2);
+  const profit = parseFloat((income - total).toFixed(2));
   const message = income > 0
     ? `${month}: Income: ${income} - Expenses: ${total} = Profit: ${profit}`
     : `${month}: Expenses: ${total}`;
@@ -31,45 +31,69 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
   } = useSwipeActions();
 
   return (
-    <div className="table-wrapper">
-      <div className="month-badge">{message}</div>
-      <table className="expenses-table" cellSpacing="0" cellPadding="0">
-        <thead>
-        <tr>
-          <th>Date</th>
-          <th onClick={() => requestSort('sum')} className={`sortable ${getClassNamesFor('sum')}`}>Amount</th>
-          <th>Category</th>
-          <th>Description</th>
-          <th className="desktop-only"></th>
-          <th className="desktop-only"></th>
-        </tr>
-        </thead>
-        <tbody ref={tableRef}>
-        {sortedItems.map((element) => (
-          <tr
-            key={element.id}
-            data-id={element.id}
-            onTouchStart={(e) => handleTouchStart(e, element.id, tableRef)}
-            onTouchMove={(e) => handleTouchMove(e, tableRef)}
-            onTouchEnd={() => handleTouchEnd(tableRef, element.id, handleEdit, setShowDeleteModal)}
-          >
-            <td>{element.dt.split('-')[2]}</td>
-            <td>{element.sum}</td>
-            <td>{categories[element.cat]}</td>
-            <td>{element.dsc}</td>
-            <td className="desktop-only">
-              <button onClick={() => handleEdit(element.id)} className="btn-outline">Edit</button>
-            </td>
-            <td className="desktop-only">
-              <button onClick={(e) => setShowDeleteModal(element.id)} className="btn-outline">Delete</button>
-            </td>
+    <>
+      <div className="month-stats">
+        <div>
+          <h3>Spent</h3>
+          <div className="stat-value">{total}</div>
+        </div>
+        {income > 0 &&
+          <div>
+            <h3>Income</h3>
+            <div className="stat-value">{income}</div>
+          </div>
+        }
+        {income > 0 &&
+          <div>
+            <h3>Profit</h3>
+            <div className="stat-value">{profit}</div>
+          </div>
+        }
+        {/*<div>*/}
+        {/*  <h3>Budget</h3>*/}
+        {/*  <div className="stat-value">100</div>*/}
+        {/*</div>*/}
+      </div>
+      <div className="table-wrapper">
+        {/*<div className="month-badge">{message}</div>*/}
+        <table className="expenses-table" cellSpacing="0" cellPadding="0">
+          <thead>
+          <tr>
+            <th>Date</th>
+            <th onClick={() => requestSort('sum')} className={`sortable ${getClassNamesFor('sum')}`}>Amount</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th className="desktop-only"></th>
+            <th className="desktop-only"></th>
           </tr>
-        ))}
-        </tbody>
-      </table>
-      {deleteVisible && <div style={{ ...extraRowStyle }}><div className="action delete"><FaTrash /></div></div>}
-      {editVisible && <div style={{ ...extraRowStyle }}><div className="action edit"><FaPen /></div></div>}
-    </div>
+          </thead>
+          <tbody ref={tableRef}>
+          {sortedItems.map((element) => (
+            <tr
+              key={element.id}
+              data-id={element.id}
+              onTouchStart={(e) => handleTouchStart(e, element.id, tableRef)}
+              onTouchMove={(e) => handleTouchMove(e, tableRef)}
+              onTouchEnd={(e) => handleTouchEnd(e, tableRef, element.id, handleEdit, setShowDeleteModal)}
+            >
+              <td>{element.dt.split('-')[2]}</td>
+              <td>{element.sum}</td>
+              <td>{categories[element.cat]}</td>
+              <td>{element.dsc}</td>
+              <td className="desktop-only">
+                <button onClick={() => handleEdit(element.id)} className="btn-outline">Edit</button>
+              </td>
+              <td className="desktop-only">
+                <button onClick={(e) => setShowDeleteModal(element.id)} className="btn-outline">Delete</button>
+              </td>
+            </tr>
+          ))}
+          </tbody>
+        </table>
+        {deleteVisible && <div style={{ ...extraRowStyle }}><div className="action delete"><FaTrash /></div></div>}
+        {editVisible && <div style={{ ...extraRowStyle }}><div className="action edit"><FaPen /></div></div>}
+      </div>
+    </>
   );
 };
 

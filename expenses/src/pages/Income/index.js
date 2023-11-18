@@ -90,11 +90,14 @@ const Income = () => {
 
         </div>
       }
-      <div className="charts-section">
-        <Suspense fallback=''>
-          <YearIncomeAverageTrend />
-        </Suspense>
-      </div>
+      {data.incomeData?.length ?
+        <div className="charts-section">
+          <Suspense fallback=''>
+            <YearIncomeAverageTrend />
+          </Suspense>
+        </div>
+        : ''
+      }
     </div>
   );
 };

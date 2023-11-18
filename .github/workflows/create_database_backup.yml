@@ -18,4 +18,4 @@ jobs:
       - name: Login to terminus
         run: terminus auth:login --machine-token=${{ secrets.TERMINUS_TOKEN }}
       - name: Create database backup
-        run: terminus backup:create expenses-api.dev --element=db --keep-for=100
+        run: terminus backup:create expenses-api.dev --element=db --keep-for=60

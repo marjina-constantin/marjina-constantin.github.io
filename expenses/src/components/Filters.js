@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, {useState, useEffect, useRef, useLayoutEffect} from "react";
 import {categories} from "../utils/constants";
 import {useData} from "../context";
 import {FaSearch} from "react-icons/fa";
@@ -11,6 +11,7 @@ export default function Filters() {
     textFilter: data.textFilter ?? '',
   });
   const [showTextFilter, setShowTextFilter] = useState(false);
+  const textInputRef = useRef(null);
 
   const prevFilterState = useRef(state);
 
@@ -50,10 +51,17 @@ export default function Filters() {
     }
   }, [state]);
 
+  useLayoutEffect(() => {
+    if (showTextFilter && textInputRef.current) {
+      textInputRef.current.focus();
+    }
+  }, [showTextFilter]);
+
   return (
     <div className="filters">
       {!showTextFilter && <FaSearch onClick={() => {setShowTextFilter(true)}}/>}
       {showTextFilter && (<input
+        ref={textInputRef}
         type="text"
         value={data.textFilter}
         name="textFilter"

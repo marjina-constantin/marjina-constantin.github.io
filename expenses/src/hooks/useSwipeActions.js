@@ -3,7 +3,6 @@ import { useState } from 'react';
 const useSwipeActions = () => {
   const [startX, setStartX] = useState(null);
   const [startY, setStartY] = useState(null);
-  const [endX, setEndX] = useState(null);
   const [swipedItemId, setSwipedItemId] = useState(null);
   const [deleteVisible, setDeleteVisible] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
@@ -39,9 +38,6 @@ const useSwipeActions = () => {
       setIsSwiping(Math.abs(distanceX) > Math.abs(distanceY));
     }
     else if (isSwiping) {
-      // Set the current touch position.
-      setEndX(e.touches[0].clientX);
-
       // Prevent vertical scrolling.
       document.body.style.overflow = 'hidden';
 
@@ -68,14 +64,15 @@ const useSwipeActions = () => {
     }
   };
 
-  const handleTouchEnd = (tableRef, id, handleEdit, setShowDeleteModal) => {
+  const handleTouchEnd = (e, tableRef, id, handleEdit, setShowDeleteModal) => {
     // Re-enable scrolling on the Y-axis.
     document.body.style.overflow = '';
 
+    const endX = e.changedTouches[0].clientX;
     const trElement = tableRef.current.querySelector(`[data-id="${id}"]`);
 
     // Calculate touch end difference and trigger actions based on swipe.
-    if (isSwiping && startX && endX) {
+    if (isSwiping) {
       const diff = Math.abs(endX - startX);
       const trWidth = trElement.getBoundingClientRect().width;
       const diffPercentage = (diff / trWidth) * 100;
@@ -95,7 +92,6 @@ const useSwipeActions = () => {
     trElement.style.transform = 'translateX(0)';
 
     setStartX(null);
-    setEndX(null);
     setSwipedItemId(null);
     setDeleteVisible(false);
     setEditVisible(false);

@@ -55,14 +55,12 @@ const Profile = () => {
     <div className="user-page">
       <div className={blink ? 'user-avatar saved' : 'user-avatar'}><FaUserCircle /></div>
       <h3>{userDetails.current_user.name}</h3>
-      <div className="user-currency">
+      <div className="user-settings">
         <select value={currency} className="currency" name="currency" onChange={handleChange}>
           {sortedCurrencies.map(([id, currency]) => (
             <option key={id} value={id}>{currency}</option>
           ))}
         </select>
-      </div>
-      <div className="user-theme">
         <select value={theme} className="theme" name="theme" onChange={handleThemeChange}>
           <option key="bondi-blue" value="bondi-blue">Bondi blue</option>
           <option key="maximum-green-yellow" value="maximum-green-yellow">Maximum green yellow</option>
@@ -70,9 +68,10 @@ const Profile = () => {
           <option key="carrot-orange" value="carrot-orange">Carrot Orange</option>
           <option key="saffron" value="saffron">Saffron</option>
           <option key="inchworm" value="inchworm">Inchworm</option>
+          <option key="cadetblue" value="cadetblue">Cadetblue</option>
         </select>
+        <button className="button logout" onClick={handleLogout}>Logout</button>
       </div>
-      <button className="button logout" onClick={handleLogout}>Logout</button>
     </div>
   );
 };

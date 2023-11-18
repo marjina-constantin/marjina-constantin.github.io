@@ -146,7 +146,7 @@ export const fetchData = (token, dataDispatch, dispatch, category = null, textFi
           totalIncomePerYear[year] = (parseFloat(totalIncomePerYear[year]) + parseFloat(item.sum)).toFixed(2);
           totalIncomePerYearAndMonth[year][month] += parseFloat(item.sum);
           incomeData.push(item)
-          incomeTotals[month] = (parseFloat(incomeTotals[month]) + parseFloat(item.sum)).toFixed(2);
+          incomeTotals[month] = parseFloat((parseFloat(incomeTotals[month]) + parseFloat(item.sum)).toFixed(2));
         } else {
           groupedData[month].push(item);
           monthsTotals[month] = parseFloat((parseFloat(monthsTotals[month]) + parseFloat(item.sum)).toFixed(2));

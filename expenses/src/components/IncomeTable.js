@@ -37,7 +37,7 @@ export default function IncomeTable({items, handleEdit, setShowDeleteModal}) {
             data-id={element.id}
             onTouchStart={(e) => handleTouchStart(e, element.id, tableRef)}
             onTouchMove={(e) => handleTouchMove(e, tableRef)}
-            onTouchEnd={() => handleTouchEnd(tableRef, element.id, handleEdit, setShowDeleteModal)}
+            onTouchEnd={(e) => handleTouchEnd(e, tableRef, element.id, handleEdit, setShowDeleteModal)}
           >
             <td>{element.dt}</td>
             <td>{element.sum}</td>

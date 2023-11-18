@@ -2,8 +2,8 @@ name: Ping the site to keep the server running.
 
 on:
   schedule:
-    # At every 60th minute.
-    - cron:  '*/60 * * * *'
+    # At every 45th minute.
+    - cron:  '*/45 * * * *'
 
 jobs:
   build:
