@@ -185,12 +185,12 @@ body {
 
     &.delete {
       justify-content: left;
-      background: indianred;
+      background: linear-gradient(90deg, rgba(255,107,250,1) 0%,  rgba(108,108,244,1) 100%);
     }
 
     &.edit {
       justify-content: right;
-      background: #a1c4fd;
+      background: linear-gradient(90deg, rgba(108,108,244,1) 0%,  #7bd0c9 100%);
     }
 
     svg {
