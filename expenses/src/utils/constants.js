@@ -227,6 +227,9 @@ export const suggestions = {
   ],
   '13': [
     'nunta', 'cumatrie'
+  ],
+  '14': [
+    'vin', 'bere', 'whiskey', 'cognac', 'gin', 'cocktails',
   ]
 };
 
