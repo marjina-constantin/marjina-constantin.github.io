@@ -19,7 +19,7 @@ const bgColors = {
   'carrot-orange': '#102433',
   'inchworm': '#201f1e',
 }
-const theme = localStorage.getItem('theme');
+const theme = localStorage.getItem('theme') || 'blue-pink-gradient';
 
 Highcharts.theme = {
   chart: {
