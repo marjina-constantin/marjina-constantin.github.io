@@ -4,13 +4,14 @@ import {useHistory} from 'react-router-dom';
 import {currencies} from '../../utils/constants';
 import {FaUserCircle} from 'react-icons/fa';
 import {fetchRequest} from '../../utils/utils';
-import {notificationType} from '../../utils/constants';
+import {notificationType, themeList} from '../../utils/constants';
 
 const Profile = () => {
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
-  const { userDetails, token, currency, theme } = useAuthState();
+  let { userDetails, token, currency, theme } = useAuthState();
+  theme = themeList[theme] ? theme : 'blue-pink-gradient';
   const history = useHistory();
   const handleLogout = (e) => {
     e.preventDefault();
@@ -62,15 +63,9 @@ const Profile = () => {
           ))}
         </select>
         <select value={theme} className="theme" name="theme" onChange={handleThemeChange}>
-          <option key="bondi-blue" value="bondi-blue">Bondi blue</option>
-          <option key="maximum-green-yellow" value="maximum-green-yellow">Maximum green yellow</option>
-          <option key="indian-red" value="indian-red">Indian red</option>
-          <option key="carrot-orange" value="carrot-orange">Carrot Orange</option>
-          <option key="saffron" value="saffron">Saffron</option>
-          <option key="inchworm" value="inchworm">Inchworm</option>
-          <option key="cadetblue" value="cadetblue">Cadetblue</option>
-          <option key="dj-alik" value="dj-alik">DJ Alik</option>
-          <option key="pearl-aqua" value="pearl-aqua">Pearl Aqua</option>
+          {Object.entries(themeList).map(([id, name]) => (
+            <option key={id} value={id}>{name}</option>
+          ))}
         </select>
         <button className="button logout" onClick={handleLogout}>Logout</button>
       </div>

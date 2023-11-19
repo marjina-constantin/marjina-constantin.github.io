@@ -1,6 +1,6 @@
 import React, {createContext, useContext, useState} from 'react';
 import Notification from '../components/Notification';
-import {notificationType} from '../utils/constants';
+import {notificationType, themeList} from '../utils/constants';
 import {useAuthState} from "./context";
 
 const NotificationContext = createContext();
@@ -9,8 +9,9 @@ export const useNotification = () => useContext(NotificationContext);
 
 export const NotificationProvider = ({children}) => {
   const [notification, setNotification] = useState(null);
-  const { theme } = useAuthState();
-  const gradientClass = theme === 'dj-alik' ? 'has-gradient-accent' : '';
+  let { theme } = useAuthState();
+  theme = themeList[theme] ? theme : 'blue-pink-gradient';
+  const gradientClass = theme === 'blue-pink-gradient' ? 'has-gradient-accent' : '';
 
   const showNotification = (message, type) => {
     setNotification({message, type});

@@ -15,7 +15,7 @@ export const initialState = {
   errorMessage: null,
   userIsLoggedIn: !!user,
   currency: user?.current_user?.currency || 'MDL',
-  theme: theme || 'bondi-blue'
+  theme: theme || 'blue-pink-gradient'
 };
 
 export const initialData = {
