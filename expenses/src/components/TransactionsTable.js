@@ -35,19 +35,25 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
     <>
       <div className="month-stats">
         <div>
-          <h3>Spent</h3>
-          <div className="stat-value"><NumberDisplay number={total} /></div>
+          <div className="stats-container has-budget" style={{'--budget-progress': '100%'}}>
+            <h3>Spent</h3>
+            <div className="stat-value"><NumberDisplay number={total} /></div>
+          </div>
         </div>
         {income > 0 &&
           <div>
-            <h3>Income</h3>
-            <div className="stat-value"><NumberDisplay number={income} /></div>
+            <div className="stats-container">
+              <h3>Income</h3>
+              <div className="stat-value"><NumberDisplay number={income} /></div>
+            </div>
           </div>
         }
         {income > 0 &&
           <div>
-            <h3>Profit</h3>
-            <div className="stat-value"><NumberDisplay number={profit} /></div>
+            <div className="stats-container">
+              <h3>Profit</h3>
+              <div className="stat-value"><NumberDisplay number={profit} /></div>
+            </div>
           </div>
         }
         {/*<div>*/}
