@@ -3,6 +3,7 @@ import { useSortableData } from '../utils/useSortableData';
 import { categories as categoriesArray } from '../utils/constants';
 import useSwipeActions from "../hooks/useSwipeActions";
 import {FaTrash, FaPen} from "react-icons/fa";
+import NumberDisplay from "./NumberDisplay";
 
 const categories = categoriesArray.reduce((acc, item) => {
   acc[item.value] = item.label;
@@ -35,18 +36,18 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
       <div className="month-stats">
         <div>
           <h3>Spent</h3>
-          <div className="stat-value">{total}</div>
+          <div className="stat-value"><NumberDisplay number={total} /></div>
         </div>
         {income > 0 &&
           <div>
             <h3>Income</h3>
-            <div className="stat-value">{income}</div>
+            <div className="stat-value"><NumberDisplay number={income} /></div>
           </div>
         }
         {income > 0 &&
           <div>
             <h3>Profit</h3>
-            <div className="stat-value">{profit}</div>
+            <div className="stat-value"><NumberDisplay number={profit} /></div>
           </div>
         }
         {/*<div>*/}
