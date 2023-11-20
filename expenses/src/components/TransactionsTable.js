@@ -35,7 +35,7 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
       ?.filter(transaction => [1, 2, 3, 4, 5, 7, 8].includes(parseInt(transaction.cat)))
       ?.reduce((total, transaction) => total + parseFloat(transaction.sum), 0) || 0;
 
-    percentage = 100 - ((178 / parseInt(weeklyToSpent)) * 100);
+    percentage = 100 - ((totalSumForCategory / parseInt(weeklyToSpent)) * 100);
   }
 
   const getClassNamesFor = (name) => (sortConfig && sortConfig.key === name) ? sortConfig.direction : '';
