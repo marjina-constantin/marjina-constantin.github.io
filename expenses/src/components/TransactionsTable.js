@@ -78,13 +78,13 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
             </div>
           </div>
         }
-        {totalSumForCategory && percentage && weeklyToSpent && <div>
+        {(totalSumForCategory && percentage && weeklyToSpent) ? <div>
           <div className="stats-container has-budget" style={{'--budget-progress': `${percentage}%`}}>
-            <h3>Weekly spent</h3>
+            <h3>Week budget</h3>
             <div className="stat-value"><NumberDisplay number={totalSumForCategory} /></div>
             <div>of {weeklyToSpent}</div>
           </div>
-        </div>}
+        </div> : null}
       </div>
       <div className="table-wrapper">
         <table className="expenses-table" cellSpacing="0" cellPadding="0">
