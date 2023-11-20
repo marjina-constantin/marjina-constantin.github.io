@@ -16,6 +16,21 @@ export const categories = [
   {value: '14', label: 'Drinks'},
 ];
 
+export const monthNames = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December"
+];
+
 export const currencies = {
   "AED": "United Arab Emirates Dirham",
   "AFN": "Afghan Afghani",

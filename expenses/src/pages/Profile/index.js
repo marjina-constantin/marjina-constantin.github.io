@@ -11,6 +11,9 @@ const Profile = () => {
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
   let { userDetails, token, currency, theme } = useAuthState();
+  const [weeklyToSpent, setWeeklyToSpent] = useState(localStorage.getItem("weeklyToSpent")
+    ? JSON.parse(localStorage.getItem("weeklyToSpent"))
+    : 0);
   theme = themeList[theme] ? theme : 'blue-pink-gradient';
   const history = useHistory();
   const handleLogout = (e) => {
@@ -49,6 +52,17 @@ const Profile = () => {
     dispatch({ type: 'UPDATE_USER', payload: {theme: event.target.value} });
   };
 
+  const onBlur = (event) => {
+    event.preventDefault();
+    localStorage.setItem('weeklyToSpent', JSON.stringify(event.target.value));
+    dispatch({ type: 'UPDATE_USER', payload: {weeklyToSpent: event.target.value} });
+  };
+
+  const handleInputChange = (event) => {
+    event.preventDefault();
+    setWeeklyToSpent(event.target.value);
+  };
+
   const sortedCurrencies = Object.entries(currencies).sort((a,b) => { return a[1] < b[1] ? -1 : 1 });
   const [blink, setBlink] = useState(false);
 
@@ -67,6 +81,15 @@ const Profile = () => {
             <option key={id} value={id}>{name}</option>
           ))}
         </select>
+        <input
+          required
+          placeholder="Weekly to spent"
+          type="number"
+          name="weeklyToSpent"
+          value={weeklyToSpent}
+          onChange={handleInputChange}
+          onBlur={onBlur}
+        />
         <button className="button logout" onClick={handleLogout}>Logout</button>
       </div>
     </div>

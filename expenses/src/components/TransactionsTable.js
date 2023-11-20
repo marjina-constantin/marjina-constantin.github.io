@@ -1,9 +1,10 @@
 import React, {useRef} from "react";
 import { useSortableData } from '../utils/useSortableData';
-import { categories as categoriesArray } from '../utils/constants';
+import {categories as categoriesArray, monthNames} from '../utils/constants';
 import useSwipeActions from "../hooks/useSwipeActions";
 import {FaTrash, FaPen} from "react-icons/fa";
 import NumberDisplay from "./NumberDisplay";
+import {useData} from "../context";
 
 const categories = categoriesArray.reduce((acc, item) => {
   acc[item.value] = item.label;
@@ -13,13 +14,34 @@ const categories = categoriesArray.reduce((acc, item) => {
 const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal, incomeTotals }) => {
   const { sortedItems, requestSort, sortConfig } = useSortableData(items);
 
+  const { data } = useData();
+
+  // Get today's date
+  const today = new Date();
+  let totalSumForCategory;
+  let percentage;
+  const weeklyToSpent = localStorage.getItem("weeklyToSpent")
+    ? JSON.parse(localStorage.getItem("weeklyToSpent"))
+    : 0;
+
+  if (!data?.filtered && `${monthNames[today.getMonth()]} ${today.getFullYear()}` === month && weeklyToSpent) {
+    // Calculate the date of the last Monday
+    const lastMonday = new Date(today);
+    lastMonday.setDate(lastMonday.getDate() - ((today.getDay() + 6) % 7));
+    // Format lastMonday to match 'YYYY-MM-DD' format
+    const formattedLastMonday = lastMonday.toISOString().split('T')[0];
+
+    totalSumForCategory = data?.raw?.filter(transaction => transaction.dt >= formattedLastMonday)
+      ?.filter(transaction => [1, 2, 3, 4, 5, 7, 8].includes(parseInt(transaction.cat)))
+      ?.reduce((total, transaction) => total + parseFloat(transaction.sum), 0) || 0;
+
+    percentage = 100 - ((178 / parseInt(weeklyToSpent)) * 100);
+  }
+
   const getClassNamesFor = (name) => (sortConfig && sortConfig.key === name) ? sortConfig.direction : '';
 
   const income = incomeTotals ? incomeTotals[month] : -1;
   const profit = parseFloat((income - total).toFixed(2));
-  const message = income > 0
-    ? `${month}: Income: ${income} - Expenses: ${total} = Profit: ${profit}`
-    : `${month}: Expenses: ${total}`;
 
   const tableRef = useRef(null);
   const {
@@ -56,13 +78,15 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
             </div>
           </div>
         }
-        {/*<div>*/}
-        {/*  <h3>Budget</h3>*/}
-        {/*  <div className="stat-value">100</div>*/}
-        {/*</div>*/}
+        {totalSumForCategory && percentage && weeklyToSpent && <div>
+          <div className="stats-container has-budget" style={{'--budget-progress': `${percentage}%`}}>
+            <h3>Weekly spent</h3>
+            <div className="stat-value"><NumberDisplay number={totalSumForCategory} /></div>
+            <div>of {weeklyToSpent}</div>
+          </div>
+        </div>}
       </div>
       <div className="table-wrapper">
-        {/*<div className="month-badge">{message}</div>*/}
         <table className="expenses-table" cellSpacing="0" cellPadding="0">
           <thead>
           <tr>

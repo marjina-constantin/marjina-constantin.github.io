@@ -3,6 +3,7 @@ import {useAuthState, useData} from "../context";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import {formatDataForChart} from "../utils/utils";
+import {monthNames} from "../utils/constants";
 
 export default function YearIncomeAverageTrend() {
   const { data } = useData();
@@ -26,7 +27,7 @@ export default function YearIncomeAverageTrend() {
     },
     xAxis: {
       type: "category",
-      categories: formattedIncomeData.monthOrder,
+      categories: monthNames,
     },
     yAxis: {
       title: {
@@ -39,7 +40,7 @@ export default function YearIncomeAverageTrend() {
     credits: {
       enabled: false
     },
-    series: formattedIncomeData.seriesData,
+    series: formattedIncomeData,
   };
 
   return (

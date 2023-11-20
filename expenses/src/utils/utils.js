@@ -1,4 +1,4 @@
-import {categories} from './constants';
+import {categories, monthNames} from './constants';
 import { logout } from '../context'
 
 // const handleErrors = (response) => {
@@ -21,28 +21,13 @@ const handleErrors = (response, options, dataDispatch, dispatch) => {
 export const formatDataForChart = (data) => {
   const seriesData = [];
 
-  const monthOrder = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
   for (const year in data) {
     const yearSeries = {
       name: year,
       data: [],
     };
 
-    for (const month of monthOrder) {
+    for (const month of monthNames) {
       if (data[year][`${month} ${year}`]) {
         const monthValue = data[year][`${month} ${year}`];
         yearSeries.data.push([month, monthValue]);
@@ -54,7 +39,7 @@ export const formatDataForChart = (data) => {
     }
   }
 
-  return {seriesData, monthOrder};
+  return seriesData;
 }
 
 export const fetchRequest = (url, options, dataDispatch, dispatch, callback) => {
@@ -100,9 +85,6 @@ export const fetchData = (token, dataDispatch, dispatch, category = null, textFi
     let categoryTotals = {};
     let totalSpent = 0;
     if (data) {
-      const monthNames = ["January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-      ];
       data.forEach(item => {
         const date = new Date(item.dt);
         const category = item.cat;
