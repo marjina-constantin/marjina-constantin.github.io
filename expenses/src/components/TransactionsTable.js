@@ -26,8 +26,12 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
     // Calculate the date of the last Monday
     const lastMonday = new Date(today);
     lastMonday.setDate(lastMonday.getDate() - ((today.getDay() + 6) % 7));
-    // Format lastMonday to match 'YYYY-MM-DD' format
-    const formattedLastMonday = lastMonday.toISOString().split('T')[0];
+    // Get the parts of the date
+    const year = lastMonday.getFullYear();
+    const month = String(lastMonday.getMonth() + 1).padStart(2, '0');
+    const day = String(lastMonday.getDate()).padStart(2, '0');
+    // Form the formatted date string 'YYYY-MM-DD'
+    const formattedLastMonday = `${year}-${month}-${day}`;
 
     totalSumForCategory = data?.raw?.filter(transaction => transaction.dt >= formattedLastMonday)
       ?.filter(transaction => [1, 2, 3, 4, 5, 7, 8].includes(parseInt(transaction.cat)))
