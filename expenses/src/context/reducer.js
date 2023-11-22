@@ -1,12 +1,15 @@
 let user = localStorage.getItem("currentUser")
   ? JSON.parse(localStorage.getItem("currentUser"))
   : "";
-let token = localStorage.getItem("currentUser")
+const token = localStorage.getItem("currentUser")
   ? JSON.parse(localStorage.getItem("currentUser")).jwt_token
   : "";
-let theme = localStorage.getItem("theme")
+const theme = localStorage.getItem("theme")
   ? JSON.parse(localStorage.getItem("theme"))
   : "";
+const weeklyToSpent = localStorage.getItem("weeklyToSpent")
+  ? JSON.parse(localStorage.getItem("weeklyToSpent"))
+  : 0;
 
 export const initialState = {
   userDetails: "" || user,
@@ -15,7 +18,8 @@ export const initialState = {
   errorMessage: null,
   userIsLoggedIn: !!user,
   currency: user?.current_user?.currency || 'MDL',
-  theme: theme || 'blue-pink-gradient'
+  theme: theme || 'blue-pink-gradient',
+  weeklyToSpent,
 };
 
 export const initialData = {

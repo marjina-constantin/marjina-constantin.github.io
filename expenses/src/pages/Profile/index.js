@@ -10,10 +10,8 @@ const Profile = () => {
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
-  let { userDetails, token, currency, theme } = useAuthState();
-  const [weeklyToSpent, setWeeklyToSpent] = useState(localStorage.getItem("weeklyToSpent")
-    ? JSON.parse(localStorage.getItem("weeklyToSpent"))
-    : 0);
+  let { userDetails, token, currency, theme, weeklyToSpent } = useAuthState();
+  const [weeklyBudget, setWeeklyBudget] = useState(weeklyToSpent);
   theme = themeList[theme] ? theme : 'blue-pink-gradient';
   const history = useHistory();
   const handleLogout = (e) => {
@@ -60,7 +58,7 @@ const Profile = () => {
 
   const handleInputChange = (event) => {
     event.preventDefault();
-    setWeeklyToSpent(event.target.value);
+    setWeeklyBudget(event.target.value);
   };
 
   const sortedCurrencies = Object.entries(currencies).sort((a,b) => { return a[1] < b[1] ? -1 : 1 });
@@ -86,7 +84,7 @@ const Profile = () => {
           placeholder="Weekly to spent"
           type="number"
           name="weeklyToSpent"
-          value={weeklyToSpent}
+          value={weeklyBudget}
           onChange={handleInputChange}
           onBlur={onBlur}
         />

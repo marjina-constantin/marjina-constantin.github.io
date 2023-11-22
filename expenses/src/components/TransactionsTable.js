@@ -4,7 +4,7 @@ import {categories as categoriesArray, monthNames} from '../utils/constants';
 import useSwipeActions from "../hooks/useSwipeActions";
 import {FaTrash, FaPen} from "react-icons/fa";
 import NumberDisplay from "./NumberDisplay";
-import {useData} from "../context";
+import {useAuthState, useData} from "../context";
 
 const categories = categoriesArray.reduce((acc, item) => {
   acc[item.value] = item.label;
@@ -20,9 +20,7 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
   const today = new Date();
   let totalSumForCategory;
   let percentage;
-  const weeklyToSpent = localStorage.getItem("weeklyToSpent")
-    ? JSON.parse(localStorage.getItem("weeklyToSpent"))
-    : 0;
+  const { weeklyToSpent } = useAuthState();
 
   if (!data?.filtered && `${monthNames[today.getMonth()]} ${today.getFullYear()}` === month && weeklyToSpent) {
     // Calculate the date of the last Monday
