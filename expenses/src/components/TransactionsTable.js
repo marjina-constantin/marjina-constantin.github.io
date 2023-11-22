@@ -20,9 +20,9 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
   const today = new Date();
   let totalSumForCategory;
   let percentage;
-  const { weeklyToSpent } = useAuthState();
+  const { weeklyToSpend } = useAuthState();
 
-  if (!data?.filtered && `${monthNames[today.getMonth()]} ${today.getFullYear()}` === month && weeklyToSpent) {
+  if (!data?.filtered && `${monthNames[today.getMonth()]} ${today.getFullYear()}` === month && weeklyToSpend) {
     // Calculate the date of the last Monday
     const lastMonday = new Date(today);
     lastMonday.setDate(lastMonday.getDate() - ((today.getDay() + 6) % 7));
@@ -33,7 +33,8 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
       ?.filter(transaction => [1, 2, 3, 4, 5, 7, 8].includes(parseInt(transaction.cat)))
       ?.reduce((total, transaction) => total + parseFloat(transaction.sum), 0) || 0;
 
-    percentage = 100 - ((totalSumForCategory / parseInt(weeklyToSpent)) * 100);
+    percentage = 100 - ((totalSumForCategory / parseInt(weeklyToSpend)) * 100);
+    percentage = percentage > 100 ? 100 : percentage;
   }
 
   const getClassNamesFor = (name) => (sortConfig && sortConfig.key === name) ? sortConfig.direction : '';
@@ -76,11 +77,11 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
             </div>
           </div>
         }
-        {(totalSumForCategory && percentage && weeklyToSpent) ? <div>
+        {(totalSumForCategory && percentage && weeklyToSpend) ? <div>
           <div className="stats-container has-budget" style={{'--budget-progress': `${percentage}%`}}>
             <h3>Week budget</h3>
             <div className="stat-value"><NumberDisplay number={totalSumForCategory} /></div>
-            <div>of {weeklyToSpent}</div>
+            <div>of {weeklyToSpend}</div>
           </div>
         </div> : null}
       </div>

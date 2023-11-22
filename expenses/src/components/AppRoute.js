@@ -1,26 +1,15 @@
-import React from "react";
-import { Redirect, Route } from "react-router-dom";
+import React from 'react';
+import {Navigate} from 'react-router-dom';
+import {useAuthState} from '../context';
 
-import { useAuthState } from '../context'
+const AppRoute = ({ component: Component, isPrivate }) => {
+  const userDetails = useAuthState();
 
-const AppRoute = ({ component: Component, path, isPrivate, ...rest }) => {
+  if (isPrivate && !Boolean(userDetails.token)) {
+    return  <Navigate to="/expenses/login" />;
+  }
 
-  const userDetails = useAuthState()
-  return (
-    <Route
-      path={path}
-      render={props =>
-        isPrivate && !Boolean(userDetails.token) ? (
-          <Redirect
-            to={{ pathname: "/expenses/login" }}
-          />
-        ) : (
-          <Component {...props} />
-        )
-      }
-      {...rest}
-    />
-  )
+  return <Component />;
 }
 
-export default AppRoute
+export default AppRoute;

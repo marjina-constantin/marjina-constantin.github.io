@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.scss';
-import {BrowserRouter as Router, Switch} from 'react-router-dom';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import routes from './config/routes';
 import Navbar from './components/Navbar';
 import {AuthProvider, NotificationProvider} from './context';
@@ -13,16 +13,15 @@ function App() {
         <Router>
           <Navbar/>
 
-          <Switch>
+          <Routes>
             {routes.map((route) => (
-              <AppRoute
+              <Route
                 key={route.path}
-                exact path={route.path}
-                component={route.component}
-                isPrivate={route.isPrivate}
+                path={route.path}
+                element={<AppRoute component={route.component} isPrivate={route.isPrivate} />}
               />
             ))}
-          </Switch>
+          </Routes>
 
         </Router>
       </NotificationProvider>

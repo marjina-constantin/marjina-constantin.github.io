@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {logout, useAuthDispatch, useAuthState, useData, useNotification} from '../../context';
-import {useHistory} from 'react-router-dom';
+import {useNavigate} from "react-router-dom";
 import {currencies} from '../../utils/constants';
 import {FaUserCircle} from 'react-icons/fa';
 import {fetchRequest} from '../../utils/utils';
@@ -10,14 +10,14 @@ const Profile = () => {
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
-  let { userDetails, token, currency, theme, weeklyToSpent } = useAuthState();
-  const [weeklyBudget, setWeeklyBudget] = useState(weeklyToSpent);
+  let { userDetails, token, currency, theme, weeklyToSpend } = useAuthState();
+  const [weeklyBudget, setWeeklyBudget] = useState(weeklyToSpend);
   theme = themeList[theme] ? theme : 'blue-pink-gradient';
-  const history = useHistory();
+  const navigate = useNavigate();
   const handleLogout = (e) => {
     e.preventDefault();
     logout(dispatch, dataDispatch);
-    history.push('/expenses/login') //navigate to logout page on logout
+    navigate('/expenses/login'); //navigate to logout page on logout
   }
 
   const handleChange = (event) => {
@@ -52,8 +52,8 @@ const Profile = () => {
 
   const onBlur = (event) => {
     event.preventDefault();
-    localStorage.setItem('weeklyToSpent', JSON.stringify(event.target.value));
-    dispatch({ type: 'UPDATE_USER', payload: {weeklyToSpent: event.target.value} });
+    localStorage.setItem('weeklyToSpend', JSON.stringify(event.target.value));
+    dispatch({ type: 'UPDATE_USER', payload: {weeklyToSpend: event.target.value} });
   };
 
   const handleInputChange = (event) => {
@@ -83,7 +83,7 @@ const Profile = () => {
           required
           placeholder="Weekly to spent"
           type="number"
-          name="weeklyToSpent"
+          name="weeklyToSpend"
           value={weeklyBudget}
           onChange={handleInputChange}
           onBlur={onBlur}

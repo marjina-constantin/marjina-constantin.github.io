@@ -43,19 +43,19 @@ export default function Navbar() {
         <li>
           <NavLink
             // onClick={() => setCssClass('closed')}
-            activeClassName="selected"
+            activeclassname="selected"
             className="not-selected"
             to="/expenses/"
-            exact
+            exact="true"
           ><FaHome /></NavLink>
         </li>
         <li>
           <NavLink
             // onClick={() => setCssClass('closed')}
             to="/expenses/charts"
-            activeClassName="selected"
+            activeclassname="selected"
             className="not-selected"
-            exact
+            exact="true"
           ><FaChartPie />
           </NavLink>
         </li>
@@ -63,9 +63,9 @@ export default function Navbar() {
           <NavLink
             // onClick={() => setCssClass('closed')}
             to="/expenses/add-transaction"
-            activeClassName="selected"
+            activeclassname="selected"
             className="not-selected"
-            exact
+            exact="true"
           ><FaPlus />
           </NavLink>
         </li>
@@ -73,9 +73,9 @@ export default function Navbar() {
           <NavLink
             // onClick={() => setCssClass('closed')}
             to="/expenses/income"
-            activeClassName="selected"
+            activeclassname="selected"
             className="not-selected"
-            exact
+            exact="true"
           ><FaMoneyBill />
           </NavLink>
         </li>
@@ -84,9 +84,9 @@ export default function Navbar() {
             <NavLink
               // onClick={() => setCssClass('closed')}
               to="/expenses/user"
-              activeClassName="selected"
+              activeclassname="selected"
               className="not-selected"
-              exact
+              exact="true"
             ><FaUser />
             </NavLink>
           </li> : ''

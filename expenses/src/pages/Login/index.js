@@ -1,15 +1,15 @@
 import React from "react";
 import GoogleLogin from "react-google-login";
 import {loginUser, useAuthDispatch, useAuthState} from "../../context";
-import { useHistory } from 'react-router-dom';
+import {useNavigate} from "react-router-dom";
 
 const Login = () => {
   const dispatch = useAuthDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { loading, errorMessage, userIsLoggedIn } = useAuthState();
 
   if (userIsLoggedIn) {
-    history.push('/expenses');
+    navigate('/expenses');
   }
 
   const handleLogin = async (googleResponse) => {
@@ -20,7 +20,7 @@ const Login = () => {
         return;
       }
 
-      history.push(`/expenses`);
+      navigate(`/expenses`);
     } catch (error) {
       console.log(error)
     }
