@@ -42,51 +42,32 @@ export default function Navbar() {
       <ul>
         <li>
           <NavLink
-            // onClick={() => setCssClass('closed')}
-            activeclassname="selected"
-            className="not-selected"
             to="/expenses/"
-            exact="true"
+            end
           ><FaHome /></NavLink>
         </li>
         <li>
           <NavLink
-            // onClick={() => setCssClass('closed')}
             to="/expenses/charts"
-            activeclassname="selected"
-            className="not-selected"
-            exact="true"
           ><FaChartPie />
           </NavLink>
         </li>
         <li>
           <NavLink
-            // onClick={() => setCssClass('closed')}
             to="/expenses/add-transaction"
-            activeclassname="selected"
-            className="not-selected"
-            exact="true"
           ><FaPlus />
           </NavLink>
         </li>
         <li>
           <NavLink
-            // onClick={() => setCssClass('closed')}
             to="/expenses/income"
-            activeclassname="selected"
-            className="not-selected"
-            exact="true"
           ><FaMoneyBill />
           </NavLink>
         </li>
         {userIsLoggedIn ?
           <li>
             <NavLink
-              // onClick={() => setCssClass('closed')}
               to="/expenses/user"
-              activeclassname="selected"
-              className="not-selected"
-              exact="true"
             ><FaUser />
             </NavLink>
           </li> : ''
