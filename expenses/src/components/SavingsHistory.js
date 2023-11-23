@@ -6,13 +6,13 @@ import HighchartsReact from "highcharts-react-official";
 export default function SavingsHistory() {
 
   const { data } = useData();
-  const [items, setItems] = useState(data.raw.filter((object, index) => index % 2 === 0));
+  const [items, setItems] = useState([]);
 
   // Re-render the component only when dependencies are changed.
   useEffect(() => {
     const timeout = setTimeout(() => {
       setItems(data.raw);
-    }, 250);
+    }, 200);
 
     return () => {
       clearTimeout(timeout);

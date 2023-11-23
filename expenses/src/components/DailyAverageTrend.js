@@ -6,28 +6,15 @@ import HighchartsReact from "highcharts-react-official";
 export default function DailyAverageTrend() {
 
   const { data } = useData();
-  let initialItems;
-  if (data.filtered_raw) {
-    initialItems = data.filtered_raw.filter((object, index) => index % 2 === 0);
-  } else {
-    initialItems = data.raw.filter((object, index) => index % 2 === 0);
-  }
 
-  const [items, setItems] = useState(initialItems);
+  const [items, setItems] = useState([]);
   const isFiltered = !!data.filtered_raw;
 
   // Re-render the component only when dependencies are changed.
   useEffect(() => {
-    let timeout;
-    if (data.filtered_raw) {
-      timeout = setTimeout(() => {
-        setItems(data.filtered_raw);
-      }, 250);
-    } else {
-      timeout = setTimeout(() => {
-        setItems(data.raw);
-      }, 250);
-    }
+    const timeout = setTimeout(() => {
+      setItems(data.filtered_raw || data.raw);
+    }, 200);
 
     return () => {
       clearTimeout(timeout);
