@@ -48,7 +48,7 @@ Highcharts.setOptions({
 Highcharts.setOptions({
   plotOptions: {
     series: {
-      animation: true,
+      animation: false,
       boostThreshold: 4000,
     }
   }
