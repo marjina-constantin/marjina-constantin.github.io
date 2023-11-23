@@ -22,7 +22,7 @@ export default function AllTimeSpendings() {
       text: 'All time spendings'
     },
     tooltip: {
-      pointFormat: `{point.y} {series.name} ({point.percentage:.1f})%`
+      pointFormat: `{point.y} {series.name} ({point.percentage:.2f})%`
     },
     plotOptions: {
       pie: {
