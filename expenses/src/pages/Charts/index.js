@@ -5,11 +5,7 @@ import {useAuthDispatch, useAuthState, useData} from "../../context";
 import {fetchData} from "../../utils/utils";
 import Filters from "../../components/Filters";
 import MonthlyTotals from "../../components/MonthlyTotals";
-// import LastMonth from "../../components/LastMonth";
-import AllTimeSpendings from "../../components/AllTimeSpendings";
-import DailyAverage from "../../components/DailyAverage";
-import MonthlyAverage from "../../components/MonthlyAverage";
-import LastTwoMonthsAverage from "../../components/LastTwoMonthsAverage";
+import YearAverageTrend from "../../components/YearAverageTrend";
 import Boost from "highcharts/modules/boost";
 
 Boost(Highcharts);
@@ -59,9 +55,12 @@ Highcharts.setOptions({
 });
 
 const Charts = () => {
-  const DailyAverageTrend = React.lazy(() => import("../../components/DailyAverageTrend"));
-  const YearAverageTrend = React.lazy(() => import("../../components/YearAverageTrend"));
+  const AllTimeSpendings = React.lazy(() => import("../../components/AllTimeSpendings"));
+  const MonthlyAverage = React.lazy(() => import("../../components/MonthlyAverage"));
   const SavingsHistory = React.lazy(() => import("../../components/SavingsHistory"));
+  const DailyAverage = React.lazy(() => import("../../components/DailyAverage"));
+  const DailyAverageTrend = React.lazy(() => import("../../components/DailyAverageTrend"));
+  const LastTwoMonthsAverage = React.lazy(() => import("../../components/LastTwoMonthsAverage"));
 
   const { data, dataDispatch } = useData();
   const noData = data.groupedData === null;
@@ -87,22 +86,20 @@ const Charts = () => {
             <MonthlyTotals />
           </div>
 
-          {/*<div className="charts-section">*/}
-          {/*  <LastMonth />*/}
-          {/*</div>*/}
+          <div className="charts-section">
+            <YearAverageTrend />
+          </div>
 
           <div className="charts-section">
             <Suspense fallback=''>
-              <YearAverageTrend />
+              <AllTimeSpendings />
             </Suspense>
           </div>
 
           <div className="charts-section">
-            <AllTimeSpendings />
-          </div>
-
-          <div className="charts-section">
-            <MonthlyAverage />
+            <Suspense fallback=''>
+              <MonthlyAverage />
+            </Suspense>
           </div>
 
           <div className="charts-section">
@@ -112,7 +109,9 @@ const Charts = () => {
           </div>
 
           <div className="charts-section">
-            <DailyAverage />
+            <Suspense fallback=''>
+              <DailyAverage />
+            </Suspense>
           </div>
 
           <div className="charts-section">
@@ -122,7 +121,9 @@ const Charts = () => {
           </div>
 
           <div className="charts-section">
-            <LastTwoMonthsAverage />
+            <Suspense fallback=''>
+              <LastTwoMonthsAverage />
+            </Suspense>
           </div>
 
         </div>
