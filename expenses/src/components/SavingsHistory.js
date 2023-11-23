@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {useData} from "../context";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
@@ -6,10 +6,18 @@ import HighchartsReact from "highcharts-react-official";
 export default function SavingsHistory() {
 
   const { data } = useData();
-  const items = data.raw;
+  const [items, setItems] = useState(data.raw.filter((object, index) => index % 2 === 0));
 
   // Re-render the component only when dependencies are changed.
-  useEffect(() => {}, [data.raw]);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setItems(data.raw);
+    }, 250);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [data.raw]);
 
   let savings = {};
   let totalExpensesAtDate = 0;

@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {useData} from "../context";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
@@ -6,11 +6,33 @@ import HighchartsReact from "highcharts-react-official";
 export default function DailyAverageTrend() {
 
   const { data } = useData();
-  const items = data.filtered_raw || data.raw;
+  let initialItems;
+  if (data.filtered_raw) {
+    initialItems = data.filtered_raw.filter((object, index) => index % 2 === 0);
+  } else {
+    initialItems = data.raw.filter((object, index) => index % 2 === 0);
+  }
+
+  const [items, setItems] = useState(initialItems);
   const isFiltered = !!data.filtered_raw;
 
   // Re-render the component only when dependencies are changed.
-  useEffect(() => {}, [data.raw, data.filtered_raw]);
+  useEffect(() => {
+    let timeout;
+    if (data.filtered_raw) {
+      timeout = setTimeout(() => {
+        setItems(data.filtered_raw);
+      }, 250);
+    } else {
+      timeout = setTimeout(() => {
+        setItems(data.raw);
+      }, 250);
+    }
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [data.raw, data.filtered_raw]);
 
   const firstDay = new Date(data.raw[data.raw.length - 1]?.dt);
   const getNrOfDaysFromStart = (endDate) => {
