@@ -14,16 +14,16 @@ const NumberDisplay = ({ number }) => {
           let step;
           switch (true) {
             case diff > 10000:
-              step = 3000;
+              step = 5000;
               break;
             case diff > 1000:
-              step = 300;
+              step = 500;
               break;
             case diff > 100:
-              step = 30;
+              step = 50;
               break;
             case diff > 10:
-              step = 3;
+              step = 5;
               break;
             default:
               step = 1;
