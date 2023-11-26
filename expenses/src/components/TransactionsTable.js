@@ -39,7 +39,6 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
       ?.reduce((total, transaction) => total + parseFloat(transaction.sum), 0) || 0;
 
     percentage = 100 - ((totalSumForCategory / parseInt(weeklyToSpend)) * 100);
-    totalSumForCategory = totalSumForCategory > weeklyToSpend ? weeklyToSpend - totalSumForCategory : totalSumForCategory;
     percentage = percentage <= 0 ? 0.01 : percentage;
   }
 
