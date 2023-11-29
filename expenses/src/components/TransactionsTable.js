@@ -12,7 +12,7 @@ const categories = categoriesArray.reduce((acc, item) => {
 }, {});
 
 const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal, incomeTotals }) => {
-  const { sortedItems, requestSort, sortConfig } = useSortableData(items);
+  const { sortedItems, requestSort, sortConfig } = useSortableData(items || []);
 
   const { data } = useData();
 
