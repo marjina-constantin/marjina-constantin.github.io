@@ -59,8 +59,17 @@ const Home = () => {
 
   const months = items.groupedData ? Object.keys(items.groupedData) : [];
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
-  const currentMonth = months[currentMonthIndex];
+  const currentMonth = months[currentMonthIndex] ? months[currentMonthIndex] : months[0];
 
+  useEffect(() => {
+    if (data?.filtered) {
+      const index = Object.keys(months).find(key => months[key] === currentMonth);
+      setCurrentMonthIndex(parseInt(index));
+    } else {
+      setCurrentMonthIndex(0);
+    }
+  }, [data.filtered]);
+  
   return (
     <div>
       <Modal show={showDeleteModal} onClose={(e) => {e.preventDefault(); setShowDeleteModal(false)}}>
