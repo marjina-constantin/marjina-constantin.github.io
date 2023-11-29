@@ -2,7 +2,7 @@ import React, {useEffect} from "react";
 import {useAuthState, useData} from "../context";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import {formatDataForChart} from "../utils/utils";
+import {formatDataForChart, isEmptyObject} from "../utils/utils";
 import {monthNames} from "../utils/constants";
 
 export default function YearAverageTrend() {
@@ -18,6 +18,10 @@ export default function YearAverageTrend() {
     data?.totalPerYear,
     data?.filtered?.totalPerYear
   ]);
+
+  if (isEmptyObject(items)) {
+    return <>No data</>;
+  }
 
   const formattedData = formatDataForChart(items);
 

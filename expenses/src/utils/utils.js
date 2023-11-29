@@ -160,3 +160,22 @@ export const fetchData = (token, dataDispatch, dispatch, category = null, textFi
     }
   });
 }
+
+export const isEmptyObject = (data) => {
+  const isEmpty = (obj) => Object.keys(obj).length === 0 && obj.constructor === Object;
+
+  if (!isEmpty(data)) {
+    for (const key in data) {
+      if (Object.hasOwnProperty.call(data, key)) {
+        if (data[key] !== null && typeof data[key] === 'object' && !Array.isArray(data[key])) {
+          if (!isEmpty(data[key])) {
+            return false; // If any non-empty object element is found, return false
+          }
+        } else if (data[key] !== 0 && data[key] !== '') {
+          return false; // If any non-zero, non-empty string or non-null element is found, return false
+        }
+      }
+    }
+  }
+  return true;
+}

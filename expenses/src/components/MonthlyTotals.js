@@ -3,6 +3,7 @@ import {useAuthState, useData} from "../context";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import {categories} from "../utils/constants";
+import {isEmptyObject} from "../utils/utils";
 
 export default function MonthlyTotals() {
 
@@ -12,6 +13,10 @@ export default function MonthlyTotals() {
 
   // Re-render the component only when dependencies are changed.
   useEffect(() => {}, [data, currency]);
+
+  if (isEmptyObject(items)) {
+    return <>No data</>;
+  }
 
   const firstDay = data.raw[data.raw.length - 1]?.dt;
   const daysPassed = parseInt((new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1);
