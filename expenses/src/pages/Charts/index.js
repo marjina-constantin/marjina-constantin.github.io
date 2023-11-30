@@ -7,9 +7,11 @@ import Filters from "../../components/Filters";
 import MonthlyTotals from "../../components/MonthlyTotals";
 import YearAverageTrend from "../../components/YearAverageTrend";
 import Boost from "highcharts/modules/boost";
+import NoData from "highcharts/modules/no-data-to-display";
 
 Boost(Highcharts);
 DarkUnica(Highcharts);
+NoData(Highcharts);
 
 const bgColors = {
   'carrot-orange': '#102433',

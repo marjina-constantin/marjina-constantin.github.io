@@ -1,10 +1,6 @@
 import {categories, monthNames} from './constants';
-import { logout } from '../context'
+import { logout } from '../context';
 
-// const handleErrors = (response) => {
-//   if (!response.ok) throw Error(response.statusText);
-//   return response.json();
-// }
 const handleErrors = (response, options, dataDispatch, dispatch) => {
   if (!response.ok) {
     fetch(`https://dev-expenses-api.pantheonsite.io/jwt/token`, options)
@@ -167,23 +163,4 @@ export const fetchData = (token, dataDispatch, dispatch, category = null, textFi
       dataDispatch({ type: 'FILTER_DATA', category: category, textFilter });
     }
   });
-}
-
-export const isEmptyObject = (data) => {
-  const isEmpty = (obj) => Object.keys(obj).length === 0 && obj.constructor === Object;
-
-  if (!isEmpty(data)) {
-    for (const key in data) {
-      if (Object.hasOwnProperty.call(data, key)) {
-        if (data[key] !== null && typeof data[key] === 'object' && !Array.isArray(data[key])) {
-          if (!isEmpty(data[key])) {
-            return false; // If any non-empty object element is found, return false
-          }
-        } else if (data[key] !== 0 && data[key] !== '') {
-          return false; // If any non-zero, non-empty string or non-null element is found, return false
-        }
-      }
-    }
-  }
-  return true;
 }

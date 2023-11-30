@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import {useData} from "../context";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import {isEmptyObject} from "../utils/utils";
 
 export default function DailyAverageTrend() {
 
@@ -21,10 +20,6 @@ export default function DailyAverageTrend() {
       clearTimeout(timeout);
     };
   }, [data.raw, data.filtered_raw]);
-
-  if (isEmptyObject(items)) {
-    return <>No data</>;
-  }
 
   const firstDay = new Date(data.raw[data.raw.length - 1]?.dt);
   const getNrOfDaysFromStart = (endDate) => {

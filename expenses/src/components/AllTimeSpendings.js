@@ -26,6 +26,7 @@ export default function AllTimeSpendings() {
     },
     plotOptions: {
       pie: {
+        allowPointSelect: true,
         borderWidth: 0,
       },
     },
