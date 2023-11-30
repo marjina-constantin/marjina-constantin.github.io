@@ -84,60 +84,68 @@ export const fetchData = (token, dataDispatch, dispatch, category = null, textFi
     let totalIncomePerYearAndMonth = {};
     let categoryTotals = {};
     let totalSpent = 0;
+    const updateYearAndMonth = (year, month) => {
+      if (!totalsPerYearAndMonth[year]) {
+        totalsPerYearAndMonth[year] = {};
+      }
+      if (!totalsPerYearAndMonth[year][month]) {
+        totalsPerYearAndMonth[year][month] = 0;
+      }
+      if (!groupedData[month]) {
+        groupedData[month] = [];
+      }
+      if (!monthsTotals[month]) {
+        monthsTotals[month] = 0;
+      }
+      if (!incomeTotals[month]) {
+        incomeTotals[month] = 0;
+      }
+      if (!totalIncomePerYearAndMonth[year]) {
+        totalIncomePerYearAndMonth[year] = {};
+      }
+      if (!totalIncomePerYearAndMonth[year][month]) {
+        totalIncomePerYearAndMonth[year][month] = 0;
+      }
+      if (!totalIncomePerYear[year]) {
+        totalIncomePerYear[year] = 0;
+      }
+      if (!totalPerYear[year]) {
+        totalPerYear[year] = 0;
+      }
+    }
+
+    const updateTotals = (item, year, month) => {
+      const { cat, sum, type } = item;
+      if (type === 'incomes') {
+        totalIncomePerYear[year] = (parseFloat(totalIncomePerYear[year]) + parseFloat(sum)).toFixed(2);
+        totalIncomePerYearAndMonth[year][month] += parseFloat(sum);
+        incomeData.push(item);
+        incomeTotals[month] = parseFloat((parseFloat(incomeTotals[month]) + parseFloat(sum)).toFixed(2));
+      } else if (type === 'transaction') {
+        groupedData[month].push(item);
+        monthsTotals[month] = parseFloat((parseFloat(monthsTotals[month]) + parseFloat(sum)).toFixed(2));
+        categoryTotals[cat].name = categories[cat].label;
+        categoryTotals[cat].y = parseFloat((parseFloat(categoryTotals[cat].y) + parseFloat(sum)).toFixed(2));
+        totalSpent = (parseFloat(totalSpent) + parseFloat(sum)).toFixed(2);
+        totalsPerYearAndMonth[year][month] += parseFloat(sum);
+        totalPerYear[year] = (parseFloat(totalPerYear[year]) + parseFloat(sum)).toFixed(2);
+      }
+    }
     if (data) {
       data.forEach(item => {
-        const date = new Date(item.dt);
-        const category = item.cat;
+        const { dt, cat } = item;
+        const date = new Date(dt);
         const year = date.getFullYear();
         const month = `${monthNames[date.getMonth()]} ${year}`;
-        if (!totalsPerYearAndMonth[year]) {
-          totalsPerYearAndMonth[year] = {};
-        }
-        if (!totalsPerYearAndMonth[year][month]) {
-          totalsPerYearAndMonth[year][month] = 0;
-        }
-        if (!groupedData[month]) {
-          groupedData[month] = [];
-        }
-        if (!monthsTotals[month]) {
-          monthsTotals[month] = 0;
-        }
-        if (!incomeTotals[month]) {
-          incomeTotals[month] = 0;
-        }
-        if (!totalIncomePerYearAndMonth[year]) {
-          totalIncomePerYearAndMonth[year] = {};
-        }
-        if (!totalIncomePerYearAndMonth[year][month]) {
-          totalIncomePerYearAndMonth[year][month] = 0;
-        }
-        if (!totalIncomePerYear[year]) {
-          totalIncomePerYear[year] = 0;
-        }
-        if (!totalPerYear[year]) {
-          totalPerYear[year] = 0;
-        }
-        if (!categoryTotals[category] && category) {
-          categoryTotals[category] = {
+
+        if (!categoryTotals[cat] && cat) {
+          categoryTotals[cat] = {
             name: '',
             y: 0
           };
         }
-
-        if (item.type === 'incomes') {
-          totalIncomePerYear[year] = (parseFloat(totalIncomePerYear[year]) + parseFloat(item.sum)).toFixed(2);
-          totalIncomePerYearAndMonth[year][month] += parseFloat(item.sum);
-          incomeData.push(item)
-          incomeTotals[month] = parseFloat((parseFloat(incomeTotals[month]) + parseFloat(item.sum)).toFixed(2));
-        } else {
-          groupedData[month].push(item);
-          monthsTotals[month] = parseFloat((parseFloat(monthsTotals[month]) + parseFloat(item.sum)).toFixed(2));
-          categoryTotals[category].name = categories[category].label;
-          categoryTotals[category].y = parseFloat((parseFloat(categoryTotals[category].y) + parseFloat(item.sum)).toFixed(2));
-          totalSpent = (parseFloat(totalSpent) + parseFloat(item.sum)).toFixed(2);
-          totalsPerYearAndMonth[year][month] += parseFloat(item.sum);
-          totalPerYear[year] = (parseFloat(totalPerYear[year]) + parseFloat(item.sum)).toFixed(2);
-        }
+        updateYearAndMonth(year, month);
+        updateTotals(item, year, month);
       });
     }
     dataDispatch({

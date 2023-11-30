@@ -1,3 +1,5 @@
+import { monthNames } from '../utils/constants';
+
 let user = localStorage.getItem("currentUser")
   ? JSON.parse(localStorage.getItem("currentUser"))
   : "";
@@ -95,55 +97,42 @@ export const DataReducer = (initialState, action) => {
 
     case "FILTER_DATA":
       if ((action.category !== '' || action.textFilter !== '') && initialState.raw) {
-        let filtered = initialState.raw?.filter(item => item.type === 'transaction');
-        if (action.category !== '') {
+        const { raw } = initialState;
+        let filtered = raw?.filter(item => item.type === 'transaction') || [];
+
+        if (action.category) {
           filtered = filtered.filter(item => item.cat === action.category);
         }
-        if (action.textFilter !== '') {
+
+        if (action.textFilter) {
+          const textFilterLower = action.textFilter.toLowerCase();
           filtered = filtered.filter(item =>
-            item.dsc?.toLowerCase()?.includes(action.textFilter?.toLowerCase())
+            item.dsc?.toLowerCase()?.includes(textFilterLower)
           );
         }
-        let groupedData = {};
-        let monthsTotals = {};
-        let totalSpent = 0;
-        const totalsPerYearAndMonth = {};
-        const totalPerYear = {};
-        const monthNames = ["January", "February", "March", "April", "May", "June",
-          "July", "August", "September", "October", "November", "December"
-        ];
-        filtered.forEach(item => {
+        const newState = filtered.reduce((accumulator, item) => {
           const date = new Date(item.dt);
           const year = date.getFullYear();
           const month = `${monthNames[date.getMonth()]} ${year}`;
-          if (!totalsPerYearAndMonth[year]) {
-            totalsPerYearAndMonth[year] = {};
-          }
-          if (!totalsPerYearAndMonth[year][month]) {
-            totalsPerYearAndMonth[year][month] = 0;
-          }
-          if (!groupedData[month]) {
-            groupedData[month] = [];
-          }
-          if (!monthsTotals[month]) {
-            monthsTotals[month] = 0;
-          }
-          if (!totalPerYear[year]) {
-            totalPerYear[year] = 0;
-          }
-          groupedData[month].push(item);
-          monthsTotals[month] = parseFloat((parseFloat(monthsTotals[month]) + parseFloat(item.sum)).toFixed(2));
-          totalSpent = (parseFloat(totalSpent) + parseFloat(item.sum)).toFixed(2);
-          totalsPerYearAndMonth[year][month] += parseFloat(item.sum);
-          totalPerYear[year] = (parseFloat(totalPerYear[year]) + parseFloat(item.sum)).toFixed(2);
+          accumulator.groupedData[month] = accumulator.groupedData[month] || [];
+          accumulator.groupedData[month].push(item);
+
+          accumulator.totals[month] = (accumulator.totals[month] || 0) + parseFloat(item.sum);
+          accumulator.totalSpent = (parseFloat(accumulator.totalSpent) + parseFloat(item.sum)).toFixed(2);
+
+          accumulator.totalsPerYearAndMonth[year] = accumulator.totalsPerYearAndMonth[year] || {};
+          accumulator.totalsPerYearAndMonth[year][month] = (accumulator.totalsPerYearAndMonth[year][month] || 0) + parseFloat(item.sum);
+
+          accumulator.totalPerYear[year] = (accumulator.totalPerYear[year] || 0) + parseFloat(item.sum);
+
+          return accumulator;
+        }, {
+          groupedData: {},
+          totals: {},
+          totalsPerYearAndMonth: {},
+          totalPerYear: {},
+          totalSpent: 0
         });
-        const newState = {
-          groupedData: groupedData,
-          totals: monthsTotals,
-          totalsPerYearAndMonth,
-          totalPerYear,
-          totalSpent,
-        };
         return {
           ...initialState,
           filtered: newState,
