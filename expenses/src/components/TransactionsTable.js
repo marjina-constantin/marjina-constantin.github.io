@@ -19,11 +19,18 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
   // Get today's date
   const today = new Date();
   let totalSumForCategory = 0;
-  let percentage;
-  const { weeklyToSpend } = useAuthState();
+  let weekPercentage;
+  let monthPercentage = 100;
+  const { weeklyBudget, monthlyBudget } = useAuthState();
+  const isCurrentMonth = `${monthNames[today.getMonth()]} ${today.getFullYear()}` === month;
 
-  const isWeekBugdet = !data?.filtered && `${monthNames[today.getMonth()]} ${today.getFullYear()}` === month && weeklyToSpend;
-  if (isWeekBugdet) {
+  const isWeekBudget = !data?.filtered && isCurrentMonth && weeklyBudget;
+  const isMonthBudget = !data?.filtered && isCurrentMonth && monthlyBudget;
+  if (isMonthBudget) {
+    monthPercentage = 100 - ((total / parseInt(monthlyBudget)) * 100);
+    monthPercentage = monthPercentage <= 0 ? 0.01 : monthPercentage;
+  }
+  if (isWeekBudget) {
     // Calculate the date of the last Monday
     const lastMonday = new Date(today);
     lastMonday.setDate(lastMonday.getDate() - ((today.getDay() + 6) % 7));
@@ -38,8 +45,8 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
       ?.filter(transaction => [1, 2, 3, 4, 5, 7, 8].includes(parseInt(transaction.cat)))
       ?.reduce((total, transaction) => total + parseFloat(transaction.sum), 0) || 0;
 
-    percentage = 100 - ((totalSumForCategory / parseInt(weeklyToSpend)) * 100);
-    percentage = percentage <= 0 ? 0.01 : percentage;
+    weekPercentage = 100 - ((totalSumForCategory / parseInt(weeklyBudget)) * 100);
+    weekPercentage = weekPercentage <= 0 ? 0.01 : weekPercentage;
   }
 
   const getClassNamesFor = (name) => (sortConfig && sortConfig.key === name) ? sortConfig.direction : '';
@@ -61,9 +68,10 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
     <>
       <div className="month-stats">
         <div>
-          <div className="stats-container has-budget" style={{'--budget-progress': '100%'}}>
+          <div className="stats-container has-budget" style={{'--budget-progress': `${monthPercentage}%`}}>
             <h3>Spent</h3>
             <div className="stat-value"><NumberDisplay number={total} /></div>
+            {isMonthBudget && <div>of {monthlyBudget}</div>}
           </div>
         </div>
         {income > 0 &&
@@ -82,11 +90,11 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
             </div>
           </div>
         }
-        {isWeekBugdet ? <div>
-          <div className="stats-container has-budget" style={{'--budget-progress': `${percentage}%`}}>
+        {isWeekBudget ? <div>
+          <div className="stats-container has-budget" style={{'--budget-progress': `${weekPercentage}%`}}>
             <h3>Week budget</h3>
             <div className="stat-value"><NumberDisplay number={totalSumForCategory} /></div>
-            <div>of {weeklyToSpend}</div>
+            <div>of {weeklyBudget}</div>
           </div>
         </div> : null}
       </div>

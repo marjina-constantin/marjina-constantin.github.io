@@ -10,8 +10,11 @@ const Profile = () => {
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
-  let { userDetails, token, currency, theme, weeklyToSpend } = useAuthState();
-  const [weeklyBudget, setWeeklyBudget] = useState(weeklyToSpend);
+  let { userDetails, token, currency, theme, weeklyBudget, monthlyBudget } = useAuthState();
+  const [state, setState] = useState({
+    weeklyBudget: weeklyBudget,
+    monthlyBudget: monthlyBudget,
+  });
   theme = themeList[theme] ? theme : 'blue-pink-gradient';
   const navigate = useNavigate();
   const handleLogout = (e) => {
@@ -51,14 +54,21 @@ const Profile = () => {
   };
 
   const onBlur = (event) => {
+    const value = event.target.value;
+    const name = event.target.name;
     event.preventDefault();
-    localStorage.setItem('weeklyToSpend', JSON.stringify(event.target.value));
-    dispatch({ type: 'UPDATE_USER', payload: {weeklyToSpend: event.target.value} });
+    localStorage.setItem(name, JSON.stringify(value));
+    dispatch({ type: 'UPDATE_USER', payload: {[name]: value} });
   };
 
   const handleInputChange = (event) => {
+    const value = event.target.value;
+    const name = event.target.name;
     event.preventDefault();
-    setWeeklyBudget(event.target.value);
+    setState({
+      ...state,
+      [name]: value,
+    });
   };
 
   const sortedCurrencies = Object.entries(currencies).sort((a,b) => { return a[1] < b[1] ? -1 : 1 });
@@ -81,10 +91,19 @@ const Profile = () => {
         </select>
         <input
           required
-          placeholder="Weekly to spent"
+          placeholder="Week Budget"
           type="number"
-          name="weeklyToSpend"
-          value={weeklyBudget}
+          name="weeklyBudget"
+          value={state.weeklyBudget}
+          onChange={handleInputChange}
+          onBlur={onBlur}
+        />
+        <input
+          required
+          placeholder="Month Budget"
+          type="number"
+          name="monthlyBudget"
+          value={state.monthlyBudget}
           onChange={handleInputChange}
           onBlur={onBlur}
         />

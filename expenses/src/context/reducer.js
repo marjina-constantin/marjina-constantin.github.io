@@ -9,8 +9,12 @@ const token = localStorage.getItem("currentUser")
 const theme = localStorage.getItem("theme")
   ? JSON.parse(localStorage.getItem("theme"))
   : "";
-const weeklyToSpend = localStorage.getItem("weeklyToSpend")
-  ? JSON.parse(localStorage.getItem("weeklyToSpend"))
+const weeklyBudget = localStorage.getItem("weeklyBudget")
+  ? JSON.parse(localStorage.getItem("weeklyBudget"))
+  : 0;
+
+const monthlyBudget = localStorage.getItem("monthlyBudget")
+  ? JSON.parse(localStorage.getItem("monthlyBudget"))
   : 0;
 
 export const initialState = {
@@ -21,7 +25,8 @@ export const initialState = {
   userIsLoggedIn: !!user,
   currency: user?.current_user?.currency || 'MDL',
   theme: theme || 'blue-pink-gradient',
-  weeklyToSpend,
+  weeklyBudget,
+  monthlyBudget,
 };
 
 export const initialData = {
