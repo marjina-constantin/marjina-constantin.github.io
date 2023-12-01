@@ -11,11 +11,11 @@ const theme = localStorage.getItem("theme")
   : "";
 const weeklyBudget = localStorage.getItem("weeklyBudget")
   ? JSON.parse(localStorage.getItem("weeklyBudget"))
-  : 0;
+  : "";
 
 const monthlyBudget = localStorage.getItem("monthlyBudget")
   ? JSON.parse(localStorage.getItem("monthlyBudget"))
-  : 0;
+  : "";
 
 export const initialState = {
   userDetails: "" || user,
