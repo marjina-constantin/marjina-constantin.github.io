@@ -280,6 +280,13 @@ input[type=submit] {
   text-align: left;
   margin-bottom: 20px;
 }
+
+@media only screen and (max-width: 360px) and (max-height: 800px) {
+  .table-wrapper {
+    padding: 0 2px;
+  }
+}
+
 .expenses-table thead tr {
   //box-shadow: 0 19px 38px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
   background-color: var(--secondary-color);
