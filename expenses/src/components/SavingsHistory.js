@@ -72,6 +72,7 @@ export default function SavingsHistory() {
     },
     xAxis: {
       type: 'datetime',
+      crosshair: true,
     },
     tooltip: {
       xDateFormat: '%Y-%m-%d',

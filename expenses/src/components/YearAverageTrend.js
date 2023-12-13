@@ -35,6 +35,7 @@ export default function YearAverageTrend() {
     xAxis: {
       type: "category",
       categories: monthNames,
+      crosshair: true,
     },
     yAxis: {
       title: {

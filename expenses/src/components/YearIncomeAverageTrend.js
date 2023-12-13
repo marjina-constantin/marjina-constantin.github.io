@@ -28,6 +28,7 @@ export default function YearIncomeAverageTrend() {
     xAxis: {
       type: "category",
       categories: monthNames,
+      crosshair: true,
     },
     yAxis: {
       title: {
