@@ -42,6 +42,7 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
     const formattedLastMonday = `${year}-${month}-${day}`;
 
     totalSumForCategory = data?.raw?.filter(transaction => transaction.dt >= formattedLastMonday)
+      ?.filter(transaction => transaction.type === 'transaction')
       ?.filter(transaction => ![6, 9, 10, 12, 13, 11].includes(parseInt(transaction.cat)))
       ?.reduce((total, transaction) => total + parseFloat(transaction.sum), 0) || 0;
 
