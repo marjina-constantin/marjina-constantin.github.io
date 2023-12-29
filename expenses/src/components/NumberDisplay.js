@@ -33,6 +33,7 @@ const NumberDisplay = ({ number }) => {
           } else if (prevNumber > number) {
             return Math.max(prevNumber - step, number);
           }
+          clearInterval(intervalId);
           return prevNumber;
         });
       }, intervalDuration);
