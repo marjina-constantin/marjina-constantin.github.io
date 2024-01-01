@@ -70,7 +70,9 @@ export default function YearIncomeAverageTrend() {
                 <td>{item[0]}</td>
                 <td>{item[1]} {currency}</td>
                 <td>{totalPerYear[item[0]]} {currency}</td>
-                <td>{diff} {currency} ({savingsPercent}%)</td>
+                <td>
+                  {isFinite(savingsPercent) ? `${diff} ${currency} (${savingsPercent}%)` : `${diff} ${currency}`}
+                </td>
               </tr>
             )})}
           </tbody>
