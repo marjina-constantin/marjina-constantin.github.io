@@ -1,4 +1,4 @@
-import { monthNames } from '../utils/constants';
+import {categories, monthNames} from '../utils/constants';
 
 let user = localStorage.getItem("currentUser")
   ? JSON.parse(localStorage.getItem("currentUser"))
@@ -130,13 +130,23 @@ export const DataReducer = (initialState, action) => {
 
           accumulator.totalPerYear[year] = (accumulator.totalPerYear[year] || 0) + parseFloat(item.sum);
 
+          if (!accumulator.categoryTotals[item.cat] && item.cat) {
+            accumulator.categoryTotals[item.cat] = {
+              name: '',
+              y: 0
+            };
+          }
+          accumulator.categoryTotals[item.cat].name = categories[item.cat].label;
+          accumulator.categoryTotals[item.cat].y = parseFloat((parseFloat(accumulator.categoryTotals[item.cat].y) + parseFloat(item.sum)).toFixed(2));
+
           return accumulator;
         }, {
           groupedData: {},
           totals: {},
           totalsPerYearAndMonth: {},
           totalPerYear: {},
-          totalSpent: 0
+          totalSpent: 0,
+          categoryTotals: {}
         });
         return {
           ...initialState,

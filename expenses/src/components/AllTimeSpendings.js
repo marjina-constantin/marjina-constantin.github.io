@@ -8,8 +8,10 @@ export default function AllTimeSpendings() {
   const { data } = useData();
   const { currency } = useAuthState();
 
+  const items = data.filtered || data;
+
   // Re-render the component only when dependencies are changed.
-  useEffect(() => {}, [data.groupedData, data.categoryTotals, data.totalSpent, currency]);
+  useEffect(() => {}, [data, currency]);
 
   const firstDay = data.raw[data.raw.length - 1]?.dt;
   const daysPassed = parseInt((new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1);
@@ -33,7 +35,7 @@ export default function AllTimeSpendings() {
     series: [{
       name: currency,
       colorByPoint: true,
-      data: Object.values(data.categoryTotals)
+      data: Object.values(items.categoryTotals)
     }],
     credits: {
       enabled: false
@@ -47,7 +49,7 @@ export default function AllTimeSpendings() {
         options={allTimeSpendings}
       />
       <div className="average-spending">
-        Total spent: {data.totalSpent} {currency} in {monthsPassed} months
+        Total spent: {items.totalSpent} {currency} in {monthsPassed} months
       </div>
     </>
   );
