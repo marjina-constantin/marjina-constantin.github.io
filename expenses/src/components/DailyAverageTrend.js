@@ -94,8 +94,9 @@ export default function DailyAverageTrend() {
       crosshair: true,
     },
     tooltip: {
-      xDateFormat: '%Y-%m-%d',
+      xDateFormat: '%e %b %Y',
       shared: true,
+      split: true,
     },
     credits: {
       enabled: false

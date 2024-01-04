@@ -21,6 +21,7 @@ export default function YearAverageTrend() {
 
   const formattedData = formatDataForChart(items);
 
+  console.log(9, currency)
   const dailyAverageOptions = {
     chart: {
       type: 'line',
@@ -44,6 +45,7 @@ export default function YearAverageTrend() {
     },
     tooltip: {
       shared: true,
+      split: true,
     },
     credits: {
       enabled: false

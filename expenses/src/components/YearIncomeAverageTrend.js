@@ -37,6 +37,7 @@ export default function YearIncomeAverageTrend() {
     },
     tooltip: {
       shared: true,
+      split: true,
     },
     credits: {
       enabled: false

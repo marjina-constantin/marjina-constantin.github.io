@@ -75,7 +75,7 @@ export default function SavingsHistory() {
       crosshair: true,
     },
     tooltip: {
-      xDateFormat: '%Y-%m-%d',
+      xDateFormat: '%e %b %Y',
       valueSuffix: '%',
     },
     credits: {
