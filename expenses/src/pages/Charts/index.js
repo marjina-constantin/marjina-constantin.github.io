@@ -33,7 +33,7 @@ Highcharts.theme = {
 Highcharts.setOptions(Highcharts.theme);
 // Radialize the colors
 Highcharts.setOptions({
-  colors: Highcharts.map(Highcharts.getOptions().colors, function (color) {
+  colors: Highcharts.getOptions().colors.map(function(color) {
     return {
       radialGradient: {
         cx: 0.5,
