@@ -30,38 +30,10 @@ Highcharts.theme = {
   },
 };
 
-const colors = [
-  '#fe4a49',
-  '#fed766',
-  '#0e9aa7',
-  '#fe9c8f',
-  '#fce9db',
-  '#4d648d',
-  '#ffeead',
-  '#ff6f69',
-  '#ffcc5c',
-  '#88d8b0',
-  '#3385c6',
-  '#bbbbbb',
-  '#8874a3',
-  '#ff7f51',
-];
-
-// Function to shuffle the array
-const shuffleArray = (array) => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-};
-
-// Shuffle the colors array
-shuffleArray(colors);
-
 Highcharts.setOptions(Highcharts.theme);
 // Radialize the colors
 Highcharts.setOptions({
-  colors: Highcharts.map(colors, function (color) {
+  colors: Highcharts.map(Highcharts.getOptions().colors, function (color) {
     return {
       radialGradient: {
         cx: 0.5,
