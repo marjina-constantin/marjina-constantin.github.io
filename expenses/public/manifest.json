@@ -412,5 +412,12 @@
   "scope": "/expenses/",
   "display": "standalone",
   "theme_color": "#282a36",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "shortcuts": [
+    {
+      "name": "Add transaction",
+      "url": "/add-transaction",
+      "icons": [{ "src": "/icons/add-transaction.png", "sizes": "192x192" }]
+    }
+  ]
 }
