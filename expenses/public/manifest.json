@@ -417,7 +417,7 @@
     {
       "name": "Add transaction",
       "url": "/expenses/add-transaction",
-      "icons": [{ "src": "/icons/add-transaction.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/expenses/icons/add-transaction.png", "sizes": "192x192" }]
     }
   ]
 }
