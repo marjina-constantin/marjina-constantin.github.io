@@ -416,7 +416,7 @@
   "shortcuts": [
     {
       "name": "Add transaction",
-      "url": "/add-transaction",
+      "url": "/expenses/add-transaction",
       "icons": [{ "src": "/icons/add-transaction.png", "sizes": "192x192" }]
     }
   ]
