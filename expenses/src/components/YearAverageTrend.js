@@ -21,7 +21,6 @@ export default function YearAverageTrend() {
 
   const formattedData = formatDataForChart(items);
 
-  console.log(9, currency)
   const dailyAverageOptions = {
     chart: {
       type: 'line',
