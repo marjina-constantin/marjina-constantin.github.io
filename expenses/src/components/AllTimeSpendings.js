@@ -49,7 +49,7 @@ export default function AllTimeSpendings() {
         options={allTimeSpendings}
       />
       <div className="average-spending">
-        Total spent: {items.totalSpent} {currency} in {monthsPassed} months
+        Total spent: {parseFloat(items.totalSpent)?.toLocaleString()} {currency} in {monthsPassed} months
       </div>
     </>
   );

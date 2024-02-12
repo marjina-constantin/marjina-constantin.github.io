@@ -2,10 +2,12 @@ import React, {useRef} from "react";
 import useSwipeActions from "../hooks/useSwipeActions";
 import {FaPen, FaTrash} from "react-icons/fa";
 import {useSortableData} from "../utils/useSortableData";
+import {useAuthState} from "../context";
 
 export default function IncomeTable({items, handleEdit, setShowDeleteModal}) {
   const total = items && items.length ? items.reduce((accumulator, curValue) => (parseFloat(accumulator) + (parseFloat(curValue['sum']) || 0)).toFixed(2), 0) : 0;
   const { sortedItems, requestSort, sortConfig } = useSortableData(items);
+  const { currency } = useAuthState();
   const getClassNamesFor = (name) => (sortConfig && sortConfig.key === name) ? sortConfig.direction : '';
   const tableRef = useRef(null);
   const {
@@ -19,7 +21,7 @@ export default function IncomeTable({items, handleEdit, setShowDeleteModal}) {
 
   return (
     <div className="table-wrapper">
-      <div className="month-badge">Incomes: {total}</div>
+      <div className="month-badge">Incomes: {parseFloat(total)?.toLocaleString()} {currency}</div>
       <table className="expenses-table" cellSpacing="0" cellPadding="0">
         <thead>
         <tr>

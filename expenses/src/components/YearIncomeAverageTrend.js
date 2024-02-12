@@ -11,6 +11,7 @@ export default function YearIncomeAverageTrend() {
 
   const totalIncomePerYear = data?.totalIncomePerYear || {};
   const totalPerYear = data?.totalPerYear || {};
+  const totalSpent = data?.totalSpent || 0;
 
   const formattedIncomeData = formatDataForChart(data?.totalIncomePerYearAndMonth);
 
@@ -45,6 +46,8 @@ export default function YearIncomeAverageTrend() {
     series: formattedIncomeData,
   };
 
+  let sumDiff = 0;
+  let sumIncome = 0;
   return (
     <>
       <HighchartsReact
@@ -66,16 +69,24 @@ export default function YearIncomeAverageTrend() {
           {Object.entries(totalIncomePerYear).map((item, key) => {
             const diff = parseInt(item[1]) - parseInt(totalPerYear[item[0]]);
             const savingsPercent = parseFloat(parseFloat(((totalPerYear[item[0]] / item[1]) - 1) * -100).toFixed(2));
+            sumDiff += parseFloat(diff);
+            sumIncome += parseFloat(item[1]);
             return (
               <tr key={key}>
                 <td>{item[0]}</td>
-                <td>{item[1]} {currency}</td>
-                <td>{totalPerYear[item[0]]} {currency}</td>
+                <td>{parseFloat(item[1])?.toLocaleString()} {currency}</td>
+                <td>{parseFloat(totalPerYear[item[0]])?.toLocaleString()} {currency}</td>
                 <td>
-                  {isFinite(savingsPercent) ? `${diff} ${currency} (${savingsPercent}%)` : `${diff} ${currency}`}
+                  {isFinite(savingsPercent) ? `${diff?.toLocaleString()} ${currency} (${savingsPercent}%)` : `${diff?.toLocaleString()} ${currency}`}
                 </td>
               </tr>
             )})}
+          <tr>
+            <td>Total</td>
+            <td>{sumIncome?.toLocaleString()} {currency}</td>
+            <td>{parseFloat(totalSpent)?.toLocaleString()} {currency}</td>
+            <td>{sumDiff?.toLocaleString()} {currency}</td>
+          </tr>
           </tbody>
         </table>
       </div>

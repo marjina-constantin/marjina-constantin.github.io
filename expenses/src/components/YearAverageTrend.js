@@ -65,7 +65,7 @@ export default function YearAverageTrend() {
           return (
           <tr key={key}>
             <td>{item[0]}</td>
-            <td>{item[1]} {currency}</td>
+            <td>{parseFloat(item[1])?.toLocaleString()} {currency}</td>
           </tr>
         )})}
         </tbody>
