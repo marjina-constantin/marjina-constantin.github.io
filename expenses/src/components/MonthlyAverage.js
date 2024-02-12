@@ -1,5 +1,6 @@
 import React, {useEffect} from "react";
 import {useAuthState, useData} from "../context";
+import {formatNumber} from "../utils/utils";
 export default function MonthlyAverage() {
   const { data } = useData();
   const { currency } = useAuthState();
@@ -20,13 +21,13 @@ export default function MonthlyAverage() {
         {Object.values(data.categoryTotals).map((item, key) => (
           <tr key={key}>
             <td>{item.name}</td>
-            <td>{parseFloat(item.y / monthsPassed).toFixed(2)} {currency} / month</td>
+            <td>{formatNumber(parseFloat(item.y / monthsPassed).toFixed(2))} {currency} / month</td>
           </tr>
         ))}
         </tbody>
       </table>
       <div className="average-spending">
-        Average spending per month: {monthlyAverage} {currency}
+        Average spending per month: {formatNumber(monthlyAverage)} {currency}
       </div>
     </>
   )

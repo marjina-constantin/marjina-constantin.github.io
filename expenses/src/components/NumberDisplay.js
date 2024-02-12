@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import {formatNumber} from "../utils/utils";
 
 const NumberDisplay = ({ number }) => {
   const [displayedNumber, setDisplayedNumber] = useState(0);
@@ -44,7 +45,7 @@ const NumberDisplay = ({ number }) => {
     }
   }, [number]);
 
-  return <div>{displayedNumber}</div>;
+  return <div>{formatNumber(displayedNumber)}</div>;
 };
 
 export default NumberDisplay;

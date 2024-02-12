@@ -5,6 +5,7 @@ import useSwipeActions from "../hooks/useSwipeActions";
 import {FaTrash, FaPen} from "react-icons/fa";
 import NumberDisplay from "./NumberDisplay";
 import {useAuthState, useData} from "../context";
+import {formatNumber} from "../utils/utils";
 
 const categories = categoriesArray.reduce((acc, item) => {
   acc[item.value] = item.label;
@@ -72,7 +73,7 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
           <div className="stats-container has-budget" style={{'--budget-progress': `${monthPercentage}%`}}>
             <h3>Spent</h3>
             <div className="stat-value"><NumberDisplay number={total} /></div>
-            {isMonthBudget && <div>of {monthlyBudget}</div>}
+            {isMonthBudget && <div>of {formatNumber(monthlyBudget)}</div>}
           </div>
         </div>
         {income > 0 &&
@@ -95,7 +96,7 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
           <div className="stats-container has-budget" style={{'--budget-progress': `${weekPercentage}%`}}>
             <h3>Week budget</h3>
             <div className="stat-value"><NumberDisplay number={totalSumForCategory} /></div>
-            <div>of {weeklyBudget}</div>
+            <div>of {formatNumber(weeklyBudget)}</div>
           </div>
         </div> : null}
       </div>
@@ -121,7 +122,7 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
               onTouchEnd={(e) => handleTouchEnd(e, tableRef, element.id, handleEdit, setShowDeleteModal)}
             >
               <td>{element.dt.split('-')[2]}</td>
-              <td>{element.sum}</td>
+              <td>{formatNumber(element.sum)}</td>
               <td>{categories[element.cat]}</td>
               <td>{element.dsc}</td>
               <td className="desktop-only">

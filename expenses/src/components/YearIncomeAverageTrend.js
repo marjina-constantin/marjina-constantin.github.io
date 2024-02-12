@@ -2,7 +2,7 @@ import React from "react";
 import {useAuthState, useData} from "../context";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import {formatDataForChart} from "../utils/utils";
+import {formatDataForChart, formatNumber} from "../utils/utils";
 import {monthNames} from "../utils/constants";
 
 export default function YearIncomeAverageTrend() {
@@ -74,18 +74,18 @@ export default function YearIncomeAverageTrend() {
             return (
               <tr key={key}>
                 <td>{item[0]}</td>
-                <td>{parseFloat(item[1])?.toLocaleString()} {currency}</td>
-                <td>{parseFloat(totalPerYear[item[0]])?.toLocaleString()} {currency}</td>
+                <td>{formatNumber(item[1])} {currency}</td>
+                <td>{formatNumber(totalPerYear[item[0]])} {currency}</td>
                 <td>
-                  {isFinite(savingsPercent) ? `${diff?.toLocaleString()} ${currency} (${savingsPercent}%)` : `${diff?.toLocaleString()} ${currency}`}
+                  {isFinite(savingsPercent) ? `${formatNumber(diff)} ${currency} (${savingsPercent}%)` : `${formatNumber(diff)} ${currency}`}
                 </td>
               </tr>
             )})}
           <tr>
             <td>Total</td>
-            <td>{sumIncome?.toLocaleString()} {currency}</td>
-            <td>{parseFloat(totalSpent)?.toLocaleString()} {currency}</td>
-            <td>{sumDiff?.toLocaleString()} {currency}</td>
+            <td>{formatNumber(sumIncome)} {currency}</td>
+            <td>{formatNumber(totalSpent)} {currency}</td>
+            <td>{formatNumber(sumDiff)} {currency}</td>
           </tr>
           </tbody>
         </table>

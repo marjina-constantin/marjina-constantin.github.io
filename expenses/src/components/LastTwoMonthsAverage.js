@@ -1,5 +1,6 @@
 import React, {useEffect} from "react";
 import {useAuthState, useData} from "../context";
+import {formatNumber} from "../utils/utils";
 
 export default function LastTwoMonthsAverage() {
 
@@ -29,6 +30,6 @@ export default function LastTwoMonthsAverage() {
   const daysDiff = userHasMoreThanTwoMonths ? 60 : timeDiff / (1000 * 3600 * 24);
 
   return (
-    <span>Average spending for the last 60 days: {parseFloat(lastTwoMonthsTotal / Math.ceil(daysDiff)).toFixed(2)} {currency} / day</span>
+    <span>Average spending for the last 60 days: {formatNumber(parseFloat(lastTwoMonthsTotal / Math.ceil(daysDiff)).toFixed(2))} {currency} / day</span>
   )
 }

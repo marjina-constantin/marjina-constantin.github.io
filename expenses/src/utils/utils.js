@@ -164,3 +164,17 @@ export const fetchData = (token, dataDispatch, dispatch, category = null, textFi
     }
   });
 }
+
+export const formatNumber = (value) => {
+  // Try to parse the value as a floating-point number
+  const parsedValue = parseFloat(value);
+
+  // Check if the parsed value is a valid number
+  if (!isNaN(parsedValue)) {
+    // Use a specific locale or options if needed
+    return parsedValue.toLocaleString();
+  } else {
+    // Handle non-numeric values or invalid input
+    return "Invalid Input";
+  }
+}

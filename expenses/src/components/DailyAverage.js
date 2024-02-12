@@ -1,5 +1,6 @@
 import React, {useEffect} from "react";
 import {useAuthState, useData} from "../context";
+import {formatNumber} from "../utils/utils";
 
 export default function DailyAverage() {
 
@@ -20,13 +21,13 @@ export default function DailyAverage() {
         {Object.values(data.categoryTotals).map((item, key) => (
           <tr key={key}>
             <td>{item.name}</td>
-            <td>{parseFloat(item.y / daysPassed).toFixed(2)} {currency} / day</td>
+            <td>{formatNumber(parseFloat(item.y / daysPassed).toFixed(2))} {currency} / day</td>
           </tr>
         ))}
         </tbody>
       </table>
       <div className="average-spending">
-        Average spending per day: {parseFloat(data.totalSpent / daysPassed).toFixed(2)} {currency}
+        Average spending per day: {formatNumber(parseFloat(data.totalSpent / daysPassed).toFixed(2))} {currency}
       </div>
     </>
   )

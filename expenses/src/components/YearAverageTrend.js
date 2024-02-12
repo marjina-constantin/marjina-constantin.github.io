@@ -2,7 +2,7 @@ import React, {useEffect} from "react";
 import {useAuthState, useData} from "../context";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import {formatDataForChart} from "../utils/utils";
+import {formatDataForChart, formatNumber} from "../utils/utils";
 import {monthNames} from "../utils/constants";
 
 export default function YearAverageTrend() {
@@ -65,7 +65,7 @@ export default function YearAverageTrend() {
           return (
           <tr key={key}>
             <td>{item[0]}</td>
-            <td>{parseFloat(item[1])?.toLocaleString()} {currency}</td>
+            <td>{formatNumber(item[1])} {currency}</td>
           </tr>
         )})}
         </tbody>
