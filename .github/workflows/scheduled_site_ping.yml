@@ -13,4 +13,4 @@ jobs:
       - name: cURL request
         run: |
           curl -I https://dev-expenses-api.pantheonsite.io/github-action-ping
-          curl -I https://dev-zepto-cms.pantheonsite.io/github-action-ping
+          curl -I https://dev-schwarz-cms.pantheonsite.io/github-action-ping
