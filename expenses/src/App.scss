@@ -204,10 +204,14 @@ body {
   }
 }
 
-select {
+select, input {
   background: var(--bg-color);
   color: #fff;
   border: 1px solid var(--accent-color);
+
+  &::placeholder {
+    color: #fff;
+  }
 }
 
 .add-transaction {
@@ -261,10 +265,6 @@ input[type=submit] {
   width: 80%;
 }
 .button.w-100 {
-  width: 100%;
-}
-.button.logout {
-  margin-top: 20px;
   width: 100%;
 }
 .add-transaction input[type=submit]:hover, .button:hover {
@@ -416,6 +416,7 @@ button:hover {
     padding: 10px;
     border-radius: 20px;
     min-width: 265px;
+    margin-top: 20px;
   }
 }
 .charts-page {
@@ -518,9 +519,6 @@ button:hover {
 }
 .user-avatar.saved svg {
   animation: avatar-blink 2s ease 1;
-}
-.currency, .theme {
-  margin-top: 20px;
 }
 @keyframes avatar-blink {
   0% {
