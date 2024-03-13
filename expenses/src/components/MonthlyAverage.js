@@ -18,7 +18,7 @@ export default function MonthlyAverage() {
       <span className="heading">Monthly average per category</span>
       <table className="daily-average">
         <tbody>
-        {Object.values(data.categoryTotals).map((item, key) => (
+        {Object.values(data.categoryTotals)?.sort((a, b) => b.y - a.y)?.map((item, key) => (
           <tr key={key}>
             <td>{item.name}</td>
             <td>{formatNumber(parseFloat(item.y / monthsPassed).toFixed(2))} {currency} / month</td>
