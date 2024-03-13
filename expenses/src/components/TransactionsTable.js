@@ -1,5 +1,5 @@
 import React, {useRef} from "react";
-import { useSortableData } from '../utils/useSortableData';
+import {useSortableData, getClassNamesFor} from '../utils/useSortableData';
 import {categories as categoriesArray, monthNames} from '../utils/constants';
 import useSwipeActions from "../hooks/useSwipeActions";
 import {FaTrash, FaPen} from "react-icons/fa";
@@ -50,8 +50,6 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
     weekPercentage = 100 - ((totalSumForCategory / parseInt(weeklyBudget)) * 100);
     weekPercentage = weekPercentage <= 0 ? 0.01 : weekPercentage;
   }
-
-  const getClassNamesFor = (name) => (sortConfig && sortConfig.key === name) ? sortConfig.direction : '';
 
   const income = incomeTotals ? incomeTotals[month] : -1;
   const profit = parseFloat((income - total).toFixed(2));
@@ -105,7 +103,9 @@ const TransactionsTable = ({ month, total, items, handleEdit, setShowDeleteModal
           <thead>
           <tr>
             <th>Date</th>
-            <th onClick={() => requestSort('sum')} className={`sortable ${getClassNamesFor('sum')}`}>Amount</th>
+            <th onClick={() => requestSort('sum')} className={`sortable ${getClassNamesFor(sortConfig, 'sum')}`}>
+              Amount
+            </th>
             <th>Category</th>
             <th>Description</th>
             <th className="desktop-only"></th>

@@ -510,6 +510,45 @@ button:hover {
   background: var(--secondary-color);
   border: 2px solid var(--bg-color);
 }
+
+.daily-average thead tr {
+  //box-shadow: 0 19px 38px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
+  background-color: var(--secondary-color);
+}
+.daily-average th {
+  padding: 0 5px;
+  position: relative;
+}
+.daily-average th.sortable:before,
+.daily-average th.sortable:after {
+  border: 5px solid transparent;
+  content: "";
+  right: 5px;
+  top: 50%;
+  position: absolute;
+}
+.daily-average th.sortable:before {
+  border-bottom-color: var(--accent-color);
+  margin-top: -10px;
+}
+.daily-average th.sortable:after {
+  border-top-color: var(--accent-color);
+  margin-top: 2px;
+}
+.daily-average th.sortable.ascending:after {
+  border: none;
+}
+.daily-average th.sortable.descending:before {
+  border: none;
+}
+.daily-average tr {
+  height: 50px;
+  background-color: var(--bg-color);
+}
+.daily-average tr:nth-of-type(even) {
+  background-color: var(--secondary-color);
+}
+
 .user-avatar svg {
   width: 200px;
   height: 200px;

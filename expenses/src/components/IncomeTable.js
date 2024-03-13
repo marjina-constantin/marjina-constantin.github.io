@@ -1,7 +1,7 @@
 import React, {useRef} from "react";
 import useSwipeActions from "../hooks/useSwipeActions";
 import {FaPen, FaTrash} from "react-icons/fa";
-import {useSortableData} from "../utils/useSortableData";
+import {useSortableData, getClassNamesFor} from "../utils/useSortableData";
 import {useAuthState} from "../context";
 import {formatNumber} from "../utils/utils";
 
@@ -9,7 +9,6 @@ export default function IncomeTable({items, handleEdit, setShowDeleteModal}) {
   const total = items && items.length ? items.reduce((accumulator, curValue) => (parseFloat(accumulator) + (parseFloat(curValue['sum']) || 0)).toFixed(2), 0) : 0;
   const { sortedItems, requestSort, sortConfig } = useSortableData(items);
   const { currency } = useAuthState();
-  const getClassNamesFor = (name) => (sortConfig && sortConfig.key === name) ? sortConfig.direction : '';
   const tableRef = useRef(null);
   const {
     handleTouchStart,
@@ -27,7 +26,9 @@ export default function IncomeTable({items, handleEdit, setShowDeleteModal}) {
         <thead>
         <tr>
           <th>Date</th>
-          <th onClick={() => requestSort('sum')} className={`sortable ${getClassNamesFor('sum')}`}>Amount</th>
+          <th onClick={() => requestSort('sum')} className={`sortable ${getClassNamesFor(sortConfig, 'sum')}`}>
+            Amount
+          </th>
           <th>Description</th>
           <th className="desktop-only"></th>
           <th className="desktop-only"></th>

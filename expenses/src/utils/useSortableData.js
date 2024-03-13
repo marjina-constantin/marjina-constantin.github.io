@@ -33,3 +33,5 @@ export const useSortableData = (items, config = null) => {
     return { sortedItems: sortedItems, requestSort, sortConfig };
 };
 
+export const getClassNamesFor = (sortConfig, name) => sortConfig && sortConfig.key === name ? sortConfig.direction : '';
+

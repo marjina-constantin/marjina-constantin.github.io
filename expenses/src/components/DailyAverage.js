@@ -1,9 +1,9 @@
 import React, {useEffect} from "react";
 import {useAuthState, useData} from "../context";
 import {formatNumber} from "../utils/utils";
+import {useSortableData, getClassNamesFor} from "../utils/useSortableData";
 
 export default function DailyAverage() {
-
   const { data } = useData();
   const { currency } = useAuthState();
 
@@ -12,13 +12,22 @@ export default function DailyAverage() {
 
   const firstDay = data.raw[data.raw.length - 1]?.dt;
   const daysPassed = parseInt((new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1);
+  const { sortedItems, requestSort, sortConfig } = useSortableData(Object.values(data.categoryTotals));
 
   return (
     <>
       <span className="heading">Daily average per category</span>
       <table className="daily-average">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th onClick={() => requestSort('y')} className={`sortable ${getClassNamesFor(sortConfig, 'y')}`}>
+              Amount
+            </th>
+          </tr>
+        </thead>
         <tbody>
-        {Object.values(data.categoryTotals)?.sort((a, b) => b.y - a.y)?.map((item, key) => (
+        {sortedItems.map((item, key) => (
           <tr key={key}>
             <td>{item.name}</td>
             <td>{formatNumber(parseFloat(item.y / daysPassed).toFixed(2))} {currency} / day</td>
