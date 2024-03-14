@@ -85,7 +85,9 @@ export default function YearIncomeAverageTrend() {
             <td>Total</td>
             <td>{formatNumber(sumIncome)} {currency}</td>
             <td>{formatNumber(totalSpent)} {currency}</td>
-            <td>{formatNumber(sumDiff)} {currency}</td>
+            <td>
+              {formatNumber(sumDiff)} {currency} ({parseFloat(parseFloat(((totalSpent / sumIncome) - 1) * -100).toFixed(2))}%)
+            </td>
           </tr>
           </tbody>
         </table>
