@@ -26,7 +26,8 @@
     "start": "react-scripts start",
     "build": "GENERATE_SOURCEMAP=false react-scripts build && mv build home",
     "eject": "react-scripts eject",
-    "lint": "eslint --fix src/"
+    "lint": "eslint --fix src/",
+    "tsc": "tsc"
   },
   "eslintConfig": {
     "extends": [
@@ -50,7 +51,8 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.1",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.2"
   },
   "prettier": {
     "trailingComma": "es5",

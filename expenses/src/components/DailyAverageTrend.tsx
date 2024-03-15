@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import { Item, Daily } from '../type/types';
 
 export default function DailyAverageTrend() {
   const { data } = useData();
@@ -21,40 +22,42 @@ export default function DailyAverageTrend() {
   }, [data.raw, data.filtered_raw]);
 
   const firstDay = new Date(data.raw[data.raw.length - 1]?.dt);
-  const getNrOfDaysFromStart = (endDate) => {
+  const getNrOfDaysFromStart = (endDate: Date) => {
     const difference = endDate.getTime() - firstDay.getTime();
-    return parseInt(difference / (1000 * 3600 * 24)) + 1;
+    return parseInt(String(difference / (1000 * 3600 * 24))) + 1;
   };
 
-  let dailyExpenses = {};
-  let dailyIncomes = {};
+  let dailyExpenses: Daily[] = [];
+  let dailyIncomes: Daily[] = [];
   let totalExpensesAtDate = 0;
   let totalIncomesAtDate = 0;
   const dataInChronologicalOrder = items.slice().reverse();
 
   for (const item of dataInChronologicalOrder) {
-    const itemDate = new Date(item.dt);
-    if (item.type === 'incomes') {
+    const itemDate = new Date((item as Item).dt);
+    if ((item as Item).type === 'incomes') {
       totalIncomesAtDate =
-        parseFloat(totalIncomesAtDate) + parseFloat(item.sum);
+        parseFloat(String(totalIncomesAtDate)) + parseFloat((item as Item).sum);
     } else {
       totalExpensesAtDate =
-        parseFloat(totalExpensesAtDate) + parseFloat(item.sum);
+        parseFloat(String(totalExpensesAtDate)) + parseFloat((item as Item).sum);
     }
 
-    dailyIncomes[item.dt] = [
+    // @ts-expect-error TBC
+    dailyIncomes[(item as Item).dt] = [
       itemDate.getTime(),
       parseFloat(
-        parseFloat(totalIncomesAtDate / getNrOfDaysFromStart(itemDate)).toFixed(
+        parseFloat(String(totalIncomesAtDate / getNrOfDaysFromStart(itemDate))).toFixed(
           2
         )
       ),
     ];
-    dailyExpenses[item.dt] = [
+    // @ts-expect-error TBC
+    dailyExpenses[(item as Item).dt] = [
       itemDate.getTime(),
       parseFloat(
         parseFloat(
-          totalExpensesAtDate / getNrOfDaysFromStart(itemDate)
+          String(totalExpensesAtDate / getNrOfDaysFromStart(itemDate))
         ).toFixed(2)
       ),
     ];
