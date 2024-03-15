@@ -9,11 +9,11 @@ export async function loginUser(dispatch, loginPayload) {
 
   try {
     dispatch({ type: 'REQUEST_LOGIN' });
-    let response = await fetch(
+    const response = await fetch(
       `${ROOT_URL}/user/login/google?_format=json`,
       requestOptions
     );
-    let data = await response.json();
+    const data = await response.json();
 
     if (data.current_user) {
       dispatch({ type: 'LOGIN_SUCCESS', payload: data });
@@ -28,8 +28,8 @@ export async function loginUser(dispatch, loginPayload) {
 }
 
 export async function logout(dispatch, dataDispatch) {
-  dispatch({ type: 'LOGOUT' });
-  dataDispatch({ type: 'REMOVE_DATA' });
-  localStorage.removeItem('currentUser');
-  localStorage.removeItem('token');
+  await dispatch({ type: 'LOGOUT' });
+  await dataDispatch({ type: 'REMOVE_DATA' });
+  await localStorage.removeItem('currentUser');
+  await localStorage.removeItem('token');
 }

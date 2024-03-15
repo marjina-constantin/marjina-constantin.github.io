@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { categories } from '../utils/constants';
 import { useData } from '../context';
 import { FaSearch } from 'react-icons/fa';

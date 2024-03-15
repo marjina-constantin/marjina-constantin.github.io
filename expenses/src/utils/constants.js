@@ -174,7 +174,7 @@ export const currencies = {
   TJS: 'Tajikistani Somoni',
   TMT: 'Turkmenistani Manat',
   TND: 'Tunisian Dinar',
-  TOP: "Tongan Pa'anga",
+  TOP: 'Tongan Pa\'anga',
   TRY: 'Turkish Lira',
   TTD: 'Trinidad and Tobago Dollar',
   TWD: 'New Taiwan Dollar',

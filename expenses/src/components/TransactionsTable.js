@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
-import { useSortableData, getClassNamesFor } from '../utils/useSortableData';
+import { getClassNamesFor, useSortableData } from '../utils/useSortableData';
 import { categories as categoriesArray, monthNames } from '../utils/constants';
 import useSwipeActions from '../hooks/useSwipeActions';
-import { FaTrash, FaPen } from 'react-icons/fa';
+import { FaPen, FaTrash } from 'react-icons/fa';
 import NumberDisplay from './NumberDisplay';
 import { useAuthState, useData } from '../context';
 import { formatNumber } from '../utils/utils';
@@ -180,7 +180,7 @@ const TransactionsTable = ({
                 </td>
                 <td className="desktop-only">
                   <button
-                    onClick={(e) => setShowDeleteModal(element.id)}
+                    onClick={() => setShowDeleteModal(element.id)}
                     className="btn-outline"
                   >
                     Delete

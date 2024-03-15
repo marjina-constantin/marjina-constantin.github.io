@@ -1,0 +1,28 @@
+{
+  "env": {
+    "es2023": true,
+    "browser": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "plugins": ["react"],
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off",
+    "no-undef": "off",
+    "eqeqeq": "error",
+    "require-await": "error",
+    "no-var": "error",
+    "quotes": ["error", "single"],
+    "prefer-const": "error"
+  }
+}

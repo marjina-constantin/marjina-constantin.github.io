@@ -1,11 +1,11 @@
 import { NavLink } from 'react-router-dom';
 import { useAuthState } from '../context';
 import {
-  FaHome,
   FaChartPie,
-  FaUser,
-  FaPlus,
+  FaHome,
   FaMoneyBill,
+  FaPlus,
+  FaUser,
 } from 'react-icons/fa';
 import { useState } from 'react';
 

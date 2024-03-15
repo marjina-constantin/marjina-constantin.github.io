@@ -3,7 +3,7 @@ import { logout } from '../context';
 
 const handleErrors = (response, options, dataDispatch, dispatch) => {
   if (!response.ok) {
-    fetch(`https://dev-expenses-api.pantheonsite.io/jwt/token`, options).then(
+    fetch('https://dev-expenses-api.pantheonsite.io/jwt/token', options).then(
       (response) => {
         if (response.status === 403) {
           logout(dispatch, dataDispatch);
@@ -90,15 +90,15 @@ export const fetchData = (
     dataDispatch,
     dispatch,
     (data) => {
-      let groupedData = {};
+      const groupedData = {};
       const totalsPerYearAndMonth = {};
       const totalPerYear = {};
-      let incomeData = [];
-      let monthsTotals = {};
-      let incomeTotals = {};
-      let totalIncomePerYear = {};
-      let totalIncomePerYearAndMonth = {};
-      let categoryTotals = {};
+      const incomeData = [];
+      const monthsTotals = {};
+      const incomeTotals = {};
+      const totalIncomePerYear = {};
+      const totalIncomePerYearAndMonth = {};
+      const categoryTotals = {};
       let totalSpent = 0;
       const updateYearAndMonth = (year, month) => {
         if (!totalsPerYearAndMonth[year]) {

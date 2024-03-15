@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import useSwipeActions from '../hooks/useSwipeActions';
 import { FaPen, FaTrash } from 'react-icons/fa';
-import { useSortableData, getClassNamesFor } from '../utils/useSortableData';
+import { getClassNamesFor, useSortableData } from '../utils/useSortableData';
 import { useAuthState } from '../context';
 import { formatNumber } from '../utils/utils';
 
@@ -78,7 +78,7 @@ export default function IncomeTable({ items, handleEdit, setShowDeleteModal }) {
               </td>
               <td className="desktop-only">
                 <button
-                  onClick={(e) => setShowDeleteModal(element.id)}
+                  onClick={() => setShowDeleteModal(element.id)}
                   className="btn-outline"
                 >
                   Delete

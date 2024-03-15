@@ -12,7 +12,7 @@ export default function LastTwoMonthsAverage() {
   let userHasMoreThanTwoMonths = false;
   let lastProcessedItem = {};
   const twoMonthsAgo = new Date().setDate(new Date().getDate() - 60);
-  for (let item of data.raw) {
+  for (const item of data.raw) {
     if (item.type === 'incomes') {
       continue;
     }

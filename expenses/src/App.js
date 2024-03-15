@@ -1,10 +1,10 @@
-import React from 'react';
 import './App.scss';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider, NotificationProvider } from './context';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import AppRoute from './components/AppRoute';
+import React from 'react';
 import routes from './config/routes';
 import Navbar from './components/Navbar';
-import { AuthProvider, NotificationProvider } from './context';
-import AppRoute from './components/AppRoute';
 
 function App() {
   return (

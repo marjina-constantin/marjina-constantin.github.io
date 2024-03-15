@@ -5,7 +5,7 @@ import { useAuthState } from '../context';
 const AppRoute = ({ component: Component, isPrivate }) => {
   const userDetails = useAuthState();
 
-  if (isPrivate && !Boolean(userDetails.token)) {
+  if (isPrivate && !userDetails.token) {
     return <Navigate to="/expenses/login" />;
   }
 

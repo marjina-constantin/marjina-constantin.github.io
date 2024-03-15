@@ -1,6 +1,6 @@
 import { categories, monthNames } from '../utils/constants';
 
-let user = localStorage.getItem('currentUser')
+const user = localStorage.getItem('currentUser')
   ? JSON.parse(localStorage.getItem('currentUser'))
   : '';
 const token = localStorage.getItem('currentUser')

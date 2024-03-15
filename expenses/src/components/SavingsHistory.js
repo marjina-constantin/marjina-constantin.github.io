@@ -23,7 +23,7 @@ export default function SavingsHistory() {
   let totalIncomesAtDate = 0;
   const dataInChronologicalOrder = items.slice().reverse();
 
-  for (let item of dataInChronologicalOrder) {
+  for (const item of dataInChronologicalOrder) {
     const itemDate = new Date(item.dt);
     if (item.type === 'incomes') {
       totalIncomesAtDate =

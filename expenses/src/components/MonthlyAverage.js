@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useAuthState, useData } from '../context';
 import { formatNumber } from '../utils/utils';
-import { useSortableData, getClassNamesFor } from '../utils/useSortableData';
+import { getClassNamesFor, useSortableData } from '../utils/useSortableData';
 export default function MonthlyAverage() {
   const { data } = useData();
   const { currency } = useAuthState();

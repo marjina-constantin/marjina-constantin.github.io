@@ -13,14 +13,14 @@ const Login = () => {
   }
 
   const handleLogin = async (googleResponse) => {
-    let payload = { access_token: googleResponse.accessToken };
+    const payload = { access_token: googleResponse.accessToken };
     try {
-      let response = await loginUser(dispatch, payload);
+      const response = await loginUser(dispatch, payload);
       if (!response.current_user) {
         return;
       }
 
-      navigate(`/expenses`);
+      navigate('/expenses');
     } catch (error) {
       console.log(error);
     }

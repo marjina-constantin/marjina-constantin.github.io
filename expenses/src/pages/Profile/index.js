@@ -16,8 +16,9 @@ const Profile = () => {
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
-  let { userDetails, token, currency, theme, weeklyBudget, monthlyBudget } =
+  const { userDetails, token, currency, weeklyBudget, monthlyBudget } =
     useAuthState();
+  let { theme } = useAuthState();
   const [state, setState] = useState({
     weeklyBudget: weeklyBudget,
     monthlyBudget: monthlyBudget,

@@ -5,7 +5,7 @@ import {
   useAuthState,
   useData,
 } from './context';
-import { useNotification, NotificationProvider } from './notification';
+import { NotificationProvider, useNotification } from './notification';
 
 export {
   AuthProvider,

@@ -4,7 +4,7 @@ export const useSortableData = (items, config = null) => {
   const [sortConfig, setSortConfig] = useState(config);
 
   const sortedItems = useMemo(() => {
-    let sortableItems = [...items];
+    const sortableItems = [...items];
     if (sortConfig !== null) {
       sortableItems.sort((a, b) => {
         if (sortConfig.direction === 'ascending') {

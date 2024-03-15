@@ -14,7 +14,7 @@ export default function LastMonth() {
 
   const oneMonthAgo = new Date().setDate(new Date().getDate() - 30);
   const lastMonthTotals = {};
-  for (let item of data.raw) {
+  for (const item of data.raw) {
     if (item.type === 'incomes') {
       continue;
     }

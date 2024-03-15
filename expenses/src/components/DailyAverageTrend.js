@@ -22,7 +22,7 @@ export default function DailyAverageTrend() {
 
   const firstDay = new Date(data.raw[data.raw.length - 1]?.dt);
   const getNrOfDaysFromStart = (endDate) => {
-    let difference = endDate.getTime() - firstDay.getTime();
+    const difference = endDate.getTime() - firstDay.getTime();
     return parseInt(difference / (1000 * 3600 * 24)) + 1;
   };
 
@@ -32,7 +32,7 @@ export default function DailyAverageTrend() {
   let totalIncomesAtDate = 0;
   const dataInChronologicalOrder = items.slice().reverse();
 
-  for (let item of dataInChronologicalOrder) {
+  for (const item of dataInChronologicalOrder) {
     const itemDate = new Date(item.dt);
     if (item.type === 'incomes') {
       totalIncomesAtDate =
