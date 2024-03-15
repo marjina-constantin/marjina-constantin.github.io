@@ -22,7 +22,6 @@
     "eqeqeq": "error",
     "require-await": "error",
     "no-var": "error",
-    "quotes": ["error", "single"],
     "prefer-const": "error"
   }
 }
