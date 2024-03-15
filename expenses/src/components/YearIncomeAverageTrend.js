@@ -1,21 +1,21 @@
-import React from 'react'
-import { useAuthState, useData } from '../context'
-import Highcharts from 'highcharts'
-import HighchartsReact from 'highcharts-react-official'
-import { formatDataForChart, formatNumber } from '../utils/utils'
-import { monthNames } from '../utils/constants'
+import React from 'react';
+import { useAuthState, useData } from '../context';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
+import { formatDataForChart, formatNumber } from '../utils/utils';
+import { monthNames } from '../utils/constants';
 
 export default function YearIncomeAverageTrend() {
-  const { data } = useData()
-  const { currency } = useAuthState()
+  const { data } = useData();
+  const { currency } = useAuthState();
 
-  const totalIncomePerYear = data?.totalIncomePerYear || {}
-  const totalPerYear = data?.totalPerYear || {}
-  const totalSpent = data?.totalSpent || 0
+  const totalIncomePerYear = data?.totalIncomePerYear || {};
+  const totalPerYear = data?.totalPerYear || {};
+  const totalSpent = data?.totalSpent || 0;
 
   const formattedIncomeData = formatDataForChart(
     data?.totalIncomePerYearAndMonth
-  )
+  );
 
   const yearIncomeAverageOptions = {
     chart: {
@@ -46,10 +46,10 @@ export default function YearIncomeAverageTrend() {
       enabled: false,
     },
     series: formattedIncomeData,
-  }
+  };
 
-  let sumDiff = 0
-  let sumIncome = 0
+  let sumDiff = 0;
+  let sumIncome = 0;
   return (
     <>
       <HighchartsReact
@@ -69,14 +69,14 @@ export default function YearIncomeAverageTrend() {
           </thead>
           <tbody>
             {Object.entries(totalIncomePerYear).map((item, key) => {
-              const diff = parseInt(item[1]) - parseInt(totalPerYear[item[0]])
+              const diff = parseInt(item[1]) - parseInt(totalPerYear[item[0]]);
               const savingsPercent = parseFloat(
                 parseFloat(
                   (totalPerYear[item[0]] / item[1] - 1) * -100
                 ).toFixed(2)
-              )
-              sumDiff += parseFloat(diff)
-              sumIncome += parseFloat(item[1])
+              );
+              sumDiff += parseFloat(diff);
+              sumIncome += parseFloat(item[1]);
               return (
                 <tr key={key}>
                   <td>{item[0]}</td>
@@ -92,7 +92,7 @@ export default function YearIncomeAverageTrend() {
                       : `${formatNumber(diff)} ${currency}`}
                   </td>
                 </tr>
-              )
+              );
             })}
             <tr>
               <td>Total</td>
@@ -114,5 +114,5 @@ export default function YearIncomeAverageTrend() {
         </table>
       </div>
     </>
-  )
+  );
 }

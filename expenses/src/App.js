@@ -1,10 +1,10 @@
-import React from 'react'
-import './App.scss'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import routes from './config/routes'
-import Navbar from './components/Navbar'
-import { AuthProvider, NotificationProvider } from './context'
-import AppRoute from './components/AppRoute'
+import React from 'react';
+import './App.scss';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import routes from './config/routes';
+import Navbar from './components/Navbar';
+import { AuthProvider, NotificationProvider } from './context';
+import AppRoute from './components/AppRoute';
 
 function App() {
   return (
@@ -30,7 +30,7 @@ function App() {
         </Router>
       </NotificationProvider>
     </AuthProvider>
-  )
+  );
 }
 
-export default App
+export default App;

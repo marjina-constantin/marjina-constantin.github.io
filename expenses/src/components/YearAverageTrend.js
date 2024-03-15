@@ -1,16 +1,16 @@
-import React, { useEffect } from 'react'
-import { useAuthState, useData } from '../context'
-import Highcharts from 'highcharts'
-import HighchartsReact from 'highcharts-react-official'
-import { formatDataForChart, formatNumber } from '../utils/utils'
-import { monthNames } from '../utils/constants'
+import React, { useEffect } from 'react';
+import { useAuthState, useData } from '../context';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
+import { formatDataForChart, formatNumber } from '../utils/utils';
+import { monthNames } from '../utils/constants';
 
 export default function YearAverageTrend() {
-  const { data } = useData()
-  const { currency } = useAuthState()
+  const { data } = useData();
+  const { currency } = useAuthState();
   const items =
-    data?.filtered?.totalsPerYearAndMonth || data?.totalsPerYearAndMonth
-  const totalPerYear = data?.filtered?.totalPerYear || data?.totalPerYear
+    data?.filtered?.totalsPerYearAndMonth || data?.totalsPerYearAndMonth;
+  const totalPerYear = data?.filtered?.totalPerYear || data?.totalPerYear;
 
   // Re-render the component only when dependencies are changed.
   useEffect(() => {}, [
@@ -18,9 +18,9 @@ export default function YearAverageTrend() {
     data?.filtered?.totalsPerYearAndMonth,
     data?.totalPerYear,
     data?.filtered?.totalPerYear,
-  ])
+  ]);
 
-  const formattedData = formatDataForChart(items)
+  const formattedData = formatDataForChart(items);
 
   const dailyAverageOptions = {
     chart: {
@@ -51,7 +51,7 @@ export default function YearAverageTrend() {
       enabled: false,
     },
     series: formattedData,
-  }
+  };
 
   return (
     <>
@@ -67,10 +67,10 @@ export default function YearAverageTrend() {
                   {formatNumber(item[1])} {currency}
                 </td>
               </tr>
-            )
+            );
           })}
         </tbody>
       </table>
     </>
-  )
+  );
 }

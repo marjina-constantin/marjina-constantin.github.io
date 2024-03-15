@@ -1,43 +1,43 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react'
-import { categories } from '../utils/constants'
-import { useData } from '../context'
-import { FaSearch } from 'react-icons/fa'
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { categories } from '../utils/constants';
+import { useData } from '../context';
+import { FaSearch } from 'react-icons/fa';
 
 export default function Filters() {
-  const { data, dataDispatch } = useData()
+  const { data, dataDispatch } = useData();
 
   const [state, setState] = useState({
     category: data.category ?? '',
     textFilter: data.textFilter ?? '',
-  })
-  const [showTextFilter, setShowTextFilter] = useState(false)
-  const textInputRef = useRef(null)
+  });
+  const [showTextFilter, setShowTextFilter] = useState(false);
+  const textInputRef = useRef(null);
 
-  const prevFilterState = useRef(state)
+  const prevFilterState = useRef(state);
 
   const handleCategoryChange = (event) => {
-    const category = event.target.value
+    const category = event.target.value;
     setState((prevState) => ({
       ...prevState,
       category,
-    }))
-  }
+    }));
+  };
 
   const handleTextFilterChange = (event) => {
-    const textFilter = event.target.value
+    const textFilter = event.target.value;
     setState((prevState) => ({
       ...prevState,
       textFilter,
-    }))
-  }
+    }));
+  };
 
   const handleClearFilters = () => {
     setState({
       category: '',
       textFilter: '',
-    })
-    setShowTextFilter(false)
-  }
+    });
+    setShowTextFilter(false);
+  };
 
   useEffect(() => {
     if (prevFilterState.current !== state) {
@@ -46,23 +46,23 @@ export default function Filters() {
         type: 'FILTER_DATA',
         category: state.category,
         textFilter: state.textFilter,
-      })
-      prevFilterState.current = state
+      });
+      prevFilterState.current = state;
     }
-  }, [state])
+  }, [state]);
 
   useLayoutEffect(() => {
     if (showTextFilter && textInputRef.current) {
-      textInputRef.current.focus()
+      textInputRef.current.focus();
     }
-  }, [showTextFilter])
+  }, [showTextFilter]);
 
   return (
     <div className="filters">
       {!showTextFilter && (
         <FaSearch
           onClick={() => {
-            setShowTextFilter(true)
+            setShowTextFilter(true);
           }}
         />
       )}
@@ -93,5 +93,5 @@ export default function Filters() {
         </button>
       )}
     </div>
-  )
+  );
 }

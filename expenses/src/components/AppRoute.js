@@ -1,15 +1,15 @@
-import React from 'react'
-import { Navigate } from 'react-router-dom'
-import { useAuthState } from '../context'
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuthState } from '../context';
 
 const AppRoute = ({ component: Component, isPrivate }) => {
-  const userDetails = useAuthState()
+  const userDetails = useAuthState();
 
   if (isPrivate && !Boolean(userDetails.token)) {
-    return <Navigate to="/expenses/login" />
+    return <Navigate to="/expenses/login" />;
   }
 
-  return <Component />
-}
+  return <Component />;
+};
 
-export default AppRoute
+export default AppRoute;

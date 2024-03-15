@@ -1,22 +1,22 @@
-import React, { useEffect } from 'react'
-import { useAuthState, useData } from '../context'
-import { formatNumber } from '../utils/utils'
-import { useSortableData, getClassNamesFor } from '../utils/useSortableData'
+import React, { useEffect } from 'react';
+import { useAuthState, useData } from '../context';
+import { formatNumber } from '../utils/utils';
+import { useSortableData, getClassNamesFor } from '../utils/useSortableData';
 
 export default function DailyAverage() {
-  const { data } = useData()
-  const { currency } = useAuthState()
+  const { data } = useData();
+  const { currency } = useAuthState();
 
   // Re-render the component only when dependencies are changed.
-  useEffect(() => {}, [data.raw, data.categoryTotals])
+  useEffect(() => {}, [data.raw, data.categoryTotals]);
 
-  const firstDay = data.raw[data.raw.length - 1]?.dt
+  const firstDay = data.raw[data.raw.length - 1]?.dt;
   const daysPassed = parseInt(
     (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1
-  )
+  );
   const { sortedItems, requestSort, sortConfig } = useSortableData(
     Object.values(data.categoryTotals)
-  )
+  );
 
   return (
     <>
@@ -51,5 +51,5 @@ export default function DailyAverage() {
         {currency}
       </div>
     </>
-  )
+  );
 }

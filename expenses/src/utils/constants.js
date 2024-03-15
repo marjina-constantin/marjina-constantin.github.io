@@ -14,7 +14,7 @@ export const categories = [
   { value: '12', label: 'Family' },
   { value: '13', label: 'Investment' },
   { value: '14', label: 'Drinks' },
-]
+];
 
 export const monthNames = [
   'January',
@@ -29,7 +29,7 @@ export const monthNames = [
   'October',
   'November',
   'December',
-]
+];
 
 export const currencies = {
   AED: 'United Arab Emirates Dirham',
@@ -202,7 +202,7 @@ export const currencies = {
   ZAR: 'South African Rand',
   ZMW: 'Zambian Kwacha',
   ZWL: 'Zimbabwean Dollar',
-}
+};
 
 export const suggestions = {
   '': [],
@@ -255,12 +255,12 @@ export const suggestions = {
   12: ['Nelea'],
   13: ['nunta', 'cumatrie'],
   14: ['vin', 'bere', 'whiskey', 'cognac', 'gin', 'cocktails'],
-}
+};
 
 export const notificationType = {
   SUCCESS: 'success',
   ERROR: 'error',
-}
+};
 
 export const themeList = {
   'bondi-blue': 'Bondi blue',
@@ -272,4 +272,4 @@ export const themeList = {
   cadetblue: 'Cadet blue',
   'blue-pink-gradient': 'Blue pink gradient',
   'pearl-aqua': 'Pearl Aqua',
-}
+};

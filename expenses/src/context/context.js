@@ -1,40 +1,40 @@
-import React, { useReducer } from 'react'
-import { AuthReducer, initialState, DataReducer, initialData } from './reducer'
+import React, { useReducer } from 'react';
+import { AuthReducer, initialState, DataReducer, initialData } from './reducer';
 
-const AuthStateContext = React.createContext()
-const AuthDispatchContext = React.createContext()
-const DataContext = React.createContext()
+const AuthStateContext = React.createContext();
+const AuthDispatchContext = React.createContext();
+const DataContext = React.createContext();
 
 export function useAuthState() {
-  const context = React.useContext(AuthStateContext)
+  const context = React.useContext(AuthStateContext);
   if (context === undefined) {
-    throw new Error('useAuthState must be used within a AuthProvider')
+    throw new Error('useAuthState must be used within a AuthProvider');
   }
 
-  return context
+  return context;
 }
 
 export function useData() {
-  const context = React.useContext(DataContext)
+  const context = React.useContext(DataContext);
   if (context === undefined) {
-    throw new Error('useData must be used within a AuthProvider')
+    throw new Error('useData must be used within a AuthProvider');
   }
 
-  return context
+  return context;
 }
 
 export function useAuthDispatch() {
-  const context = React.useContext(AuthDispatchContext)
+  const context = React.useContext(AuthDispatchContext);
   if (context === undefined) {
-    throw new Error('useAuthDispatch must be used within a AuthProvider')
+    throw new Error('useAuthDispatch must be used within a AuthProvider');
   }
 
-  return context
+  return context;
 }
 
 export const AuthProvider = ({ children }) => {
-  const [user, dispatch] = useReducer(AuthReducer, initialState)
-  const [data, dataDispatch] = useReducer(DataReducer, initialData)
+  const [user, dispatch] = useReducer(AuthReducer, initialState);
+  const [data, dataDispatch] = useReducer(DataReducer, initialData);
 
   return (
     <AuthStateContext.Provider value={user}>
@@ -44,5 +44,5 @@ export const AuthProvider = ({ children }) => {
         </DataContext.Provider>
       </AuthDispatchContext.Provider>
     </AuthStateContext.Provider>
-  )
-}
+  );
+};
