@@ -1,22 +1,20 @@
 const nodemailer = require('nodemailer');
-const { google } = require("googleapis");
+const { google } = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
-
 
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
 const refresh_token = process.env.REFRESH_TOKEN;
 
-
 const createTransporter = async () => {
   const oauth2Client = new OAuth2(
     client_id,
     client_secret,
-    "https://developers.google.com/oauthplayground"
+    'https://developers.google.com/oauthplayground'
   );
 
   oauth2Client.setCredentials({
-    refresh_token: refresh_token
+    refresh_token: refresh_token,
   });
 
   const accessToken = await new Promise((resolve, reject) => {
@@ -29,15 +27,15 @@ const createTransporter = async () => {
   });
 
   return nodemailer.createTransport({
-    service: "gmail",
+    service: 'gmail',
     auth: {
-      type: "OAuth2",
+      type: 'OAuth2',
       user: process.env.FROM_EMAIL,
       accessToken,
       clientId: client_id,
       clientSecret: client_secret,
-      refreshToken: refresh_token
-    }
+      refreshToken: refresh_token,
+    },
   });
 };
 
@@ -48,8 +46,8 @@ const sendEmail = async (emailOptions) => {
 };
 
 sendEmail({
-  subject: "Expenses App - Deploy complete!",
+  subject: 'Expenses App - Deploy complete!',
   text: `The following feature/fix has been deployed: ${process.argv[2]}`,
   to: process.env.FROM_EMAIL,
-  from: process.env.FROM_EMAIL
+  from: process.env.FROM_EMAIL,
 });

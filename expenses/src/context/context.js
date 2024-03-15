@@ -1,5 +1,5 @@
-import React, {useReducer} from "react";
-import {AuthReducer, initialState, DataReducer, initialData} from "./reducer";
+import React, { useReducer } from 'react';
+import { AuthReducer, initialState, DataReducer, initialData } from './reducer';
 
 const AuthStateContext = React.createContext();
 const AuthDispatchContext = React.createContext();
@@ -8,7 +8,7 @@ const DataContext = React.createContext();
 export function useAuthState() {
   const context = React.useContext(AuthStateContext);
   if (context === undefined) {
-    throw new Error("useAuthState must be used within a AuthProvider");
+    throw new Error('useAuthState must be used within a AuthProvider');
   }
 
   return context;
@@ -17,7 +17,7 @@ export function useAuthState() {
 export function useData() {
   const context = React.useContext(DataContext);
   if (context === undefined) {
-    throw new Error("useData must be used within a AuthProvider");
+    throw new Error('useData must be used within a AuthProvider');
   }
 
   return context;
@@ -26,7 +26,7 @@ export function useData() {
 export function useAuthDispatch() {
   const context = React.useContext(AuthDispatchContext);
   if (context === undefined) {
-    throw new Error("useAuthDispatch must be used within a AuthProvider");
+    throw new Error('useAuthDispatch must be used within a AuthProvider');
   }
 
   return context;
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthStateContext.Provider value={user}>
       <AuthDispatchContext.Provider value={dispatch}>
-        <DataContext.Provider value={{data, dataDispatch}}>
+        <DataContext.Provider value={{ data, dataDispatch }}>
           {children}
         </DataContext.Provider>
       </AuthDispatchContext.Provider>

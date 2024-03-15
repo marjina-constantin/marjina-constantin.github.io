@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {formatNumber} from "../utils/utils";
+import React, { useEffect, useState } from 'react';
+import { formatNumber } from '../utils/utils';
 
 const NumberDisplay = ({ number }) => {
   const [displayedNumber, setDisplayedNumber] = useState(0);

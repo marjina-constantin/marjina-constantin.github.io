@@ -1,9 +1,9 @@
-import React, { Suspense } from "react";
+import React, { Suspense } from 'react';
 
 const LazyCharts = () => {
-  const Charts = React.lazy(() => import("../Charts"));
+  const Charts = React.lazy(() => import('../Charts'));
   return (
-    <Suspense fallback=''>
+    <Suspense fallback="">
       <Charts />
     </Suspense>
   );

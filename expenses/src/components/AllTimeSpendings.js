@@ -1,7 +1,7 @@
-import React, {useEffect} from "react";
-import {useAuthState, useData} from "../context";
-import Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
+import React, { useEffect } from 'react';
+import { useAuthState, useData } from '../context';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
 
 export default function AllTimeSpendings() {
   // All time section
@@ -14,17 +14,21 @@ export default function AllTimeSpendings() {
   useEffect(() => {}, [data, currency]);
 
   const firstDay = data.raw[data.raw.length - 1]?.dt;
-  const daysPassed = parseInt((new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1);
-  const monthsPassed = daysPassed ? parseFloat(daysPassed / 30.42).toFixed(2) : 0;
+  const daysPassed = parseInt(
+    (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1
+  );
+  const monthsPassed = daysPassed
+    ? parseFloat(daysPassed / 30.42).toFixed(2)
+    : 0;
   const allTimeSpendings = {
     chart: {
-      type: 'pie'
+      type: 'pie',
     },
     title: {
-      text: "All Time Spending's"
+      text: "All Time Spending's",
     },
     tooltip: {
-      pointFormat: `{point.y} {series.name} ({point.percentage:.2f})%`
+      pointFormat: `{point.y} {series.name} ({point.percentage:.2f})%`,
     },
     plotOptions: {
       pie: {
@@ -32,24 +36,24 @@ export default function AllTimeSpendings() {
         borderWidth: 0,
       },
     },
-    series: [{
-      name: currency,
-      colorByPoint: true,
-      data: Object.values(items.categoryTotals)
-    }],
+    series: [
+      {
+        name: currency,
+        colorByPoint: true,
+        data: Object.values(items.categoryTotals),
+      },
+    ],
     credits: {
-      enabled: false
+      enabled: false,
     },
   };
 
   return (
     <>
-      <HighchartsReact
-        highcharts={Highcharts}
-        options={allTimeSpendings}
-      />
+      <HighchartsReact highcharts={Highcharts} options={allTimeSpendings} />
       <div className="average-spending">
-        Total spent: {parseFloat(items.totalSpent)?.toLocaleString()} {currency} in {monthsPassed} months
+        Total spent: {parseFloat(items.totalSpent)?.toLocaleString()} {currency}{' '}
+        in {monthsPassed} months
       </div>
     </>
   );

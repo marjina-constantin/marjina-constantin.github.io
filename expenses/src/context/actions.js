@@ -9,7 +9,10 @@ export async function loginUser(dispatch, loginPayload) {
 
   try {
     dispatch({ type: 'REQUEST_LOGIN' });
-    let response = await fetch(`${ROOT_URL}/user/login/google?_format=json`, requestOptions);
+    let response = await fetch(
+      `${ROOT_URL}/user/login/google?_format=json`,
+      requestOptions
+    );
     let data = await response.json();
 
     if (data.current_user) {

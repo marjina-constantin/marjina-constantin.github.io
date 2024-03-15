@@ -3,7 +3,7 @@ import './index.css';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
-import {createRoot} from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 
 const container = document.getElementById('root');
 
@@ -22,7 +22,7 @@ serviceWorkerRegistration.register({
     //     });
     // });
   },
-  scope: '/expenses/'
+  scope: '/expenses/',
 });
 
 // If you want to start measuring performance in your app, pass a function

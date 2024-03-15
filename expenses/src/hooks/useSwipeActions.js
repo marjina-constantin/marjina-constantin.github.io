@@ -36,14 +36,15 @@ const useSwipeActions = () => {
       const distanceX = startX - e.touches[0].clientX;
       const distanceY = startY - e.touches[0].clientY;
       setIsSwiping(Math.abs(distanceX) > Math.abs(distanceY));
-    }
-    else if (isSwiping) {
+    } else if (isSwiping) {
       // Prevent vertical scrolling.
       document.body.style.overflow = 'hidden';
 
       // Perform actions based on touch movement.
       const diff = e.touches[0].clientX - startX;
-      const trElement = tableRef.current.querySelector(`[data-id="${swipedItemId}"]`);
+      const trElement = tableRef.current.querySelector(
+        `[data-id="${swipedItemId}"]`
+      );
       // Apply transform style for the swipe effect.
       trElement.style.transform = `translateX(${diff}px)`;
       const trWidth = trElement.getBoundingClientRect().width;
@@ -52,8 +53,7 @@ const useSwipeActions = () => {
       const body = document.querySelector('body');
       if (diffPercentage > 40) {
         body.classList.add('action-active');
-      }
-      else {
+      } else {
         body.classList.remove('action-active');
       }
 
