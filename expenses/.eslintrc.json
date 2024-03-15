@@ -5,7 +5,7 @@
   },
   "extends": [
     "eslint:recommended",
-    "plugin:react/recommended"
+    "eslint-config-react-app"
   ],
   "parserOptions": {
     "ecmaVersion": "latest",
