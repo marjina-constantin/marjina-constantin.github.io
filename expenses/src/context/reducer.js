@@ -1,4 +1,4 @@
-import {categories, monthNames} from '../utils/constants';
+import { categories, monthNames } from "../utils/constants";
 
 let user = localStorage.getItem("currentUser")
   ? JSON.parse(localStorage.getItem("currentUser"))
@@ -23,8 +23,8 @@ export const initialState = {
   loading: false,
   errorMessage: null,
   userIsLoggedIn: !!user,
-  currency: user?.current_user?.currency || 'MDL',
-  theme: theme || 'blue-pink-gradient',
+  currency: user?.current_user?.currency || "MDL",
+  theme: theme || "blue-pink-gradient",
   weeklyBudget,
   monthlyBudget,
 };
@@ -45,7 +45,7 @@ export const AuthReducer = (initialState, action) => {
     case "REQUEST_LOGIN":
       return {
         ...initialState,
-        loading: true
+        loading: true,
       };
     case "LOGIN_SUCCESS":
       return {
@@ -54,7 +54,7 @@ export const AuthReducer = (initialState, action) => {
         token: action.payload.jwt_token,
         loading: false,
         userIsLoggedIn: true,
-        currency: action.payload.current_user.currency || 'MDL'
+        currency: action.payload.current_user.currency || "MDL",
       };
     case "UPDATE_USER":
       return {
@@ -66,14 +66,14 @@ export const AuthReducer = (initialState, action) => {
         ...initialState,
         user: "",
         token: "",
-        userIsLoggedIn: false
+        userIsLoggedIn: false,
       };
 
     case "LOGIN_ERROR":
       return {
         ...initialState,
         loading: false,
-        errorMessage: action.error
+        errorMessage: action.error,
       };
 
     default:
@@ -101,67 +101,87 @@ export const DataReducer = (initialState, action) => {
       };
 
     case "FILTER_DATA":
-      if ((action.category !== '' || action.textFilter !== '') && initialState.raw) {
+      if (
+        (action.category !== "" || action.textFilter !== "") &&
+        initialState.raw
+      ) {
         const { raw } = initialState;
-        let filtered = raw?.filter(item => item.type === 'transaction') || [];
+        let filtered = raw?.filter((item) => item.type === "transaction") || [];
 
         if (action.category) {
-          filtered = filtered.filter(item => item.cat === action.category);
+          filtered = filtered.filter((item) => item.cat === action.category);
         }
 
         if (action.textFilter) {
           const textFilterLower = action.textFilter.toLowerCase();
-          filtered = filtered.filter(item =>
-            item.dsc?.toLowerCase()?.includes(textFilterLower)
+          filtered = filtered.filter((item) =>
+            item.dsc?.toLowerCase()?.includes(textFilterLower),
           );
         }
-        const newState = filtered.reduce((accumulator, item) => {
-          const date = new Date(item.dt);
-          const year = date.getFullYear();
-          const month = `${monthNames[date.getMonth()]} ${year}`;
-          accumulator.groupedData[month] = accumulator.groupedData[month] || [];
-          accumulator.groupedData[month].push(item);
+        const newState = filtered.reduce(
+          (accumulator, item) => {
+            const date = new Date(item.dt);
+            const year = date.getFullYear();
+            const month = `${monthNames[date.getMonth()]} ${year}`;
+            accumulator.groupedData[month] =
+              accumulator.groupedData[month] || [];
+            accumulator.groupedData[month].push(item);
 
-          accumulator.totals[month] = (accumulator.totals[month] || 0) + parseFloat(item.sum);
-          accumulator.totalSpent = (parseFloat(accumulator.totalSpent) + parseFloat(item.sum)).toFixed(2);
+            accumulator.totals[month] =
+              (accumulator.totals[month] || 0) + parseFloat(item.sum);
+            accumulator.totalSpent = (
+              parseFloat(accumulator.totalSpent) + parseFloat(item.sum)
+            ).toFixed(2);
 
-          accumulator.totalsPerYearAndMonth[year] = accumulator.totalsPerYearAndMonth[year] || {};
-          accumulator.totalsPerYearAndMonth[year][month] = (accumulator.totalsPerYearAndMonth[year][month] || 0) + parseFloat(item.sum);
+            accumulator.totalsPerYearAndMonth[year] =
+              accumulator.totalsPerYearAndMonth[year] || {};
+            accumulator.totalsPerYearAndMonth[year][month] =
+              (accumulator.totalsPerYearAndMonth[year][month] || 0) +
+              parseFloat(item.sum);
 
-          accumulator.totalPerYear[year] = (accumulator.totalPerYear[year] || 0) + parseFloat(item.sum);
+            accumulator.totalPerYear[year] =
+              (accumulator.totalPerYear[year] || 0) + parseFloat(item.sum);
 
-          if (!accumulator.categoryTotals[item.cat] && item.cat) {
-            accumulator.categoryTotals[item.cat] = {
-              name: '',
-              y: 0
-            };
-          }
-          accumulator.categoryTotals[item.cat].name = categories[item.cat].label;
-          accumulator.categoryTotals[item.cat].y = parseFloat((parseFloat(accumulator.categoryTotals[item.cat].y) + parseFloat(item.sum)).toFixed(2));
+            if (!accumulator.categoryTotals[item.cat] && item.cat) {
+              accumulator.categoryTotals[item.cat] = {
+                name: "",
+                y: 0,
+              };
+            }
+            accumulator.categoryTotals[item.cat].name =
+              categories[item.cat].label;
+            accumulator.categoryTotals[item.cat].y = parseFloat(
+              (
+                parseFloat(accumulator.categoryTotals[item.cat].y) +
+                parseFloat(item.sum)
+              ).toFixed(2),
+            );
 
-          return accumulator;
-        }, {
-          groupedData: {},
-          totals: {},
-          totalsPerYearAndMonth: {},
-          totalPerYear: {},
-          totalSpent: 0,
-          categoryTotals: {}
-        });
+            return accumulator;
+          },
+          {
+            groupedData: {},
+            totals: {},
+            totalsPerYearAndMonth: {},
+            totalPerYear: {},
+            totalSpent: 0,
+            categoryTotals: {},
+          },
+        );
         return {
           ...initialState,
           filtered: newState,
           category: action.category,
           textFilter: action.textFilter,
-          filtered_raw: filtered
+          filtered_raw: filtered,
         };
       }
       return {
         ...initialState,
         filtered: null,
-        category: '',
-        textFilter: '',
-        filtered_raw: null
+        category: "",
+        textFilter: "",
+        filtered_raw: null,
       };
 
     case "REMOVE_DATA":

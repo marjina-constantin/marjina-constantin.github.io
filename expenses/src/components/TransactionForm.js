@@ -1,28 +1,35 @@
-import React, {useState} from 'react';
-import {fetchRequest} from '../utils/utils';
-import {useAuthDispatch, useAuthState, useData, useNotification} from '../context';
-import {categories, suggestions} from '../utils/constants';
-import {notificationType} from '../utils/constants';
+import React, { useState } from "react";
+import { fetchRequest } from "../utils/utils";
+import {
+  useAuthDispatch,
+  useAuthState,
+  useData,
+  useNotification,
+} from "../context";
+import { categories, suggestions } from "../utils/constants";
+import { notificationType } from "../utils/constants";
 
-const TransactionForm = ({formType, values, onSuccess}) => {
+const TransactionForm = ({ formType, values, onSuccess }) => {
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
   const initialState = {
-    field_amount: '',
-    field_date: new Date().toISOString().substr(0,10),
-    field_category: '',
-    field_description: '',
+    field_amount: "",
+    field_date: new Date().toISOString().substr(0, 10),
+    field_category: "",
+    field_description: "",
   };
-  const [formState, setFormState] = useState(formType === 'add' ? initialState : values);
+  const [formState, setFormState] = useState(
+    formType === "add" ? initialState : values,
+  );
   const { token } = useAuthState();
   const handleChange = (event) => {
     const value = event.target.value;
     setFormState({
       ...formState,
-      [event.target.name]: value
+      [event.target.name]: value,
     });
-    if (event.target.name === 'field_category') {
+    if (event.target.name === "field_category") {
       setSuggestionData(suggestions[value]);
     }
   };
@@ -31,52 +38,61 @@ const TransactionForm = ({formType, values, onSuccess}) => {
     event.preventDefault();
     setIsSubmitting(true);
     const node = {
-      type: 'transaction',
+      type: "transaction",
       title: [formState.field_date],
       field_amount: [formState.field_amount],
       field_category: [formState.field_category],
       field_date: [formState.field_date],
       field_description: [formState.field_description],
-    }
+    };
     const fetchOptions = {
-      method: formType === 'add' ? 'POST' : 'PATCH',
+      method: formType === "add" ? "POST" : "PATCH",
       headers: new Headers({
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'JWT-Authorization': 'Bearer ' + token
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "JWT-Authorization": "Bearer " + token,
       }),
       body: JSON.stringify(node),
     };
-    const url = formType === 'add' ?
-      'https://dev-expenses-api.pantheonsite.io/node?_format=json' :
-      `https://dev-expenses-api.pantheonsite.io/node/${values.nid}?_format=json`;
+    const url =
+      formType === "add"
+        ? "https://dev-expenses-api.pantheonsite.io/node?_format=json"
+        : `https://dev-expenses-api.pantheonsite.io/node/${values.nid}?_format=json`;
     fetchRequest(url, fetchOptions, dataDispatch, dispatch, (data) => {
       if (data.nid) {
         onSuccess();
-        showNotification('Success!', notificationType.SUCCESS);
+        showNotification("Success!", notificationType.SUCCESS);
         setIsSubmitting(false);
         setFormState(initialState);
         setSuggestionData([]);
         setSelectedIndices([]);
-      }
-      else {
-        showNotification('Something went wrong, please contact Constantin :)', notificationType.ERROR);
+      } else {
+        showNotification(
+          "Something went wrong, please contact Constantin :)",
+          notificationType.ERROR,
+        );
         setIsSubmitting(false);
       }
-    })
+    });
   };
 
   let today = new Date();
   const offset = today.getTimezoneOffset();
-  today = new Date(today.getTime() - (offset*60*1000)).toISOString().split('T')[0];
+  today = new Date(today.getTime() - offset * 60 * 1000)
+    .toISOString()
+    .split("T")[0];
 
-  const [suggestionData, setSuggestionData] = useState(suggestions[formState.field_category]);
+  const [suggestionData, setSuggestionData] = useState(
+    suggestions[formState.field_category],
+  );
   const [selectedIndices, setSelectedIndices] = useState([]);
 
   const handleSuggestionClick = (suggestion, index) => {
     setFormState({
       ...formState,
-      field_description: formState?.field_description ? formState.field_description + ` ${suggestion}` : suggestion
+      field_description: formState?.field_description
+        ? formState.field_description + ` ${suggestion}`
+        : suggestion,
     });
     const isSelected = selectedIndices.includes(index);
     if (isSelected) {
@@ -86,13 +102,35 @@ const TransactionForm = ({formType, values, onSuccess}) => {
   };
   return (
     <div>
-      <h2>{formType === 'add' ? 'Add transaction' : 'Edit transaction'}</h2>
+      <h2>{formType === "add" ? "Add transaction" : "Edit transaction"}</h2>
       <form className="add-transaction" onSubmit={handleSubmit}>
-        <input required placeholder="Amount" type="number" name="field_amount" value={formState.field_amount} onChange={handleChange} />
-        <input required placeholder="Date" type="date" max={today} name="field_date" value={formState.field_date} onChange={handleChange} />
-        <select required name="field_category" value={formState.field_category} onChange={handleChange}>
+        <input
+          required
+          placeholder="Amount"
+          type="number"
+          name="field_amount"
+          value={formState.field_amount}
+          onChange={handleChange}
+        />
+        <input
+          required
+          placeholder="Date"
+          type="date"
+          max={today}
+          name="field_date"
+          value={formState.field_date}
+          onChange={handleChange}
+        />
+        <select
+          required
+          name="field_category"
+          value={formState.field_category}
+          onChange={handleChange}
+        >
           {categories.map((category, id) => (
-            <option key={id} value={category.value}>{category.label}</option>
+            <option key={id} value={category.value}>
+              {category.label}
+            </option>
           ))}
         </select>
         <textarea
@@ -105,9 +143,17 @@ const TransactionForm = ({formType, values, onSuccess}) => {
         {suggestionData.length ? (
           <ul className="suggestions">
             {suggestionData.map((suggestion, index) => (
-              <li key={`${index}-${suggestion}`} onClick={() => {
-                handleSuggestionClick(suggestion, `${index}-${suggestion}`)
-              }} className={selectedIndices.includes(`${index}-${suggestion}`) ? 'selected-suggestion' : ''}>
+              <li
+                key={`${index}-${suggestion}`}
+                onClick={() => {
+                  handleSuggestionClick(suggestion, `${index}-${suggestion}`);
+                }}
+                className={
+                  selectedIndices.includes(`${index}-${suggestion}`)
+                    ? "selected-suggestion"
+                    : ""
+                }
+              >
                 {suggestion}
               </li>
             ))}
@@ -120,8 +166,11 @@ const TransactionForm = ({formType, values, onSuccess}) => {
               <span className="loader__element"></span>
               <span className="loader__element"></span>
             </div>
-          ) : formType === 'add' ? 'Add transaction' : 'Edit transaction'
-          }
+          ) : formType === "add" ? (
+            "Add transaction"
+          ) : (
+            "Edit transaction"
+          )}
         </button>
       </form>
     </div>

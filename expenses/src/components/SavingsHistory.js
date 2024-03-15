@@ -1,10 +1,9 @@
-import React, {useEffect, useState} from "react";
-import {useData} from "../context";
+import React, { useEffect, useState } from "react";
+import { useData } from "../context";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 
 export default function SavingsHistory() {
-
   const { data } = useData();
   const [items, setItems] = useState([]);
 
@@ -26,16 +25,21 @@ export default function SavingsHistory() {
 
   for (let item of dataInChronologicalOrder) {
     const itemDate = new Date(item.dt);
-    if (item.type === 'incomes') {
-      totalIncomesAtDate = parseFloat(totalIncomesAtDate) + parseFloat(item.sum);
-    }
-    else {
-      totalExpensesAtDate = parseFloat(totalExpensesAtDate) + parseFloat(item.sum);
+    if (item.type === "incomes") {
+      totalIncomesAtDate =
+        parseFloat(totalIncomesAtDate) + parseFloat(item.sum);
+    } else {
+      totalExpensesAtDate =
+        parseFloat(totalExpensesAtDate) + parseFloat(item.sum);
     }
 
     savings[item.dt] = [
       itemDate.getTime(),
-      parseFloat(parseFloat(((totalExpensesAtDate / totalIncomesAtDate) - 1) * -100).toFixed(2)),
+      parseFloat(
+        parseFloat(
+          (totalExpensesAtDate / totalIncomesAtDate - 1) * -100,
+        ).toFixed(2),
+      ),
     ];
   }
 
@@ -47,47 +51,42 @@ export default function SavingsHistory() {
 
   const series = [
     {
-      name: 'Savings',
+      name: "Savings",
       data: savings,
-      negativeColor: '#E91E63'
-    }
+      negativeColor: "#E91E63",
+    },
   ];
 
   const savingsOptions = {
     chart: {
-      type: 'line',
-      zoomType: 'x',
+      type: "line",
+      zoomType: "x",
     },
     boost: {
       useGPUTranslations: true,
     },
     title: {
-      text: 'Savings history'
+      text: "Savings history",
     },
-    colors: ['#4DD0E1'],
+    colors: ["#4DD0E1"],
     yAxis: {
       title: {
-        text: '%'
-      }
+        text: "%",
+      },
     },
     xAxis: {
-      type: 'datetime',
+      type: "datetime",
       crosshair: true,
     },
     tooltip: {
-      xDateFormat: '%e %b %Y',
-      valueSuffix: '%',
+      xDateFormat: "%e %b %Y",
+      valueSuffix: "%",
     },
     credits: {
-      enabled: false
+      enabled: false,
     },
-    series: series
+    series: series,
   };
 
-  return (
-    <HighchartsReact
-      highcharts={Highcharts}
-      options={savingsOptions}
-    />
-  )
+  return <HighchartsReact highcharts={Highcharts} options={savingsOptions} />;
 }

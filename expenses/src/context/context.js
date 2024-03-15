@@ -1,5 +1,5 @@
-import React, {useReducer} from "react";
-import {AuthReducer, initialState, DataReducer, initialData} from "./reducer";
+import React, { useReducer } from "react";
+import { AuthReducer, initialState, DataReducer, initialData } from "./reducer";
 
 const AuthStateContext = React.createContext();
 const AuthDispatchContext = React.createContext();
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthStateContext.Provider value={user}>
       <AuthDispatchContext.Provider value={dispatch}>
-        <DataContext.Provider value={{data, dataDispatch}}>
+        <DataContext.Provider value={{ data, dataDispatch }}>
           {children}
         </DataContext.Provider>
       </AuthDispatchContext.Provider>

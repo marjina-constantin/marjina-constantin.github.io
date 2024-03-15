@@ -1,10 +1,9 @@
-import React, {useEffect, useState} from "react";
-import {useData} from "../context";
+import React, { useEffect, useState } from "react";
+import { useData } from "../context";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 
 export default function DailyAverageTrend() {
-
   const { data } = useData();
 
   const [items, setItems] = useState([]);
@@ -24,8 +23,8 @@ export default function DailyAverageTrend() {
   const firstDay = new Date(data.raw[data.raw.length - 1]?.dt);
   const getNrOfDaysFromStart = (endDate) => {
     let difference = endDate.getTime() - firstDay.getTime();
-    return parseInt((difference / (1000 * 3600 * 24))) + 1;
-  }
+    return parseInt(difference / (1000 * 3600 * 24)) + 1;
+  };
 
   let dailyExpenses = {};
   let dailyIncomes = {};
@@ -35,20 +34,29 @@ export default function DailyAverageTrend() {
 
   for (let item of dataInChronologicalOrder) {
     const itemDate = new Date(item.dt);
-    if (item.type === 'incomes') {
-      totalIncomesAtDate = parseFloat(totalIncomesAtDate) + parseFloat(item.sum);
-    }
-    else {
-      totalExpensesAtDate = parseFloat(totalExpensesAtDate) + parseFloat(item.sum);
+    if (item.type === "incomes") {
+      totalIncomesAtDate =
+        parseFloat(totalIncomesAtDate) + parseFloat(item.sum);
+    } else {
+      totalExpensesAtDate =
+        parseFloat(totalExpensesAtDate) + parseFloat(item.sum);
     }
 
     dailyIncomes[item.dt] = [
       itemDate.getTime(),
-      parseFloat(parseFloat(totalIncomesAtDate / getNrOfDaysFromStart(itemDate)).toFixed(2)),
+      parseFloat(
+        parseFloat(totalIncomesAtDate / getNrOfDaysFromStart(itemDate)).toFixed(
+          2,
+        ),
+      ),
     ];
     dailyExpenses[item.dt] = [
       itemDate.getTime(),
-      parseFloat(parseFloat(totalExpensesAtDate / getNrOfDaysFromStart(itemDate)).toFixed(2)),
+      parseFloat(
+        parseFloat(
+          totalExpensesAtDate / getNrOfDaysFromStart(itemDate),
+        ).toFixed(2),
+      ),
     ];
   }
 
@@ -61,53 +69,50 @@ export default function DailyAverageTrend() {
 
   const series = [
     {
-      name: 'Daily expenses',
+      name: "Daily expenses",
       data: dailyExpenses,
-    }
+    },
   ];
   if (!isFiltered) {
     series.push({
-      name: 'Daily incomes',
-      data: dailyIncomes
+      name: "Daily incomes",
+      data: dailyIncomes,
     });
   }
 
   const dailyAverageOptions = {
     chart: {
-      type: 'line',
-      zoomType: 'x',
+      type: "line",
+      zoomType: "x",
     },
     boost: {
       useGPUTranslations: true,
     },
     title: {
-      text: 'Daily average trends'
+      text: "Daily average trends",
     },
-    colors: ['#E91E63', '#4DD0E1'],
+    colors: ["#E91E63", "#4DD0E1"],
     yAxis: {
       title: {
-        text: 'Daily average'
-      }
+        text: "Daily average",
+      },
     },
     xAxis: {
-      type: 'datetime',
+      type: "datetime",
       crosshair: true,
     },
     tooltip: {
-      xDateFormat: '%e %b %Y',
+      xDateFormat: "%e %b %Y",
       shared: true,
       split: true,
     },
     credits: {
-      enabled: false
+      enabled: false,
     },
-    series: series
+    series: series,
   };
 
   return (
-    <HighchartsReact
-      highcharts={Highcharts}
-      options={dailyAverageOptions}
-    />
-  )
+    <HighchartsReact highcharts={Highcharts} options={dailyAverageOptions} />
+  );
 }

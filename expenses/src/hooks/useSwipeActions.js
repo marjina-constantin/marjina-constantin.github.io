@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 const useSwipeActions = () => {
   const [startX, setStartX] = useState(null);
@@ -18,11 +18,11 @@ const useSwipeActions = () => {
     // Modify styles to prepare for the swipe animation.
     const trElement = tableRef.current.querySelector(`[data-id="${id}"]`);
     if (trElement) {
-      trElement.style.transition = 'transform 0s';
+      trElement.style.transition = "transform 0s";
       const rect = trElement.getBoundingClientRect();
       setExtraRowStyle({
-        position: 'fixed',
-        zIndex: '-1',
+        position: "fixed",
+        zIndex: "-1",
         top: `${rect.top}px`,
         width: `${rect.width}px`,
         height: `${rect.height}px`,
@@ -36,25 +36,25 @@ const useSwipeActions = () => {
       const distanceX = startX - e.touches[0].clientX;
       const distanceY = startY - e.touches[0].clientY;
       setIsSwiping(Math.abs(distanceX) > Math.abs(distanceY));
-    }
-    else if (isSwiping) {
+    } else if (isSwiping) {
       // Prevent vertical scrolling.
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
 
       // Perform actions based on touch movement.
       const diff = e.touches[0].clientX - startX;
-      const trElement = tableRef.current.querySelector(`[data-id="${swipedItemId}"]`);
+      const trElement = tableRef.current.querySelector(
+        `[data-id="${swipedItemId}"]`,
+      );
       // Apply transform style for the swipe effect.
       trElement.style.transform = `translateX(${diff}px)`;
       const trWidth = trElement.getBoundingClientRect().width;
       const absDiff = Math.abs(e.touches[0].clientX - startX);
       const diffPercentage = (absDiff / trWidth) * 100;
-      const body = document.querySelector('body');
+      const body = document.querySelector("body");
       if (diffPercentage > 40) {
-        body.classList.add('action-active');
-      }
-      else {
-        body.classList.remove('action-active');
+        body.classList.add("action-active");
+      } else {
+        body.classList.remove("action-active");
       }
 
       // Determine whether to show delete or edit based on swipe direction.
@@ -66,7 +66,7 @@ const useSwipeActions = () => {
 
   const handleTouchEnd = (e, tableRef, id, handleEdit, setShowDeleteModal) => {
     // Re-enable scrolling on the Y-axis.
-    document.body.style.overflow = '';
+    document.body.style.overflow = "";
 
     const endX = e.changedTouches[0].clientX;
     const trElement = tableRef.current.querySelector(`[data-id="${id}"]`);
@@ -88,8 +88,8 @@ const useSwipeActions = () => {
     }
 
     // Reset styles and states after touch end.
-    trElement.style.transition = 'all .3s ease';
-    trElement.style.transform = 'translateX(0)';
+    trElement.style.transition = "all .3s ease";
+    trElement.style.transform = "translateX(0)";
 
     setStartX(null);
     setSwipedItemId(null);
