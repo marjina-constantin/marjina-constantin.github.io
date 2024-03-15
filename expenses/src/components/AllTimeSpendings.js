@@ -1,28 +1,28 @@
-import React, { useEffect } from "react";
-import { useAuthState, useData } from "../context";
-import Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
+import React, { useEffect } from 'react'
+import { useAuthState, useData } from '../context'
+import Highcharts from 'highcharts'
+import HighchartsReact from 'highcharts-react-official'
 
 export default function AllTimeSpendings() {
   // All time section
-  const { data } = useData();
-  const { currency } = useAuthState();
+  const { data } = useData()
+  const { currency } = useAuthState()
 
-  const items = data.filtered || data;
+  const items = data.filtered || data
 
   // Re-render the component only when dependencies are changed.
-  useEffect(() => {}, [data, currency]);
+  useEffect(() => {}, [data, currency])
 
-  const firstDay = data.raw[data.raw.length - 1]?.dt;
+  const firstDay = data.raw[data.raw.length - 1]?.dt
   const daysPassed = parseInt(
-    (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1,
-  );
+    (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1
+  )
   const monthsPassed = daysPassed
     ? parseFloat(daysPassed / 30.42).toFixed(2)
-    : 0;
+    : 0
   const allTimeSpendings = {
     chart: {
-      type: "pie",
+      type: 'pie',
     },
     title: {
       text: "All Time Spending's",
@@ -46,15 +46,15 @@ export default function AllTimeSpendings() {
     credits: {
       enabled: false,
     },
-  };
+  }
 
   return (
     <>
       <HighchartsReact highcharts={Highcharts} options={allTimeSpendings} />
       <div className="average-spending">
-        Total spent: {parseFloat(items.totalSpent)?.toLocaleString()} {currency}{" "}
+        Total spent: {parseFloat(items.totalSpent)?.toLocaleString()} {currency}{' '}
         in {monthsPassed} months
       </div>
     </>
-  );
+  )
 }

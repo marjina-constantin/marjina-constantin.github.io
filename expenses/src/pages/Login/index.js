@@ -1,34 +1,34 @@
-import React from "react";
-import GoogleLogin from "react-google-login";
-import { loginUser, useAuthDispatch, useAuthState } from "../../context";
-import { useNavigate } from "react-router-dom";
+import React from 'react'
+import GoogleLogin from 'react-google-login'
+import { loginUser, useAuthDispatch, useAuthState } from '../../context'
+import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
-  const dispatch = useAuthDispatch();
-  const navigate = useNavigate();
-  const { loading, errorMessage, userIsLoggedIn } = useAuthState();
+  const dispatch = useAuthDispatch()
+  const navigate = useNavigate()
+  const { loading, errorMessage, userIsLoggedIn } = useAuthState()
 
   if (userIsLoggedIn) {
-    navigate("/expenses");
+    navigate('/expenses')
   }
 
   const handleLogin = async (googleResponse) => {
-    let payload = { access_token: googleResponse.accessToken };
+    let payload = { access_token: googleResponse.accessToken }
     try {
-      let response = await loginUser(dispatch, payload);
+      let response = await loginUser(dispatch, payload)
       if (!response.current_user) {
-        return;
+        return
       }
 
-      navigate(`/expenses`);
+      navigate(`/expenses`)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   const failedResponseGoogle = (response) => {
-    console.log(response);
-  };
+    console.log(response)
+  }
 
   return (
     <div>
@@ -48,11 +48,11 @@ const Login = () => {
         )}
         onSuccess={handleLogin}
         onFailure={failedResponseGoogle}
-        cookiePolicy={"single_host_origin"}
+        cookiePolicy={'single_host_origin'}
         disabled={loading}
       />
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

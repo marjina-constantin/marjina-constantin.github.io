@@ -1,36 +1,36 @@
-import React, { Suspense, useEffect } from "react";
-import Highcharts from "highcharts";
-import DarkUnica from "highcharts/themes/dark-unica";
-import { useAuthDispatch, useAuthState, useData } from "../../context";
-import { fetchData } from "../../utils/utils";
-import Filters from "../../components/Filters";
-import MonthlyTotals from "../../components/MonthlyTotals";
-import YearAverageTrend from "../../components/YearAverageTrend";
-import Boost from "highcharts/modules/boost";
-import NoData from "highcharts/modules/no-data-to-display";
+import React, { Suspense, useEffect } from 'react'
+import Highcharts from 'highcharts'
+import DarkUnica from 'highcharts/themes/dark-unica'
+import { useAuthDispatch, useAuthState, useData } from '../../context'
+import { fetchData } from '../../utils/utils'
+import Filters from '../../components/Filters'
+import MonthlyTotals from '../../components/MonthlyTotals'
+import YearAverageTrend from '../../components/YearAverageTrend'
+import Boost from 'highcharts/modules/boost'
+import NoData from 'highcharts/modules/no-data-to-display'
 
-Boost(Highcharts);
-DarkUnica(Highcharts);
-NoData(Highcharts);
+Boost(Highcharts)
+DarkUnica(Highcharts)
+NoData(Highcharts)
 
 const bgColors = {
-  "carrot-orange": "#102433",
-  inchworm: "#201f1e",
-};
-const theme = localStorage.getItem("theme") || "blue-pink-gradient";
+  'carrot-orange': '#102433',
+  inchworm: '#201f1e',
+}
+const theme = localStorage.getItem('theme') || 'blue-pink-gradient'
 
 Highcharts.theme = {
   chart: {
-    backgroundColor: theme ? bgColors[theme] : "#282a36",
+    backgroundColor: theme ? bgColors[theme] : '#282a36',
   },
   tooltip: {
     style: {
-      fontSize: "15px",
+      fontSize: '15px',
     },
   },
-};
+}
 
-Highcharts.setOptions(Highcharts.theme);
+Highcharts.setOptions(Highcharts.theme)
 // Radialize the colors
 Highcharts.setOptions({
   colors: Highcharts.getOptions().colors.map(function (color) {
@@ -42,11 +42,11 @@ Highcharts.setOptions({
       },
       stops: [
         [0, color],
-        [1, Highcharts.color(color).brighten(-0.25).get("rgb")], // darken
+        [1, Highcharts.color(color).brighten(-0.25).get('rgb')], // darken
       ],
-    };
+    }
   }),
-});
+})
 Highcharts.setOptions({
   plotOptions: {
     series: {
@@ -54,40 +54,38 @@ Highcharts.setOptions({
       boostThreshold: 4000,
     },
   },
-});
+})
 
 const Charts = () => {
   const AllTimeSpendings = React.lazy(
-    () => import("../../components/AllTimeSpendings"),
-  );
+    () => import('../../components/AllTimeSpendings')
+  )
   const MonthlyAverage = React.lazy(
-    () => import("../../components/MonthlyAverage"),
-  );
+    () => import('../../components/MonthlyAverage')
+  )
   const SavingsHistory = React.lazy(
-    () => import("../../components/SavingsHistory"),
-  );
-  const DailyAverage = React.lazy(
-    () => import("../../components/DailyAverage"),
-  );
+    () => import('../../components/SavingsHistory')
+  )
+  const DailyAverage = React.lazy(() => import('../../components/DailyAverage'))
   const DailyAverageTrend = React.lazy(
-    () => import("../../components/DailyAverageTrend"),
-  );
+    () => import('../../components/DailyAverageTrend')
+  )
   const LastTwoMonthsAverage = React.lazy(
-    () => import("../../components/LastTwoMonthsAverage"),
-  );
+    () => import('../../components/LastTwoMonthsAverage')
+  )
 
-  const { data, dataDispatch } = useData();
-  const noData = data.groupedData === null;
-  const noEntries = Object.keys(data.raw).length === 0;
-  const { token } = useAuthState();
-  const loading = data.loading;
-  const dispatch = useAuthDispatch();
+  const { data, dataDispatch } = useData()
+  const noData = data.groupedData === null
+  const noEntries = Object.keys(data.raw).length === 0
+  const { token } = useAuthState()
+  const loading = data.loading
+  const dispatch = useAuthDispatch()
 
   useEffect(() => {
     if (noData) {
-      fetchData(token, dataDispatch, dispatch);
+      fetchData(token, dataDispatch, dispatch)
     }
-  }, [data, dataDispatch, noData, token, dispatch]);
+  }, [data, dataDispatch, noData, token, dispatch])
 
   return (
     <div>
@@ -148,7 +146,7 @@ const Charts = () => {
         )
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Charts;
+export default Charts

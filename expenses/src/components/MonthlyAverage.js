@@ -1,23 +1,23 @@
-import React, { useEffect } from "react";
-import { useAuthState, useData } from "../context";
-import { formatNumber } from "../utils/utils";
-import { useSortableData, getClassNamesFor } from "../utils/useSortableData";
+import React, { useEffect } from 'react'
+import { useAuthState, useData } from '../context'
+import { formatNumber } from '../utils/utils'
+import { useSortableData, getClassNamesFor } from '../utils/useSortableData'
 export default function MonthlyAverage() {
-  const { data } = useData();
-  const { currency } = useAuthState();
+  const { data } = useData()
+  const { currency } = useAuthState()
 
   // Re-render the component only when dependencies are changed.
-  useEffect(() => {}, [data.raw, data.categoryTotals]);
+  useEffect(() => {}, [data.raw, data.categoryTotals])
 
-  const firstDay = data.raw[data.raw.length - 1]?.dt;
+  const firstDay = data.raw[data.raw.length - 1]?.dt
   const daysPassed = parseInt(
-    (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1,
-  );
-  const monthsPassed = parseFloat(daysPassed / 30.42).toFixed(2);
-  const monthlyAverage = parseFloat(data.totalSpent / monthsPassed).toFixed(2);
+    (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1
+  )
+  const monthsPassed = parseFloat(daysPassed / 30.42).toFixed(2)
+  const monthlyAverage = parseFloat(data.totalSpent / monthsPassed).toFixed(2)
   const { sortedItems, requestSort, sortConfig } = useSortableData(
-    Object.values(data.categoryTotals),
-  );
+    Object.values(data.categoryTotals)
+  )
 
   return (
     <>
@@ -27,8 +27,8 @@ export default function MonthlyAverage() {
           <tr>
             <th>Category</th>
             <th
-              onClick={() => requestSort("y")}
-              className={`sortable ${getClassNamesFor(sortConfig, "y")}`}
+              onClick={() => requestSort('y')}
+              className={`sortable ${getClassNamesFor(sortConfig, 'y')}`}
             >
               Amount
             </th>
@@ -39,7 +39,7 @@ export default function MonthlyAverage() {
             <tr key={key}>
               <td>{item.name}</td>
               <td>
-                {formatNumber(parseFloat(item.y / monthsPassed).toFixed(2))}{" "}
+                {formatNumber(parseFloat(item.y / monthsPassed).toFixed(2))}{' '}
                 {currency} / month
               </td>
             </tr>
@@ -50,5 +50,5 @@ export default function MonthlyAverage() {
         Average spending per month: {formatNumber(monthlyAverage)} {currency}
       </div>
     </>
-  );
+  )
 }

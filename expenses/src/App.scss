@@ -261,15 +261,15 @@ input {
   color: #ccc;
   font-weight: bold;
 }
-input[type="submit"] {
+input[type='submit'] {
   border-radius: 20px;
 }
-.add-transaction input[type="submit"] {
+.add-transaction input[type='submit'] {
   border: none;
   background: var(--accent-color);
   color: #282a36;
 }
-.add-transaction input[type="date"]::-webkit-calendar-picker-indicator {
+.add-transaction input[type='date']::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
 .button {
@@ -290,7 +290,7 @@ input[type="submit"] {
 .button.w-100 {
   width: 100%;
 }
-.add-transaction input[type="submit"]:hover,
+.add-transaction input[type='submit']:hover,
 .button:hover {
   cursor: pointer;
 }
@@ -316,7 +316,7 @@ input[type="submit"] {
 .expenses-table th.sortable:before,
 .expenses-table th.sortable:after {
   border: 5px solid transparent;
-  content: "";
+  content: '';
   right: 5px;
   top: 50%;
   position: absolute;
@@ -522,7 +522,7 @@ button:hover {
   color: #e0e0e3;
   font-size: 20px;
   text-transform: uppercase;
-  font-family: "Unica One", sans-serif;
+  font-family: 'Unica One', sans-serif;
   display: block;
   margin: 20px 0;
 }
@@ -550,7 +550,7 @@ button:hover {
 .daily-average th.sortable:before,
 .daily-average th.sortable:after {
   border: 5px solid transparent;
-  content: "";
+  content: '';
   right: 5px;
   top: 50%;
   position: absolute;
@@ -739,7 +739,7 @@ li.selected-suggestion {
       }
 
       &.has-budget:after {
-        content: "";
+        content: '';
         position: absolute;
         top: var(--budget-progress, 100%);
         right: 0;
@@ -766,7 +766,7 @@ li.selected-suggestion {
       border: none;
 
       &:before {
-        content: "";
+        content: '';
         position: absolute;
         top: 0;
         right: 0;

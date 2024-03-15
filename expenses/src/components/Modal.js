@@ -1,18 +1,18 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from 'react'
 
 export default function Modal({ show, onClose, children }) {
-  const ref = useRef();
+  const ref = useRef()
   useEffect(() => {
     const checkIfClickedOutside = (e) => {
       if (show && ref.current && !ref.current.contains(e.target)) {
-        onClose(e);
+        onClose(e)
       }
-    };
-    document.addEventListener("mousedown", checkIfClickedOutside);
+    }
+    document.addEventListener('mousedown', checkIfClickedOutside)
     return () => {
-      document.removeEventListener("mousedown", checkIfClickedOutside);
-    };
-  }, [show, onClose]);
+      document.removeEventListener('mousedown', checkIfClickedOutside)
+    }
+  }, [show, onClose])
 
   return (
     <>
@@ -26,8 +26,8 @@ export default function Modal({ show, onClose, children }) {
           </div>
         </div>
       ) : (
-        ""
+        ''
       )}
     </>
-  );
+  )
 }

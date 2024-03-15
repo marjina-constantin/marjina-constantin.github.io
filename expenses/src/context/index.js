@@ -1,11 +1,6 @@
-import { loginUser, logout } from "./actions";
-import {
-  AuthProvider,
-  useAuthDispatch,
-  useAuthState,
-  useData,
-} from "./context";
-import { useNotification, NotificationProvider } from "./notification";
+import { loginUser, logout } from './actions'
+import { AuthProvider, useAuthDispatch, useAuthState, useData } from './context'
+import { useNotification, NotificationProvider } from './notification'
 
 export {
   AuthProvider,
@@ -16,4 +11,4 @@ export {
   logout,
   useNotification,
   NotificationProvider,
-};
+}

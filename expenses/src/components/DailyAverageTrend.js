@@ -1,108 +1,107 @@
-import React, { useEffect, useState } from "react";
-import { useData } from "../context";
-import Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
+import React, { useEffect, useState } from 'react'
+import { useData } from '../context'
+import Highcharts from 'highcharts'
+import HighchartsReact from 'highcharts-react-official'
 
 export default function DailyAverageTrend() {
-  const { data } = useData();
+  const { data } = useData()
 
-  const [items, setItems] = useState([]);
-  const isFiltered = !!data.filtered_raw;
+  const [items, setItems] = useState([])
+  const isFiltered = !!data.filtered_raw
 
   // Re-render the component only when dependencies are changed.
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setItems(data.filtered_raw || data.raw);
-    }, 200);
+      setItems(data.filtered_raw || data.raw)
+    }, 200)
 
     return () => {
-      clearTimeout(timeout);
-    };
-  }, [data.raw, data.filtered_raw]);
+      clearTimeout(timeout)
+    }
+  }, [data.raw, data.filtered_raw])
 
-  const firstDay = new Date(data.raw[data.raw.length - 1]?.dt);
+  const firstDay = new Date(data.raw[data.raw.length - 1]?.dt)
   const getNrOfDaysFromStart = (endDate) => {
-    let difference = endDate.getTime() - firstDay.getTime();
-    return parseInt(difference / (1000 * 3600 * 24)) + 1;
-  };
+    let difference = endDate.getTime() - firstDay.getTime()
+    return parseInt(difference / (1000 * 3600 * 24)) + 1
+  }
 
-  let dailyExpenses = {};
-  let dailyIncomes = {};
-  let totalExpensesAtDate = 0;
-  let totalIncomesAtDate = 0;
-  const dataInChronologicalOrder = items.slice().reverse();
+  let dailyExpenses = {}
+  let dailyIncomes = {}
+  let totalExpensesAtDate = 0
+  let totalIncomesAtDate = 0
+  const dataInChronologicalOrder = items.slice().reverse()
 
   for (let item of dataInChronologicalOrder) {
-    const itemDate = new Date(item.dt);
-    if (item.type === "incomes") {
-      totalIncomesAtDate =
-        parseFloat(totalIncomesAtDate) + parseFloat(item.sum);
+    const itemDate = new Date(item.dt)
+    if (item.type === 'incomes') {
+      totalIncomesAtDate = parseFloat(totalIncomesAtDate) + parseFloat(item.sum)
     } else {
       totalExpensesAtDate =
-        parseFloat(totalExpensesAtDate) + parseFloat(item.sum);
+        parseFloat(totalExpensesAtDate) + parseFloat(item.sum)
     }
 
     dailyIncomes[item.dt] = [
       itemDate.getTime(),
       parseFloat(
         parseFloat(totalIncomesAtDate / getNrOfDaysFromStart(itemDate)).toFixed(
-          2,
-        ),
+          2
+        )
       ),
-    ];
+    ]
     dailyExpenses[item.dt] = [
       itemDate.getTime(),
       parseFloat(
         parseFloat(
-          totalExpensesAtDate / getNrOfDaysFromStart(itemDate),
-        ).toFixed(2),
+          totalExpensesAtDate / getNrOfDaysFromStart(itemDate)
+        ).toFixed(2)
       ),
-    ];
+    ]
   }
 
-  dailyExpenses = Object.values(dailyExpenses);
-  dailyIncomes = Object.values(dailyIncomes);
+  dailyExpenses = Object.values(dailyExpenses)
+  dailyIncomes = Object.values(dailyIncomes)
   if (dailyExpenses.length > 14 && !isFiltered) {
-    dailyExpenses.splice(0, 14);
-    dailyIncomes.splice(0, 14);
+    dailyExpenses.splice(0, 14)
+    dailyIncomes.splice(0, 14)
   }
 
   const series = [
     {
-      name: "Daily expenses",
+      name: 'Daily expenses',
       data: dailyExpenses,
     },
-  ];
+  ]
   if (!isFiltered) {
     series.push({
-      name: "Daily incomes",
+      name: 'Daily incomes',
       data: dailyIncomes,
-    });
+    })
   }
 
   const dailyAverageOptions = {
     chart: {
-      type: "line",
-      zoomType: "x",
+      type: 'line',
+      zoomType: 'x',
     },
     boost: {
       useGPUTranslations: true,
     },
     title: {
-      text: "Daily average trends",
+      text: 'Daily average trends',
     },
-    colors: ["#E91E63", "#4DD0E1"],
+    colors: ['#E91E63', '#4DD0E1'],
     yAxis: {
       title: {
-        text: "Daily average",
+        text: 'Daily average',
       },
     },
     xAxis: {
-      type: "datetime",
+      type: 'datetime',
       crosshair: true,
     },
     tooltip: {
-      xDateFormat: "%e %b %Y",
+      xDateFormat: '%e %b %Y',
       shared: true,
       split: true,
     },
@@ -110,9 +109,9 @@ export default function DailyAverageTrend() {
       enabled: false,
     },
     series: series,
-  };
+  }
 
   return (
     <HighchartsReact highcharts={Highcharts} options={dailyAverageOptions} />
-  );
+  )
 }

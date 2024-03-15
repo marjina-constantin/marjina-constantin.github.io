@@ -1,44 +1,38 @@
-import { NavLink } from "react-router-dom";
-import { useAuthState } from "../context";
-import {
-  FaHome,
-  FaChartPie,
-  FaUser,
-  FaPlus,
-  FaMoneyBill,
-} from "react-icons/fa";
-import { useState } from "react";
+import { NavLink } from 'react-router-dom'
+import { useAuthState } from '../context'
+import { FaHome, FaChartPie, FaUser, FaPlus, FaMoneyBill } from 'react-icons/fa'
+import { useState } from 'react'
 
 export default function Navbar() {
-  const { userIsLoggedIn } = useAuthState();
-  const [cssClass, setCssClass] = useState("closed");
-  const [xDown, setXDown] = useState(null);
-  const [yDown, setYDown] = useState(null);
+  const { userIsLoggedIn } = useAuthState()
+  const [cssClass, setCssClass] = useState('closed')
+  const [xDown, setXDown] = useState(null)
+  const [yDown, setYDown] = useState(null)
   const handleTouchStart = (event) => {
-    const firstTouch = event.touches[0];
-    setXDown(firstTouch.clientX);
-    setYDown(firstTouch.clientY);
-  };
+    const firstTouch = event.touches[0]
+    setXDown(firstTouch.clientX)
+    setYDown(firstTouch.clientY)
+  }
 
   const handleTouchMove = (event) => {
     if (!xDown || !yDown) {
-      return;
+      return
     }
-    const xUp = event.touches[0].clientX;
-    const yUp = event.touches[0].clientY;
-    const xDiff = xDown - xUp;
-    const yDiff = yDown - yUp;
+    const xUp = event.touches[0].clientX
+    const yUp = event.touches[0].clientY
+    const xDiff = xDown - xUp
+    const yDiff = yDown - yUp
     if (Math.abs(xDiff) < Math.abs(yDiff)) {
       if (yDiff > 0) {
-        setCssClass("open");
+        setCssClass('open')
       } else {
-        setCssClass("closed");
+        setCssClass('closed')
       }
     }
     /* reset values */
-    setXDown(null);
-    setYDown(null);
-  };
+    setXDown(null)
+    setYDown(null)
+  }
 
   return (
     <div
@@ -74,9 +68,9 @@ export default function Navbar() {
             </NavLink>
           </li>
         ) : (
-          ""
+          ''
         )}
       </ul>
     </div>
-  );
+  )
 }

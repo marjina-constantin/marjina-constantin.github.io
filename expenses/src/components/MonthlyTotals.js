@@ -1,31 +1,31 @@
-import React, { useEffect } from "react";
-import { useAuthState, useData } from "../context";
-import Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
-import { categories } from "../utils/constants";
+import React, { useEffect } from 'react'
+import { useAuthState, useData } from '../context'
+import Highcharts from 'highcharts'
+import HighchartsReact from 'highcharts-react-official'
+import { categories } from '../utils/constants'
 
 export default function MonthlyTotals() {
-  const { data } = useData();
-  const items = data.filtered || data;
-  const { currency } = useAuthState();
+  const { data } = useData()
+  const items = data.filtered || data
+  const { currency } = useAuthState()
 
   // Re-render the component only when dependencies are changed.
-  useEffect(() => {}, [data, currency]);
+  useEffect(() => {}, [data, currency])
 
-  const firstDay = data.raw[data.raw.length - 1]?.dt;
+  const firstDay = data.raw[data.raw.length - 1]?.dt
   const daysPassed = parseInt(
-    (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1,
-  );
-  const monthsPassed = parseFloat(daysPassed / 30.42).toFixed(2);
-  const monthlyAverage = parseFloat(items.totalSpent / monthsPassed).toFixed(2);
+    (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1
+  )
+  const monthsPassed = parseFloat(daysPassed / 30.42).toFixed(2)
+  const monthlyAverage = parseFloat(items.totalSpent / monthsPassed).toFixed(2)
 
   const allTimeOptions = {
     chart: {
-      type: "column",
-      zoomType: "x",
+      type: 'column',
+      zoomType: 'x',
     },
     title: {
-      text: "Monthly Totals",
+      text: 'Monthly Totals',
     },
     xAxis: {
       categories: items.totals ? Object.keys(items.totals).reverse() : [],
@@ -38,19 +38,19 @@ export default function MonthlyTotals() {
       },
       stackLabels: {
         style: {
-          color: "#FFFFFF",
-          fontWeight: "bold",
+          color: '#FFFFFF',
+          fontWeight: 'bold',
         },
         enabled: true,
-        verticalAlign: "top",
+        verticalAlign: 'top',
       },
       plotLines: [
         {
-          color: "#00a8ad",
+          color: '#00a8ad',
           value: monthlyAverage,
-          width: "1",
+          width: '1',
           zIndex: 4,
-          dashStyle: "ShortDot",
+          dashStyle: 'ShortDot',
         },
       ],
     },
@@ -58,7 +58,7 @@ export default function MonthlyTotals() {
       column: {
         pointPadding: 0.2,
         borderWidth: 0,
-        stacking: "normal",
+        stacking: 'normal',
         groupPadding: 0,
       },
     },
@@ -72,25 +72,25 @@ export default function MonthlyTotals() {
       {
         name: data.category
           ? categories.find((element) => element.value === data.category).label
-          : "Monthly totals",
+          : 'Monthly totals',
         data: items.totals ? Object.values(items.totals).reverse() : [],
         colorByPoint: true,
       },
       {
-        name: "Income",
-        type: "spline",
-        color: "#4DD0E1",
+        name: 'Income',
+        type: 'spline',
+        color: '#4DD0E1',
         visible: false,
         data: items.incomeTotals
           ? Object.values(items.incomeTotals)
               .reverse()
               .map(function (item) {
-                return parseFloat(item);
+                return parseFloat(item)
               })
           : [],
       },
     ],
-  };
+  }
 
-  return <HighchartsReact highcharts={Highcharts} options={allTimeOptions} />;
+  return <HighchartsReact highcharts={Highcharts} options={allTimeOptions} />
 }

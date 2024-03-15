@@ -1,51 +1,51 @@
-import React, { useEffect, useState } from "react";
-import { formatNumber } from "../utils/utils";
+import React, { useEffect, useState } from 'react'
+import { formatNumber } from '../utils/utils'
 
 const NumberDisplay = ({ number }) => {
-  const [displayedNumber, setDisplayedNumber] = useState(0);
-  const transitionTime = 10;
-  const steps = Math.abs(number - displayedNumber);
-  const intervalDuration = transitionTime / steps;
+  const [displayedNumber, setDisplayedNumber] = useState(0)
+  const transitionTime = 10
+  const steps = Math.abs(number - displayedNumber)
+  const intervalDuration = transitionTime / steps
 
   useEffect(() => {
     if (number !== displayedNumber) {
       const intervalId = setInterval(() => {
         setDisplayedNumber((prevNumber) => {
-          const diff = Math.abs(number - prevNumber);
-          let step;
+          const diff = Math.abs(number - prevNumber)
+          let step
           switch (true) {
             case diff > 10000:
-              step = 5000;
-              break;
+              step = 5000
+              break
             case diff > 1000:
-              step = 500;
-              break;
+              step = 500
+              break
             case diff > 100:
-              step = 50;
-              break;
+              step = 50
+              break
             case diff > 10:
-              step = 5;
-              break;
+              step = 5
+              break
             default:
-              step = 1;
+              step = 1
           }
           if (prevNumber < number) {
-            return Math.min(prevNumber + step, number);
+            return Math.min(prevNumber + step, number)
           } else if (prevNumber > number) {
-            return Math.max(prevNumber - step, number);
+            return Math.max(prevNumber - step, number)
           }
-          clearInterval(intervalId);
-          return prevNumber;
-        });
-      }, intervalDuration);
+          clearInterval(intervalId)
+          return prevNumber
+        })
+      }, intervalDuration)
 
       return () => {
-        clearInterval(intervalId);
-      };
+        clearInterval(intervalId)
+      }
     }
-  }, [number]);
+  }, [number])
 
-  return <div>{formatNumber(displayedNumber)}</div>;
-};
+  return <div>{formatNumber(displayedNumber)}</div>
+}
 
-export default NumberDisplay;
+export default NumberDisplay

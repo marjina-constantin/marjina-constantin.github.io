@@ -1,9 +1,9 @@
-import React, { useRef } from "react";
-import useSwipeActions from "../hooks/useSwipeActions";
-import { FaPen, FaTrash } from "react-icons/fa";
-import { useSortableData, getClassNamesFor } from "../utils/useSortableData";
-import { useAuthState } from "../context";
-import { formatNumber } from "../utils/utils";
+import React, { useRef } from 'react'
+import useSwipeActions from '../hooks/useSwipeActions'
+import { FaPen, FaTrash } from 'react-icons/fa'
+import { useSortableData, getClassNamesFor } from '../utils/useSortableData'
+import { useAuthState } from '../context'
+import { formatNumber } from '../utils/utils'
 
 export default function IncomeTable({ items, handleEdit, setShowDeleteModal }) {
   const total =
@@ -11,14 +11,14 @@ export default function IncomeTable({ items, handleEdit, setShowDeleteModal }) {
       ? items.reduce(
           (accumulator, curValue) =>
             (
-              parseFloat(accumulator) + (parseFloat(curValue["sum"]) || 0)
+              parseFloat(accumulator) + (parseFloat(curValue['sum']) || 0)
             ).toFixed(2),
-          0,
+          0
         )
-      : 0;
-  const { sortedItems, requestSort, sortConfig } = useSortableData(items);
-  const { currency } = useAuthState();
-  const tableRef = useRef(null);
+      : 0
+  const { sortedItems, requestSort, sortConfig } = useSortableData(items)
+  const { currency } = useAuthState()
+  const tableRef = useRef(null)
   const {
     handleTouchStart,
     handleTouchMove,
@@ -26,7 +26,7 @@ export default function IncomeTable({ items, handleEdit, setShowDeleteModal }) {
     deleteVisible,
     editVisible,
     extraRowStyle,
-  } = useSwipeActions();
+  } = useSwipeActions()
 
   return (
     <div className="table-wrapper">
@@ -38,8 +38,8 @@ export default function IncomeTable({ items, handleEdit, setShowDeleteModal }) {
           <tr>
             <th>Date</th>
             <th
-              onClick={() => requestSort("sum")}
-              className={`sortable ${getClassNamesFor(sortConfig, "sum")}`}
+              onClick={() => requestSort('sum')}
+              className={`sortable ${getClassNamesFor(sortConfig, 'sum')}`}
             >
               Amount
             </th>
@@ -61,7 +61,7 @@ export default function IncomeTable({ items, handleEdit, setShowDeleteModal }) {
                   tableRef,
                   element.id,
                   handleEdit,
-                  setShowDeleteModal,
+                  setShowDeleteModal
                 )
               }
             >
@@ -103,5 +103,5 @@ export default function IncomeTable({ items, handleEdit, setShowDeleteModal }) {
         </div>
       )}
     </div>
-  );
+  )
 }

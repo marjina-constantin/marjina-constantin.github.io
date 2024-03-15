@@ -1,16 +1,16 @@
-import React, { useRef } from "react";
-import { useSortableData, getClassNamesFor } from "../utils/useSortableData";
-import { categories as categoriesArray, monthNames } from "../utils/constants";
-import useSwipeActions from "../hooks/useSwipeActions";
-import { FaTrash, FaPen } from "react-icons/fa";
-import NumberDisplay from "./NumberDisplay";
-import { useAuthState, useData } from "../context";
-import { formatNumber } from "../utils/utils";
+import React, { useRef } from 'react'
+import { useSortableData, getClassNamesFor } from '../utils/useSortableData'
+import { categories as categoriesArray, monthNames } from '../utils/constants'
+import useSwipeActions from '../hooks/useSwipeActions'
+import { FaTrash, FaPen } from 'react-icons/fa'
+import NumberDisplay from './NumberDisplay'
+import { useAuthState, useData } from '../context'
+import { formatNumber } from '../utils/utils'
 
 const categories = categoriesArray.reduce((acc, item) => {
-  acc[item.value] = item.label;
-  return acc;
-}, {});
+  acc[item.value] = item.label
+  return acc
+}, {})
 
 const TransactionsTable = ({
   month,
@@ -20,57 +20,57 @@ const TransactionsTable = ({
   setShowDeleteModal,
   incomeTotals,
 }) => {
-  const { sortedItems, requestSort, sortConfig } = useSortableData(items || []);
+  const { sortedItems, requestSort, sortConfig } = useSortableData(items || [])
 
-  const { data } = useData();
+  const { data } = useData()
 
   // Get today's date
-  const today = new Date();
-  let totalSumForCategory = 0;
-  let weekPercentage;
-  let monthPercentage = 100;
-  const { weeklyBudget, monthlyBudget } = useAuthState();
+  const today = new Date()
+  let totalSumForCategory = 0
+  let weekPercentage
+  let monthPercentage = 100
+  const { weeklyBudget, monthlyBudget } = useAuthState()
   const isCurrentMonth =
-    `${monthNames[today.getMonth()]} ${today.getFullYear()}` === month;
+    `${monthNames[today.getMonth()]} ${today.getFullYear()}` === month
 
-  const isWeekBudget = !data?.filtered && isCurrentMonth && weeklyBudget;
-  const isMonthBudget = !data?.filtered && isCurrentMonth && monthlyBudget;
+  const isWeekBudget = !data?.filtered && isCurrentMonth && weeklyBudget
+  const isMonthBudget = !data?.filtered && isCurrentMonth && monthlyBudget
   if (isMonthBudget) {
-    monthPercentage = 100 - (total / parseInt(monthlyBudget)) * 100;
-    monthPercentage = monthPercentage <= 0 ? 0.01 : monthPercentage;
+    monthPercentage = 100 - (total / parseInt(monthlyBudget)) * 100
+    monthPercentage = monthPercentage <= 0 ? 0.01 : monthPercentage
   }
   if (isWeekBudget) {
     // Calculate the date of the last Monday
-    const lastMonday = new Date(today);
-    lastMonday.setDate(lastMonday.getDate() - ((today.getDay() + 6) % 7));
+    const lastMonday = new Date(today)
+    lastMonday.setDate(lastMonday.getDate() - ((today.getDay() + 6) % 7))
     // Get the parts of the date
-    const year = lastMonday.getFullYear();
-    const month = String(lastMonday.getMonth() + 1).padStart(2, "0");
-    const day = String(lastMonday.getDate()).padStart(2, "0");
+    const year = lastMonday.getFullYear()
+    const month = String(lastMonday.getMonth() + 1).padStart(2, '0')
+    const day = String(lastMonday.getDate()).padStart(2, '0')
     // Form the formatted date string 'YYYY-MM-DD'
-    const formattedLastMonday = `${year}-${month}-${day}`;
+    const formattedLastMonday = `${year}-${month}-${day}`
 
     totalSumForCategory =
       data?.raw
         ?.filter((transaction) => transaction.dt >= formattedLastMonday)
-        ?.filter((transaction) => transaction.type === "transaction")
+        ?.filter((transaction) => transaction.type === 'transaction')
         ?.filter(
           (transaction) =>
-            ![6, 9, 10, 12, 13, 11].includes(parseInt(transaction.cat)),
+            ![6, 9, 10, 12, 13, 11].includes(parseInt(transaction.cat))
         )
         ?.reduce(
           (total, transaction) => total + parseFloat(transaction.sum),
-          0,
-        ) || 0;
+          0
+        ) || 0
 
-    weekPercentage = 100 - (totalSumForCategory / parseInt(weeklyBudget)) * 100;
-    weekPercentage = weekPercentage <= 0 ? 0.01 : weekPercentage;
+    weekPercentage = 100 - (totalSumForCategory / parseInt(weeklyBudget)) * 100
+    weekPercentage = weekPercentage <= 0 ? 0.01 : weekPercentage
   }
 
-  const income = incomeTotals ? incomeTotals[month] : -1;
-  const profit = parseFloat((income - total).toFixed(2));
+  const income = incomeTotals ? incomeTotals[month] : -1
+  const profit = parseFloat((income - total).toFixed(2))
 
-  const tableRef = useRef(null);
+  const tableRef = useRef(null)
   const {
     handleTouchStart,
     handleTouchMove,
@@ -78,7 +78,7 @@ const TransactionsTable = ({
     deleteVisible,
     editVisible,
     extraRowStyle,
-  } = useSwipeActions();
+  } = useSwipeActions()
 
   return (
     <>
@@ -86,7 +86,7 @@ const TransactionsTable = ({
         <div>
           <div
             className="stats-container has-budget"
-            style={{ "--budget-progress": `${monthPercentage}%` }}
+            style={{ '--budget-progress': `${monthPercentage}%` }}
           >
             <h3>Spent</h3>
             <div className="stat-value">
@@ -119,7 +119,9 @@ const TransactionsTable = ({
           <div>
             <div
               className="stats-container has-budget"
-              style={{ "--budget-progress": `${weekPercentage}%` }}
+              style={{
+                '--budget-progress': `${weekPercentage}%`,
+              }}
             >
               <h3>Week budget</h3>
               <div className="stat-value">
@@ -136,8 +138,8 @@ const TransactionsTable = ({
             <tr>
               <th>Date</th>
               <th
-                onClick={() => requestSort("sum")}
-                className={`sortable ${getClassNamesFor(sortConfig, "sum")}`}
+                onClick={() => requestSort('sum')}
+                className={`sortable ${getClassNamesFor(sortConfig, 'sum')}`}
               >
                 Amount
               </th>
@@ -160,11 +162,11 @@ const TransactionsTable = ({
                     tableRef,
                     element.id,
                     handleEdit,
-                    setShowDeleteModal,
+                    setShowDeleteModal
                   )
                 }
               >
-                <td>{element.dt.split("-")[2]}</td>
+                <td>{element.dt.split('-')[2]}</td>
                 <td>{formatNumber(element.sum)}</td>
                 <td>{categories[element.cat]}</td>
                 <td>{element.dsc}</td>
@@ -204,7 +206,7 @@ const TransactionsTable = ({
         )}
       </div>
     </>
-  );
-};
+  )
+}
 
-export default TransactionsTable;
+export default TransactionsTable
