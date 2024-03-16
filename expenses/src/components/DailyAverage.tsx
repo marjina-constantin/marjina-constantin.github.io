@@ -38,7 +38,9 @@ export default function DailyAverage() {
             <tr key={key}>
               <td>{item.name}</td>
               <td>
-                {formatNumber(parseFloat(String(item.y / daysPassed)).toFixed(2))}{' '}
+                {formatNumber(
+                  parseFloat(String(item.y / daysPassed)).toFixed(2)
+                )}{' '}
                 {currency} / day
               </td>
             </tr>
@@ -47,7 +49,9 @@ export default function DailyAverage() {
       </table>
       <div className="average-spending">
         Average spending per day:{' '}
-        {formatNumber(parseFloat(String(data.totalSpent / daysPassed)).toFixed(2))}{' '}
+        {formatNumber(
+          parseFloat(String(data.totalSpent / daysPassed)).toFixed(2)
+        )}{' '}
         {currency}
       </div>
     </>

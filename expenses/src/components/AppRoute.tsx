@@ -7,7 +7,10 @@ interface AppRouteProps {
   isPrivate: boolean;
 }
 
-const AppRoute: React.FC<AppRouteProps> = ({ component: Component, isPrivate }) => {
+const AppRoute: React.FC<AppRouteProps> = ({
+  component: Component,
+  isPrivate,
+}) => {
   const userDetails = useAuthState();
 
   if (isPrivate && !userDetails.token) {

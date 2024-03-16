@@ -25,7 +25,7 @@ export default function AllTimeSpendings() {
       type: 'pie',
     },
     title: {
-      text: 'All Time Spending\'s',
+      text: "All Time Spending's",
     },
     tooltip: {
       pointFormat: '{point.y} {series.name} ({point.percentage:.2f})%',

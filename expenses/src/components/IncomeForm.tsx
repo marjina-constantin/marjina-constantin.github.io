@@ -20,7 +20,11 @@ interface IncomeFormProps {
   onSuccess: () => void;
 }
 
-const IncomeForm: React.FC<IncomeFormProps> = ({ formType, values, onSuccess }) => {
+const IncomeForm: React.FC<IncomeFormProps> = ({
+  formType,
+  values,
+  onSuccess,
+}) => {
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
@@ -33,7 +37,9 @@ const IncomeForm: React.FC<IncomeFormProps> = ({ formType, values, onSuccess }) 
     formType === 'add' ? initialState : values
   );
   const { token } = useAuthState();
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const value = event.target.value;
     setFormState({
       ...formState,
@@ -64,20 +70,26 @@ const IncomeForm: React.FC<IncomeFormProps> = ({ formType, values, onSuccess }) 
       formType === 'add'
         ? 'https://dev-expenses-api.pantheonsite.io/node?_format=json'
         : `https://dev-expenses-api.pantheonsite.io/node/${values.nid}?_format=json`;
-    fetchRequest(url, fetchOptions, dataDispatch, dispatch, (data: NodeData) => {
-      if (data.nid) {
-        onSuccess();
-        showNotification('Success!', notificationType.SUCCESS);
-        setIsSubmitting(false);
-        setFormState(initialState);
-      } else {
-        showNotification(
-          'Something went wrong, please contact Sergiu S :)',
-          notificationType.ERROR
-        );
-        setIsSubmitting(false);
+    fetchRequest(
+      url,
+      fetchOptions,
+      dataDispatch,
+      dispatch,
+      (data: NodeData) => {
+        if (data.nid) {
+          onSuccess();
+          showNotification('Success!', notificationType.SUCCESS);
+          setIsSubmitting(false);
+          setFormState(initialState);
+        } else {
+          showNotification(
+            'Something went wrong, please contact Sergiu S :)',
+            notificationType.ERROR
+          );
+          setIsSubmitting(false);
+        }
       }
-    });
+    );
   };
 
   const today: Date = new Date();

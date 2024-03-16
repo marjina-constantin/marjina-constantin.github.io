@@ -15,7 +15,9 @@ export default function Filters() {
 
   const prevFilterState = useRef(state);
 
-  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCategoryChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const category = event.target.value;
     setState((prevState) => ({
       ...prevState,
@@ -23,7 +25,9 @@ export default function Filters() {
     }));
   };
 
-  const handleTextFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTextFilterChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const textFilter = event.target.value;
     setState((prevState) => ({
       ...prevState,

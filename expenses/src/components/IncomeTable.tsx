@@ -4,15 +4,24 @@ import { FaPen, FaTrash } from 'react-icons/fa';
 import { getClassNamesFor, useSortableData } from '../utils/useSortableData';
 import { useAuthState } from '../context';
 import { formatNumber } from '../utils/utils';
+import { TransactionOrIncomeItem } from '../type/types';
 
-export default function IncomeTable({ items, handleEdit, setShowDeleteModal }) {
+interface IncomeTableProps {
+  items: TransactionOrIncomeItem[];
+  handleEdit: (id: string) => void;
+  setShowDeleteModal: (id: string) => void;
+}
+
+const IncomeTable: React.FC<IncomeTableProps> = ({
+  items,
+  handleEdit,
+  setShowDeleteModal,
+}) => {
   const total =
     items && items.length
       ? items.reduce(
-          (accumulator, curValue) =>
-            (
-              parseFloat(accumulator) + (parseFloat(curValue['sum']) || 0)
-            ).toFixed(2),
+          (accumulator: number, curValue: TransactionOrIncomeItem) =>
+            accumulator + (parseFloat(curValue['sum']) || 0),
           0
         )
       : 0;
@@ -104,4 +113,6 @@ export default function IncomeTable({ items, handleEdit, setShowDeleteModal }) {
       )}
     </div>
   );
-}
+};
+
+export default IncomeTable;

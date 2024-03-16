@@ -37,19 +37,21 @@ export default function DailyAverageTrend() {
     const itemDate = new Date((item as TransactionOrIncomeItem).dt);
     if ((item as TransactionOrIncomeItem).type === 'incomes') {
       totalIncomesAtDate =
-        parseFloat(String(totalIncomesAtDate)) + parseFloat((item as TransactionOrIncomeItem).sum);
+        parseFloat(String(totalIncomesAtDate)) +
+        parseFloat((item as TransactionOrIncomeItem).sum);
     } else {
       totalExpensesAtDate =
-        parseFloat(String(totalExpensesAtDate)) + parseFloat((item as TransactionOrIncomeItem).sum);
+        parseFloat(String(totalExpensesAtDate)) +
+        parseFloat((item as TransactionOrIncomeItem).sum);
     }
 
     // @ts-expect-error TBC
     dailyIncomes[(item as TransactionOrIncomeItem).dt] = [
       itemDate.getTime(),
       parseFloat(
-        parseFloat(String(totalIncomesAtDate / getNrOfDaysFromStart(itemDate))).toFixed(
-          2
-        )
+        parseFloat(
+          String(totalIncomesAtDate / getNrOfDaysFromStart(itemDate))
+        ).toFixed(2)
       ),
     ];
     // @ts-expect-error TBC
