@@ -15,10 +15,10 @@ export default function AllTimeSpendings() {
 
   const firstDay = data.raw[data.raw.length - 1]?.dt;
   const daysPassed = parseInt(
-    (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1
+    String((new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1)
   );
   const monthsPassed = daysPassed
-    ? parseFloat(daysPassed / 30.42).toFixed(2)
+    ? parseFloat(String(daysPassed / 30.42)).toFixed(2)
     : 0;
   const allTimeSpendings = {
     chart: {

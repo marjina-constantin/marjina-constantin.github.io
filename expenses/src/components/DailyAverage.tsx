@@ -12,7 +12,7 @@ export default function DailyAverage() {
 
   const firstDay = data.raw[data.raw.length - 1]?.dt;
   const daysPassed = parseInt(
-    (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1
+    String((new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1)
   );
   const { sortedItems, requestSort, sortConfig } = useSortableData(
     Object.values(data.categoryTotals)
@@ -38,7 +38,7 @@ export default function DailyAverage() {
             <tr key={key}>
               <td>{item.name}</td>
               <td>
-                {formatNumber(parseFloat(item.y / daysPassed).toFixed(2))}{' '}
+                {formatNumber(parseFloat(String(item.y / daysPassed)).toFixed(2))}{' '}
                 {currency} / day
               </td>
             </tr>
@@ -47,7 +47,7 @@ export default function DailyAverage() {
       </table>
       <div className="average-spending">
         Average spending per day:{' '}
-        {formatNumber(parseFloat(data.totalSpent / daysPassed).toFixed(2))}{' '}
+        {formatNumber(parseFloat(String(data.totalSpent / daysPassed)).toFixed(2))}{' '}
         {currency}
       </div>
     </>
