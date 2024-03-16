@@ -6,13 +6,27 @@ import { FaPen, FaTrash } from 'react-icons/fa';
 import NumberDisplay from './NumberDisplay';
 import { useAuthState, useData } from '../context';
 import { formatNumber } from '../utils/utils';
+import { TransactionOrIncomeItem } from '../type/types';
 
-const categories = categoriesArray.reduce((acc, item) => {
-  acc[item.value] = item.label;
-  return acc;
-}, {});
+const categories: { [key: string]: string } = categoriesArray.reduce(
+  (acc, item) => {
+    // @ts-expect-error TBC
+    acc[item.value] = item.label;
+    return acc;
+  },
+  {}
+);
 
-const TransactionsTable = ({
+interface TransactionsTableProps {
+  month: string;
+  total: number;
+  items: TransactionOrIncomeItem[];
+  handleEdit: (id: string) => void;
+  setShowDeleteModal: (id: string) => void;
+  incomeTotals: { [month: string]: number };
+}
+
+const TransactionsTable: React.FC<TransactionsTableProps> = ({
   month,
   total,
   items,
@@ -52,14 +66,23 @@ const TransactionsTable = ({
 
     totalSumForCategory =
       data?.raw
-        ?.filter((transaction) => transaction.dt >= formattedLastMonday)
-        ?.filter((transaction) => transaction.type === 'transaction')
         ?.filter(
-          (transaction) =>
-            ![6, 9, 10, 12, 13, 11].includes(parseInt(transaction.cat))
+          (transaction: TransactionOrIncomeItem) =>
+            transaction.dt >= formattedLastMonday
+        )
+        ?.filter(
+          (transaction: TransactionOrIncomeItem) =>
+            transaction.type === 'transaction'
+        )
+        ?.filter(
+          (transaction: TransactionOrIncomeItem) =>
+            ![6, 9, 10, 12, 13, 11].includes(
+              parseInt(transaction.cat as string)
+            )
         )
         ?.reduce(
-          (total, transaction) => total + parseFloat(transaction.sum),
+          (total: number, transaction: TransactionOrIncomeItem) =>
+            total + parseFloat(transaction.sum),
           0
         ) || 0;
 
@@ -86,6 +109,7 @@ const TransactionsTable = ({
         <div>
           <div
             className="stats-container has-budget"
+            // @ts-expect-error TBC
             style={{ '--budget-progress': `${monthPercentage}%` }}
           >
             <h3>Spent</h3>
@@ -120,6 +144,7 @@ const TransactionsTable = ({
             <div
               className="stats-container has-budget"
               style={{
+                // @ts-expect-error TBC
                 '--budget-progress': `${weekPercentage}%`,
               }}
             >
