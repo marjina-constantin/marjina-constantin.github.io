@@ -13,11 +13,10 @@ export default function MonthlyTotals() {
   useEffect(() => {}, [data, currency]);
 
   const firstDay = data.raw[data.raw.length - 1]?.dt;
-  const daysPassed = parseInt(
-    (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1
-  );
-  const monthsPassed = parseFloat(daysPassed / 30.42).toFixed(2);
-  const monthlyAverage = parseFloat(items.totalSpent / monthsPassed).toFixed(2);
+  const daysPassed: number =
+    (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1;
+  const monthsPassed: number = daysPassed / 30.42;
+  const monthlyAverage: number = items.totalSpent / monthsPassed;
 
   const allTimeOptions = {
     chart: {
@@ -71,7 +70,7 @@ export default function MonthlyTotals() {
     series: [
       {
         name: data.category
-          ? categories.find((element) => element.value === data.category).label
+          ? categories.find((element) => element.value === data.category)?.label
           : 'Monthly totals',
         data: items.totals ? Object.values(items.totals).reverse() : [],
         colorByPoint: true,
@@ -85,7 +84,7 @@ export default function MonthlyTotals() {
           ? Object.values(items.incomeTotals)
               .reverse()
               .map(function (item) {
-                return parseFloat(item);
+                return item;
               })
           : [],
       },

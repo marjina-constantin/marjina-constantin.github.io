@@ -206,8 +206,12 @@ export const formatNumber = (value) => {
 
   // Check if the parsed value is a valid number
   if (!isNaN(parsedValue)) {
-    const formattedValue = parsedValue.toFixed(2);
-    return formattedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    let formattedValue = parsedValue.toFixed(2);
+    if (formattedValue.endsWith('.00')) {
+      formattedValue = formattedValue.slice(0, -3);
+    }
+    formattedValue = formattedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return formattedValue;
   } else {
     // Handle non-numeric values or invalid input
     return 'Invalid Input';
