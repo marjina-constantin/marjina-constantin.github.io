@@ -8,8 +8,19 @@ import {
 } from '../context';
 import { categories, suggestions } from '../utils/constants';
 import { notificationType } from '../utils/constants';
+import { NodeData } from '../type/types';
 
-const TransactionForm = ({ formType, values, onSuccess }) => {
+interface TransactionFormProps {
+  formType: 'add' | 'edit';
+  values: any;
+  onSuccess: () => void;
+}
+
+const TransactionForm: React.FC<TransactionFormProps> = ({
+  formType,
+  values,
+  onSuccess,
+}) => {
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
@@ -23,18 +34,23 @@ const TransactionForm = ({ formType, values, onSuccess }) => {
     formType === 'add' ? initialState : values
   );
   const { token } = useAuthState();
-  const handleChange = (event) => {
+  const handleChange = (
+    event: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const value = event.target.value;
     setFormState({
       ...formState,
       [event.target.name]: value,
     });
     if (event.target.name === 'field_category') {
+      // @ts-expect-error TBC
       setSuggestionData(suggestions[value]);
     }
   };
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
     const node = {
@@ -58,36 +74,43 @@ const TransactionForm = ({ formType, values, onSuccess }) => {
       formType === 'add'
         ? 'https://dev-expenses-api.pantheonsite.io/node?_format=json'
         : `https://dev-expenses-api.pantheonsite.io/node/${values.nid}?_format=json`;
-    fetchRequest(url, fetchOptions, dataDispatch, dispatch, (data) => {
-      if (data.nid) {
-        onSuccess();
-        showNotification('Success!', notificationType.SUCCESS);
-        setIsSubmitting(false);
-        setFormState(initialState);
-        setSuggestionData([]);
-        setSelectedIndices([]);
-      } else {
-        showNotification(
-          'Something went wrong, please contact Constantin :)',
-          notificationType.ERROR
-        );
-        setIsSubmitting(false);
+    fetchRequest(
+      url,
+      fetchOptions,
+      dataDispatch,
+      dispatch,
+      (data: NodeData) => {
+        if (data.nid) {
+          onSuccess();
+          showNotification('Success!', notificationType.SUCCESS);
+          setIsSubmitting(false);
+          setFormState(initialState);
+          setSuggestionData([]);
+          setSelectedIndices([]);
+        } else {
+          showNotification(
+            'Something went wrong, please contact Constantin :)',
+            notificationType.ERROR
+          );
+          setIsSubmitting(false);
+        }
       }
-    });
+    );
   };
 
-  let today = new Date();
+  const today: Date = new Date();
   const offset = today.getTimezoneOffset();
-  today = new Date(today.getTime() - offset * 60 * 1000)
+  const maxDay = new Date(today.getTime() - offset * 60 * 1000)
     .toISOString()
     .split('T')[0];
 
-  const [suggestionData, setSuggestionData] = useState(
+  const [suggestionData, setSuggestionData] = useState<string[]>(
+    // @ts-expect-error TBC
     suggestions[formState.field_category]
   );
-  const [selectedIndices, setSelectedIndices] = useState([]);
+  const [selectedIndices, setSelectedIndices] = useState<string[]>([]);
 
-  const handleSuggestionClick = (suggestion, index) => {
+  const handleSuggestionClick = (suggestion: string, index: string) => {
     setFormState({
       ...formState,
       field_description: formState?.field_description
@@ -116,7 +139,7 @@ const TransactionForm = ({ formType, values, onSuccess }) => {
           required
           placeholder="Date"
           type="date"
-          max={today}
+          max={maxDay}
           name="field_date"
           value={formState.field_date}
           onChange={handleChange}
@@ -136,7 +159,7 @@ const TransactionForm = ({ formType, values, onSuccess }) => {
         <textarea
           placeholder="Description"
           name="field_description"
-          rows="3"
+          rows={3}
           value={formState.field_description}
           onChange={handleChange}
         />
