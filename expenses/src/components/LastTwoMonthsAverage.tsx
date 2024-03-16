@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useAuthState, useData } from '../context';
 import { formatNumber } from '../utils/utils';
+import { TransactionOrIncomeItem } from '../type/types';
 
 export default function LastTwoMonthsAverage() {
   const { data } = useData();
@@ -8,27 +9,26 @@ export default function LastTwoMonthsAverage() {
 
   useEffect(() => {}, [data.raw]);
 
-  let lastTwoMonthsTotal = 0;
+  let lastTwoMonthsTotal: number = 0;
   let userHasMoreThanTwoMonths = false;
   let lastProcessedItem = {};
   const twoMonthsAgo = new Date().setDate(new Date().getDate() - 60);
   for (const item of data.raw) {
-    if (item.type === 'incomes') {
+    if ((item as TransactionOrIncomeItem).type === 'incomes') {
       continue;
     }
-    const itemDate = new Date(item.dt);
-    if (itemDate < twoMonthsAgo) {
+    const itemDate = new Date((item as TransactionOrIncomeItem).dt);
+    if (itemDate < new Date(twoMonthsAgo)) {
       userHasMoreThanTwoMonths = true;
       break;
     }
-    lastProcessedItem = item;
-    lastTwoMonthsTotal = (
-      parseFloat(lastTwoMonthsTotal) + parseFloat(item.sum)
-    ).toFixed(2);
+    lastProcessedItem = item as TransactionOrIncomeItem;
+    lastTwoMonthsTotal = lastTwoMonthsTotal + parseFloat(item.sum);
   }
 
   const timeDiff =
-    new Date().getTime() - new Date(lastProcessedItem.dt).getTime();
+    new Date().getTime() -
+    new Date((lastProcessedItem as TransactionOrIncomeItem).dt).getTime();
   const daysDiff = userHasMoreThanTwoMonths
     ? 60
     : timeDiff / (1000 * 3600 * 24);
@@ -36,10 +36,7 @@ export default function LastTwoMonthsAverage() {
   return (
     <span>
       Average spending for the last 60 days:{' '}
-      {formatNumber(
-        parseFloat(lastTwoMonthsTotal / Math.ceil(daysDiff)).toFixed(2)
-      )}{' '}
-      {currency} / day
+      {formatNumber(lastTwoMonthsTotal / Math.ceil(daysDiff))} {currency} / day
     </span>
   );
 }
