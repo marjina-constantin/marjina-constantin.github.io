@@ -2,10 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import { TransactionOrIncomeItem } from '../type/types';
+
+interface SavingsData {
+  [key: string]: [number, number];
+}
 
 export default function SavingsHistory() {
   const { data } = useData();
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<TransactionOrIncomeItem[]>([]);
 
   // Re-render the component only when dependencies are changed.
   useEffect(() => {
@@ -18,41 +23,37 @@ export default function SavingsHistory() {
     };
   }, [data.raw]);
 
-  let savings = {};
+  const savings: SavingsData = {};
   let totalExpensesAtDate = 0;
   let totalIncomesAtDate = 0;
   const dataInChronologicalOrder = items.slice().reverse();
 
   for (const item of dataInChronologicalOrder) {
-    const itemDate = new Date(item.dt);
-    if (item.type === 'incomes') {
+    const itemDate = new Date((item as TransactionOrIncomeItem).dt);
+    if ((item as TransactionOrIncomeItem).type === 'incomes') {
       totalIncomesAtDate =
-        parseFloat(totalIncomesAtDate) + parseFloat(item.sum);
+        totalIncomesAtDate + parseFloat((item as TransactionOrIncomeItem).sum);
     } else {
       totalExpensesAtDate =
-        parseFloat(totalExpensesAtDate) + parseFloat(item.sum);
+        totalExpensesAtDate + parseFloat((item as TransactionOrIncomeItem).sum);
     }
 
-    savings[item.dt] = [
-      itemDate.getTime(),
-      parseFloat(
-        parseFloat(
-          (totalExpensesAtDate / totalIncomesAtDate - 1) * -100
-        ).toFixed(2)
-      ),
-    ];
+    const num = Number(
+      ((totalExpensesAtDate / totalIncomesAtDate - 1) * -100).toFixed(2)
+    );
+    savings[(item as TransactionOrIncomeItem).dt] = [itemDate.getTime(), num];
   }
 
-  savings = Object.values(savings);
+  const savingsArray = Object.values(savings);
 
-  if (savings.length > 14) {
-    savings.splice(0, 14);
+  if (savingsArray.length > 14) {
+    savingsArray.splice(0, 14);
   }
 
   const series = [
     {
       name: 'Savings',
-      data: savings,
+      data: savingsArray,
       negativeColor: '#E91E63',
     },
   ];
