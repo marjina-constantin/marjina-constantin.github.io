@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { formatNumber } from '../utils/utils';
 
-const NumberDisplay = ({ number }) => {
+interface NumberDisplayProps {
+  number: number;
+}
+
+const NumberDisplay: React.FC<NumberDisplayProps> = ({ number }) => {
   const [displayedNumber, setDisplayedNumber] = useState(0);
   const transitionTime = 10;
   const steps = Math.abs(number - displayedNumber);

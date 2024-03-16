@@ -7,20 +7,20 @@ import {
   FaPlus,
   FaUser,
 } from 'react-icons/fa';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 export default function Navbar() {
   const { userIsLoggedIn } = useAuthState();
   const [cssClass, setCssClass] = useState('closed');
-  const [xDown, setXDown] = useState(null);
-  const [yDown, setYDown] = useState(null);
-  const handleTouchStart = (event) => {
+  const [xDown, setXDown] = useState<number | null>(null);
+  const [yDown, setYDown] = useState<number | null>(null);
+  const handleTouchStart = (event: React.TouchEvent) => {
     const firstTouch = event.touches[0];
     setXDown(firstTouch.clientX);
     setYDown(firstTouch.clientY);
   };
 
-  const handleTouchMove = (event) => {
+  const handleTouchMove = (event: React.TouchEvent) => {
     if (!xDown || !yDown) {
       return;
     }
