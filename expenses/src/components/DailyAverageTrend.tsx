@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { Item, Daily } from '../type/types';
+import { TransactionOrIncomeItem, Daily } from '../type/types';
 
 export default function DailyAverageTrend() {
   const { data } = useData();
@@ -34,17 +34,17 @@ export default function DailyAverageTrend() {
   const dataInChronologicalOrder = items.slice().reverse();
 
   for (const item of dataInChronologicalOrder) {
-    const itemDate = new Date((item as Item).dt);
-    if ((item as Item).type === 'incomes') {
+    const itemDate = new Date((item as TransactionOrIncomeItem).dt);
+    if ((item as TransactionOrIncomeItem).type === 'incomes') {
       totalIncomesAtDate =
-        parseFloat(String(totalIncomesAtDate)) + parseFloat((item as Item).sum);
+        parseFloat(String(totalIncomesAtDate)) + parseFloat((item as TransactionOrIncomeItem).sum);
     } else {
       totalExpensesAtDate =
-        parseFloat(String(totalExpensesAtDate)) + parseFloat((item as Item).sum);
+        parseFloat(String(totalExpensesAtDate)) + parseFloat((item as TransactionOrIncomeItem).sum);
     }
 
     // @ts-expect-error TBC
-    dailyIncomes[(item as Item).dt] = [
+    dailyIncomes[(item as TransactionOrIncomeItem).dt] = [
       itemDate.getTime(),
       parseFloat(
         parseFloat(String(totalIncomesAtDate / getNrOfDaysFromStart(itemDate))).toFixed(
@@ -53,7 +53,7 @@ export default function DailyAverageTrend() {
       ),
     ];
     // @ts-expect-error TBC
-    dailyExpenses[(item as Item).dt] = [
+    dailyExpenses[(item as TransactionOrIncomeItem).dt] = [
       itemDate.getTime(),
       parseFloat(
         parseFloat(

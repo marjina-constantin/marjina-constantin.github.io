@@ -7,8 +7,20 @@ import {
   useNotification,
 } from '../context';
 import { notificationType } from '../utils/constants';
+import { NodeData } from '../type/types';
 
-const IncomeForm = ({ formType, values, onSuccess }) => {
+interface IncomeFormProps {
+  formType: string;
+  values: {
+    nid: number;
+    field_amount: string;
+    field_date: string;
+    field_description: string;
+  };
+  onSuccess: () => void;
+}
+
+const IncomeForm: React.FC<IncomeFormProps> = ({ formType, values, onSuccess }) => {
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
@@ -21,7 +33,7 @@ const IncomeForm = ({ formType, values, onSuccess }) => {
     formType === 'add' ? initialState : values
   );
   const { token } = useAuthState();
-  const handleChange = (event) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = event.target.value;
     setFormState({
       ...formState,
@@ -29,7 +41,7 @@ const IncomeForm = ({ formType, values, onSuccess }) => {
     });
   };
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
     const node = {
@@ -52,7 +64,7 @@ const IncomeForm = ({ formType, values, onSuccess }) => {
       formType === 'add'
         ? 'https://dev-expenses-api.pantheonsite.io/node?_format=json'
         : `https://dev-expenses-api.pantheonsite.io/node/${values.nid}?_format=json`;
-    fetchRequest(url, fetchOptions, dataDispatch, dispatch, (data) => {
+    fetchRequest(url, fetchOptions, dataDispatch, dispatch, (data: NodeData) => {
       if (data.nid) {
         onSuccess();
         showNotification('Success!', notificationType.SUCCESS);
@@ -68,9 +80,9 @@ const IncomeForm = ({ formType, values, onSuccess }) => {
     });
   };
 
-  let today = new Date();
+  const today: Date = new Date();
   const offset = today.getTimezoneOffset();
-  today = new Date(today.getTime() - offset * 60 * 1000)
+  const maxDay = new Date(today.getTime() - offset * 60 * 1000)
     .toISOString()
     .split('T')[0];
 
@@ -90,7 +102,7 @@ const IncomeForm = ({ formType, values, onSuccess }) => {
           required
           placeholder="Date"
           type="date"
-          max={today}
+          max={maxDay}
           name="field_date"
           value={formState.field_date}
           onChange={handleChange}
@@ -98,7 +110,7 @@ const IncomeForm = ({ formType, values, onSuccess }) => {
         <textarea
           placeholder="Description"
           name="field_description"
-          rows="3"
+          rows={3}
           value={formState.field_description}
           onChange={handleChange}
         />

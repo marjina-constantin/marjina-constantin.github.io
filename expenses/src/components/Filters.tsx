@@ -11,11 +11,11 @@ export default function Filters() {
     textFilter: data.textFilter ?? '',
   });
   const [showTextFilter, setShowTextFilter] = useState(false);
-  const textInputRef = useRef(null);
+  const textInputRef = useRef<HTMLInputElement | null>(null);
 
   const prevFilterState = useRef(state);
 
-  const handleCategoryChange = (event) => {
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const category = event.target.value;
     setState((prevState) => ({
       ...prevState,
@@ -23,7 +23,7 @@ export default function Filters() {
     }));
   };
 
-  const handleTextFilterChange = (event) => {
+  const handleTextFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const textFilter = event.target.value;
     setState((prevState) => ({
       ...prevState,
