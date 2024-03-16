@@ -206,8 +206,8 @@ export const formatNumber = (value) => {
 
   // Check if the parsed value is a valid number
   if (!isNaN(parsedValue)) {
-    // Use a specific locale or options if needed
-    return parsedValue.toLocaleString();
+    const formattedValue = parsedValue.toFixed(2);
+    return formattedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   } else {
     // Handle non-numeric values or invalid input
     return 'Invalid Input';

@@ -10,11 +10,10 @@ export default function MonthlyAverage() {
   useEffect(() => {}, [data.raw, data.categoryTotals]);
 
   const firstDay = data.raw[data.raw.length - 1]?.dt;
-  const daysPassed = parseInt(
-    (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1
-  );
-  const monthsPassed = parseFloat(daysPassed / 30.42).toFixed(2);
-  const monthlyAverage = parseFloat(data.totalSpent / monthsPassed).toFixed(2);
+  const daysPassed: number =
+    (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1;
+  const monthsPassed: number = daysPassed / 30.42;
+  const monthlyAverage: number = data.totalSpent / monthsPassed;
   const { sortedItems, requestSort, sortConfig } = useSortableData(
     Object.values(data.categoryTotals)
   );
@@ -39,8 +38,7 @@ export default function MonthlyAverage() {
             <tr key={key}>
               <td>{item.name}</td>
               <td>
-                {formatNumber(parseFloat(item.y / monthsPassed).toFixed(2))}{' '}
-                {currency} / month
+                {formatNumber(item.y / monthsPassed)} {currency} / month
               </td>
             </tr>
           ))}
