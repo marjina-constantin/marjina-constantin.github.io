@@ -2,11 +2,11 @@ import React from 'react';
 import TransactionForm from '../../components/TransactionForm';
 import { fetchData } from '../../utils/utils';
 import { useAuthDispatch, useAuthState, useData } from '../../context';
-import { AuthState, DataContext } from '../../type/types';
+import { AuthState, DataState } from '../../type/types';
 
 const AddTransaction = () => {
-  const { token }: AuthState = useAuthState();
-  const { dataDispatch }: DataContext = useData();
+  const { token } = useAuthState() as AuthState;
+  const { dataDispatch } = useData() as DataState;
   const dispatch = useAuthDispatch();
   return (
     <TransactionForm

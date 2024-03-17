@@ -8,9 +8,10 @@ import {
   FaUser,
 } from 'react-icons/fa';
 import React, { useState } from 'react';
+import { AuthState } from '../type/types';
 
 export default function Navbar() {
-  const { userIsLoggedIn } = useAuthState();
+  const { userIsLoggedIn } = useAuthState() as AuthState;
   const [cssClass, setCssClass] = useState('closed');
   const [xDown, setXDown] = useState<number | null>(null);
   const [yDown, setYDown] = useState<number | null>(null);

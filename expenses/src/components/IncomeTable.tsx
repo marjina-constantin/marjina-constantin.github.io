@@ -4,7 +4,7 @@ import { FaPen, FaTrash } from 'react-icons/fa';
 import { getClassNamesFor, useSortableData } from '../utils/useSortableData';
 import { useAuthState } from '../context';
 import { formatNumber } from '../utils/utils';
-import { TransactionOrIncomeItem } from '../type/types';
+import { AuthState, TransactionOrIncomeItem } from '../type/types';
 
 interface IncomeTableProps {
   items: TransactionOrIncomeItem[];
@@ -26,7 +26,7 @@ const IncomeTable: React.FC<IncomeTableProps> = ({
         )
       : 0;
   const { sortedItems, requestSort, sortConfig } = useSortableData(items);
-  const { currency } = useAuthState();
+  const { currency } = useAuthState() as AuthState;
   const tableRef = useRef(null);
   const {
     handleTouchStart,

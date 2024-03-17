@@ -6,7 +6,7 @@ import { FaPen, FaTrash } from 'react-icons/fa';
 import NumberDisplay from './NumberDisplay';
 import { useAuthState, useData } from '../context';
 import { formatNumber } from '../utils/utils';
-import { TransactionOrIncomeItem } from '../type/types';
+import { AuthState, DataState, TransactionOrIncomeItem } from '../type/types';
 
 const categories: { [key: string]: string } = categoriesArray.reduce(
   (acc, item) => {
@@ -36,14 +36,14 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
 }) => {
   const { sortedItems, requestSort, sortConfig } = useSortableData(items || []);
 
-  const { data } = useData();
+  const { data } = useData() as DataState;
 
   // Get today's date
   const today = new Date();
   let totalSumForCategory = 0;
   let weekPercentage;
   let monthPercentage = 100;
-  const { weeklyBudget, monthlyBudget } = useAuthState();
+  const { weeklyBudget, monthlyBudget } = useAuthState() as AuthState;
   const isCurrentMonth =
     `${monthNames[today.getMonth()]} ${today.getFullYear()}` === month;
 

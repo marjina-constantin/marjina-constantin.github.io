@@ -4,10 +4,11 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { formatDataForChart, formatNumber } from '../utils/utils';
 import { monthNames } from '../utils/constants';
+import { AuthState, DataState } from '../type/types';
 
 export default function YearAverageTrend() {
-  const { data } = useData();
-  const { currency } = useAuthState();
+  const { data } = useData() as DataState;
+  const { currency } = useAuthState() as AuthState;
   const items =
     data?.filtered?.totalsPerYearAndMonth || data?.totalsPerYearAndMonth;
   const totalPerYear = data?.filtered?.totalPerYear || data?.totalPerYear;

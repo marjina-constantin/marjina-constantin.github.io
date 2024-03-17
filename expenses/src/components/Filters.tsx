@@ -2,9 +2,10 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { categories } from '../utils/constants';
 import { useData } from '../context';
 import { FaSearch } from 'react-icons/fa';
+import { DataState } from '../type/types';
 
 export default function Filters() {
-  const { data, dataDispatch } = useData();
+  const { data, dataDispatch } = useData() as DataState;
 
   const [state, setState] = useState({
     category: data.category ?? '',

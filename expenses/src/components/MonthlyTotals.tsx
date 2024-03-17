@@ -3,11 +3,12 @@ import { useAuthState, useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { categories } from '../utils/constants';
+import { AuthState, DataState } from '../type/types';
 
 export default function MonthlyTotals() {
-  const { data } = useData();
+  const { data } = useData() as DataState;
   const items = data.filtered || data;
-  const { currency } = useAuthState();
+  const { currency } = useAuthState() as AuthState;
 
   // Re-render the component only when dependencies are changed.
   useEffect(() => {}, [data, currency]);

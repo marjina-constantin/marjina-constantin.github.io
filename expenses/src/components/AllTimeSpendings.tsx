@@ -2,11 +2,12 @@ import React, { useEffect } from 'react';
 import { useAuthState, useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import { AuthState, DataState } from '../type/types';
 
 export default function AllTimeSpendings() {
   // All time section
-  const { data } = useData();
-  const { currency } = useAuthState();
+  const { data } = useData() as DataState;
+  const { currency } = useAuthState() as AuthState;
 
   const items = data.filtered || data;
 

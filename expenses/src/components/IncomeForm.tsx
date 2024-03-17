@@ -7,7 +7,7 @@ import {
   useNotification,
 } from '../context';
 import { notificationType } from '../utils/constants';
-import { NodeData } from '../type/types';
+import { AuthState, DataState, NodeData } from '../type/types';
 
 interface IncomeFormProps {
   formType: string;
@@ -27,7 +27,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
 }) => {
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
-  const { dataDispatch } = useData();
+  const { dataDispatch } = useData() as DataState;
   const initialState = {
     field_amount: '',
     field_date: new Date().toISOString().substr(0, 10),
@@ -36,7 +36,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
   const [formState, setFormState] = useState(
     formType === 'add' ? initialState : values
   );
-  const { token } = useAuthState();
+  const { token } = useAuthState() as AuthState;
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {

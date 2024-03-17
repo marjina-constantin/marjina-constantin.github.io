@@ -2,9 +2,10 @@ import React, { useEffect } from 'react';
 import { useAuthState, useData } from '../context';
 import { formatNumber } from '../utils/utils';
 import { getClassNamesFor, useSortableData } from '../utils/useSortableData';
+import { AuthState, DataState } from '../type/types';
 export default function MonthlyAverage() {
-  const { data } = useData();
-  const { currency } = useAuthState();
+  const { data } = useData() as DataState;
+  const { currency } = useAuthState() as AuthState;
 
   // Re-render the component only when dependencies are changed.
   useEffect(() => {}, [data.raw, data.categoryTotals]);

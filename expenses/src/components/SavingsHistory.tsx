@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { TransactionOrIncomeItem } from '../type/types';
+import { DataState, TransactionOrIncomeItem } from '../type/types';
 
 interface SavingsData {
   [key: string]: [number, number];
 }
 
 export default function SavingsHistory() {
-  const { data } = useData();
+  const { data } = useData() as DataState;
   const [items, setItems] = useState<TransactionOrIncomeItem[]>([]);
 
   // Re-render the component only when dependencies are changed.

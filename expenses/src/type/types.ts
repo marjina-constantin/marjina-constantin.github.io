@@ -37,10 +37,16 @@ export interface NodeData {
 export interface AuthState {
   token: string;
   value: any;
+  theme: string;
+  currency: string;
+  weeklyBudget: string;
+  monthlyBudget: string;
+  userIsLoggedIn: boolean;
 }
 
-export interface DataContext {
-  dataDispatch: () => void;
+export interface DataState {
+  dataDispatch: (action: any) => void;
+  data: any;
 }
 
 export interface LoginPayload {

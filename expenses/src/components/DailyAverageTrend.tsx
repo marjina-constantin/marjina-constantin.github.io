@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { TransactionOrIncomeItem, Daily } from '../type/types';
+import { TransactionOrIncomeItem, Daily, DataState } from '../type/types';
 
 export default function DailyAverageTrend() {
-  const { data } = useData();
+  const { data } = useData() as DataState;
 
   const [items, setItems] = useState([]);
   const isFiltered = !!data.filtered_raw;

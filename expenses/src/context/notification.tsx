@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import Notification from '../components/Notification';
 import { notificationType, themeList } from '../utils/constants';
 import { useAuthState } from './context';
+import { AuthState } from '../type/types';
 
 interface NotificationContextProps {
   children: ReactNode;
@@ -17,7 +18,7 @@ export const NotificationProvider = ({
   children,
 }: NotificationContextProps) => {
   const [notification, setNotification] = useState({ message: '', type: '' });
-  let { theme } = useAuthState();
+  let { theme } = useAuthState() as AuthState;
   // @ts-expect-error TBC
   theme = themeList[theme] ? theme : 'blue-pink-gradient';
   const gradientClass =

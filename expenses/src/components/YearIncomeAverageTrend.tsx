@@ -4,10 +4,11 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { formatDataForChart, formatNumber } from '../utils/utils';
 import { monthNames } from '../utils/constants';
+import { AuthState, DataState } from '../type/types';
 
 export default function YearIncomeAverageTrend() {
-  const { data } = useData();
-  const { currency } = useAuthState();
+  const { data } = useData() as DataState;
+  const { currency } = useAuthState() as AuthState;
 
   const totalIncomePerYear = data?.totalIncomePerYear || {};
   const totalPerYear = data?.totalPerYear || {};

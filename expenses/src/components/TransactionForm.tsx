@@ -8,7 +8,7 @@ import {
 } from '../context';
 import { categories, suggestions } from '../utils/constants';
 import { notificationType } from '../utils/constants';
-import { NodeData } from '../type/types';
+import { AuthState, DataState, NodeData } from '../type/types';
 
 interface TransactionFormProps {
   formType: 'add' | 'edit';
@@ -23,7 +23,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
 }) => {
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
-  const { dataDispatch } = useData();
+  const { dataDispatch } = useData() as DataState;
   const initialState = {
     field_amount: '',
     field_date: new Date().toISOString().substr(0, 10),
@@ -33,7 +33,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   const [formState, setFormState] = useState(
     formType === 'add' ? initialState : values
   );
-  const { token } = useAuthState();
+  const { token } = useAuthState() as AuthState;
   const handleChange = (
     event: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
