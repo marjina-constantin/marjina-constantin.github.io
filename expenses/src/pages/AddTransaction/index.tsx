@@ -10,6 +10,7 @@ const AddTransaction = () => {
   return (
     <TransactionForm
       formType="add"
+      values={null}
       onSuccess={() => {
         fetchData(token, dataDispatch, dispatch);
       }}
