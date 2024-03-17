@@ -33,3 +33,21 @@ export interface NodeData {
   uuid: { value: string }[];
   vid: { value: number }[];
 }
+
+export interface AuthState {
+  token: string;
+  value: any;
+}
+
+export interface DataContext {
+  dataDispatch: () => void;
+}
+
+export interface LoginPayload {
+  access_token: string;
+}
+
+export interface UserData {
+  current_user: any;
+  errors: string[];
+}
