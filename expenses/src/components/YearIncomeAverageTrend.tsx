@@ -48,8 +48,9 @@ export default function YearIncomeAverageTrend() {
     series: formattedIncomeData,
   };
 
-  let sumDiff = 0;
-  let sumIncome = 0;
+  let sumDiff: number = 0;
+  let sumIncome: number = 0;
+  console.log(1, (totalSpent / sumIncome - 1) * -100);
   return (
     <>
       <HighchartsReact
@@ -69,14 +70,12 @@ export default function YearIncomeAverageTrend() {
           </thead>
           <tbody>
             {Object.entries(totalIncomePerYear).map((item, key) => {
-              const diff = parseInt(item[1]) - parseInt(totalPerYear[item[0]]);
-              const savingsPercent = parseFloat(
-                parseFloat(
-                  (totalPerYear[item[0]] / item[1] - 1) * -100
-                ).toFixed(2)
-              );
-              sumDiff += parseFloat(diff);
-              sumIncome += parseFloat(item[1]);
+              const diff: number =
+                (item[1] as number) - parseInt(totalPerYear[item[0]]);
+              const savingsPercent =
+                (totalPerYear[item[0]] / (item[1] as number) - 1) * -100;
+              sumDiff += diff;
+              sumIncome += parseFloat(item[1] as string);
               return (
                 <tr key={key}>
                   <td>{item[0]}</td>
@@ -88,7 +87,7 @@ export default function YearIncomeAverageTrend() {
                   </td>
                   <td>
                     {isFinite(savingsPercent)
-                      ? `${formatNumber(diff)} ${currency} (${savingsPercent}%)`
+                      ? `${formatNumber(diff)} ${currency} (${formatNumber(savingsPercent)}%)`
                       : `${formatNumber(diff)} ${currency}`}
                   </td>
                 </tr>
@@ -104,9 +103,7 @@ export default function YearIncomeAverageTrend() {
               </td>
               <td>
                 {formatNumber(sumDiff)} {currency} (
-                {parseFloat(
-                  parseFloat((totalSpent / sumIncome - 1) * -100).toFixed(2)
-                )}
+                {formatNumber((totalSpent / sumIncome - 1) * -100)}
                 %)
               </td>
             </tr>
