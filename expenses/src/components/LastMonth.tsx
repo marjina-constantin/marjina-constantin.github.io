@@ -3,11 +3,12 @@ import { useAuthState, useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { categories } from '../utils/constants';
+import {AuthState} from "../type/types";
 
 export default function LastMonth() {
   // Last month section
   const { data } = useData();
-  const { currency } = useAuthState();
+  const { currency } = useAuthState() as AuthState;
 
   // Re-render the component only when dependencies are changed.
   useEffect(() => {}, [data.raw, currency]);
@@ -19,15 +20,20 @@ export default function LastMonth() {
       continue;
     }
     const itemDate = new Date(item.dt);
-    if (itemDate > oneMonthAgo) {
+    if (itemDate > new Date(oneMonthAgo)) {
+      // @ts-expect-error
       const category = categories.find(
         (element) => element.value === item.cat
       ).label;
+      // @ts-expect-error
       if (!lastMonthTotals[category]) {
+        // @ts-expect-error
         lastMonthTotals[category] = { name: category, y: 0 };
       }
+      // @ts-expect-error
       lastMonthTotals[category].y = parseFloat(
         (
+          // @ts-expect-error
           parseFloat(lastMonthTotals[category].y) + parseFloat(item.sum)
         ).toFixed(2)
       );
