@@ -15,7 +15,7 @@ export default function YearIncomeAverageTrend() {
   const totalSpent = data?.totalSpent || 0;
 
   const formattedIncomeData = formatDataForChart(
-    data?.totalIncomePerYearAndMonth
+    data?.totalIncomePerYearAndMonth || {}
   );
 
   const yearIncomeAverageOptions = {

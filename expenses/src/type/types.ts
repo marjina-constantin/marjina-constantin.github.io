@@ -54,15 +54,15 @@ export interface DataItems {
   totals?: Record<string, number> | null;
   filtered?: any;
   incomeData?: any;
-  incomeTotals?: any;
+  incomeTotals?: Record<string, number> | null;
   categoryTotals?: Record<string, { name: string; y: number }> | never[];
   loading: boolean;
-  totalIncomePerYearAndMonth?: any;
+  totalIncomePerYearAndMonth?: DataStructure;
   totalSpent: number;
   totalPerYear?: ItemTotal;
   category?: string;
   textFilter?: string;
-  totalsPerYearAndMonth?: Record<string, Record<string, number>>;
+  totalsPerYearAndMonth?: DataStructure;
   totalIncomePerYear?: ItemTotal;
 }
 
@@ -94,21 +94,29 @@ export interface ActionType {
   totals?: Record<string, number>;
   raw?: any[];
   incomeData?: any;
-  incomeTotals?: any;
+  incomeTotals?: Record<string, number>;
   categoryTotals?: Record<string, { name: string; y: number }>;
   loading?: boolean;
   totalSpent?: number;
-  totalsPerYearAndMonth?: Record<string, Record<string, number>>;
+  totalsPerYearAndMonth?: DataStructure;
   totalIncomePerYear?: ItemTotal;
-  totalIncomePerYearAndMonth?: any;
+  totalIncomePerYearAndMonth?: DataStructure;
   totalPerYear?: ItemTotal;
 }
 
 export interface Accumulator {
   groupedData: Record<string, TransactionOrIncomeItem[]>;
   totals: Record<string, number>;
-  totalsPerYearAndMonth: Record<string, Record<string, number>>;
+  totalsPerYearAndMonth: DataStructure;
   totalPerYear: ItemTotal;
   totalSpent: number;
   categoryTotals: Record<string, { name: string; y: number }>;
+}
+
+export interface YearData {
+  [month: string]: number;
+}
+
+export interface DataStructure {
+  [year: string]: YearData;
 }

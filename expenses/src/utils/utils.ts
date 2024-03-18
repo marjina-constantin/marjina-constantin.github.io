@@ -1,7 +1,17 @@
 import { categories, monthNames } from './constants';
 import { logout } from '../context';
+import {
+  DataStructure,
+  ItemTotal,
+  TransactionOrIncomeItem,
+} from '../type/types';
 
-const handleErrors = (response, options, dataDispatch, dispatch) => {
+const handleErrors = (
+  response: Response,
+  options: RequestInit,
+  dataDispatch: any,
+  dispatch: any
+) => {
   if (!response.ok) {
     fetch('https://dev-expenses-api.pantheonsite.io/jwt/token', options).then(
       (response) => {
@@ -15,7 +25,7 @@ const handleErrors = (response, options, dataDispatch, dispatch) => {
   return response.json();
 };
 
-export const formatDataForChart = (data) => {
+export const formatDataForChart = (data: DataStructure) => {
   const seriesData = [];
 
   for (const year in data) {
@@ -27,6 +37,7 @@ export const formatDataForChart = (data) => {
     for (const month of monthNames) {
       if (data[year][`${month} ${year}`]) {
         const monthValue = data[year][`${month} ${year}`];
+        // @ts-expect-error TBD
         yearSeries.data.push([month, monthValue]);
       }
     }
@@ -40,11 +51,11 @@ export const formatDataForChart = (data) => {
 };
 
 export const fetchRequest = (
-  url,
-  options,
-  dataDispatch,
-  dispatch,
-  callback
+  url: string,
+  options: RequestInit,
+  dataDispatch: any,
+  dispatch: any,
+  callback: any
 ) => {
   fetch(url, options)
     .then((response) => handleErrors(response, options, dataDispatch, dispatch))
@@ -52,7 +63,7 @@ export const fetchRequest = (
     .catch((error) => console.log(error));
 };
 
-export const deleteNode = (nid, token, callback) => {
+export const deleteNode = (nid: string, token: string, callback: any) => {
   const fetchOptions = {
     method: 'DELETE',
     headers: new Headers({
@@ -70,11 +81,11 @@ export const deleteNode = (nid, token, callback) => {
 };
 
 export const fetchData = (
-  token,
-  dataDispatch,
-  dispatch,
+  token: string,
+  dataDispatch: any,
+  dispatch: any,
   category = null,
-  textFilter = ''
+  textFilter: string = ''
 ) => {
   const fetchOptions = {
     method: 'GET',
@@ -89,18 +100,20 @@ export const fetchData = (
     fetchOptions,
     dataDispatch,
     dispatch,
-    (data) => {
-      const groupedData = {};
-      const totalsPerYearAndMonth = {};
-      const totalPerYear = {};
-      const incomeData = [];
-      const monthsTotals = {};
-      const incomeTotals = {};
-      const totalIncomePerYear = {};
-      const totalIncomePerYearAndMonth = {};
-      const categoryTotals = {};
+    (data: TransactionOrIncomeItem[]) => {
+      const groupedData: Record<string, TransactionOrIncomeItem[]> = {};
+      const totalsPerYearAndMonth: DataStructure = {};
+      const totalPerYear: ItemTotal = {};
+      const incomeData: TransactionOrIncomeItem[] = [];
+      const monthsTotals: Record<string, number> = {};
+      const incomeTotals: Record<string, number> = {};
+      const totalIncomePerYear: ItemTotal = {};
+      const totalIncomePerYearAndMonth: DataStructure = {};
+      const categoryTotals:
+        | Record<string, { name: string; y: number }>
+        | never[] = {};
       let totalSpent = 0;
-      const updateYearAndMonth = (year, month) => {
+      const updateYearAndMonth = (year: string | number, month: string) => {
         if (!totalsPerYearAndMonth[year]) {
           totalsPerYearAndMonth[year] = {};
         }
@@ -130,41 +143,48 @@ export const fetchData = (
         }
       };
 
-      const updateTotals = (item, year, month) => {
+      const updateTotals = (
+        item: TransactionOrIncomeItem,
+        year: number | string,
+        month: string
+      ) => {
         const { cat, sum, type } = item;
         if (type === 'incomes') {
-          totalIncomePerYear[year] = (
-            parseFloat(totalIncomePerYear[year]) + parseFloat(sum)
-          ).toFixed(2);
+          totalIncomePerYear[year] =
+            (totalIncomePerYear[year] as number) + parseFloat(sum);
           totalIncomePerYearAndMonth[year][month] += parseFloat(sum);
           incomeData.push(item);
           incomeTotals[month] = parseFloat(
-            (parseFloat(incomeTotals[month]) + parseFloat(sum)).toFixed(2)
+            (incomeTotals[month] + parseFloat(sum)).toFixed(2)
           );
         } else if (type === 'transaction') {
           groupedData[month].push(item);
           monthsTotals[month] = parseFloat(
-            (parseFloat(monthsTotals[month]) + parseFloat(sum)).toFixed(2)
+            (monthsTotals[month] + parseFloat(sum)).toFixed(2)
           );
-          categoryTotals[cat].name = categories[cat].label;
-          categoryTotals[cat].y = parseFloat(
-            (parseFloat(categoryTotals[cat].y) + parseFloat(sum)).toFixed(2)
-          );
-          totalSpent = (parseFloat(totalSpent) + parseFloat(sum)).toFixed(2);
+          if (cat && categoryTotals[cat]) {
+            const categoryKey = cat as keyof typeof categories;
+            // @ts-expect-error
+            categoryTotals[categoryKey].name = categories[categoryKey].label;
+            // @ts-expect-error
+            categoryTotals[categoryKey].y = parseFloat(
+              // @ts-expect-error
+              (categoryTotals[categoryKey].y + parseFloat(sum)).toFixed(2)
+            );
+          }
+          totalSpent = totalSpent + parseFloat(sum);
           totalsPerYearAndMonth[year][month] += parseFloat(sum);
-          totalPerYear[year] = (
-            parseFloat(totalPerYear[year]) + parseFloat(sum)
-          ).toFixed(2);
+          totalPerYear[year] = (totalPerYear[year] as number) + parseFloat(sum);
         }
       };
       if (data) {
-        data.forEach((item) => {
+        data.forEach((item: TransactionOrIncomeItem) => {
           const { dt, cat } = item;
           const date = new Date(dt);
           const year = date.getFullYear();
           const month = `${monthNames[date.getMonth()]} ${year}`;
 
-          if (!categoryTotals[cat] && cat) {
+          if (cat && !categoryTotals[cat]) {
             categoryTotals[cat] = {
               name: '',
               y: 0,
@@ -200,9 +220,9 @@ export const fetchData = (
   );
 };
 
-export const formatNumber = (value) => {
+export const formatNumber = (value: unknown): string => {
   // Try to parse the value as a floating-point number
-  const parsedValue = parseFloat(value);
+  const parsedValue = parseFloat(value as string);
 
   // Check if the parsed value is a valid number
   if (!isNaN(parsedValue)) {
