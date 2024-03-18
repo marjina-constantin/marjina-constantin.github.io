@@ -1,12 +1,8 @@
-import { Dispatch } from 'react';
 import { LoginPayload, UserData } from '../type/types';
 
 const ROOT_URL = 'https://dev-expenses-api.pantheonsite.io';
 
-export async function loginUser(
-  dispatch: Dispatch<any>,
-  loginPayload: LoginPayload
-) {
+export async function loginUser(dispatch: any, loginPayload: LoginPayload) {
   const requestOptions = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -33,10 +29,7 @@ export async function loginUser(
   }
 }
 
-export async function logout(
-  dispatch: Dispatch<any>,
-  dataDispatch: Dispatch<any>
-) {
+export async function logout(dispatch: any, dataDispatch: any) {
   await dispatch({ type: 'LOGOUT' });
   await dataDispatch({ type: 'REMOVE_DATA' });
   await localStorage.removeItem('currentUser');

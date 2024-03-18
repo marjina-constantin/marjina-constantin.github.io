@@ -1,32 +1,39 @@
 import React from 'react';
-import GoogleLogin from 'react-google-login';
+import GoogleLogin, {
+  GoogleLoginResponse,
+  GoogleLoginResponseOffline,
+} from 'react-google-login';
 import { loginUser, useAuthDispatch, useAuthState } from '../../context';
 import { useNavigate } from 'react-router-dom';
+import { AuthState } from '../../type/types';
 
 const Login = () => {
   const dispatch = useAuthDispatch();
   const navigate = useNavigate();
-  const { loading, errorMessage, userIsLoggedIn } = useAuthState();
+  const { loading, errorMessage, userIsLoggedIn } = useAuthState() as AuthState;
 
   if (userIsLoggedIn) {
     navigate('/expenses');
   }
 
-  const handleLogin = async (googleResponse) => {
-    const payload = { access_token: googleResponse.accessToken };
-    try {
-      const response = await loginUser(dispatch, payload);
-      if (!response.current_user) {
-        return;
+  const handleLogin = async (
+    googleResponse: GoogleLoginResponse | GoogleLoginResponseOffline
+  ) => {
+    if ('accessToken' in googleResponse) {
+      const payload = { access_token: googleResponse.accessToken };
+      try {
+        const response = await loginUser(dispatch, payload);
+        if (response && !response.current_user) {
+          return;
+        }
+        navigate(`/expenses`);
+      } catch (error) {
+        console.log(error);
       }
-
-      navigate('/expenses');
-    } catch (error) {
-      console.log(error);
     }
   };
 
-  const failedResponseGoogle = (response) => {
+  const failedResponseGoogle = (response: Response) => {
     console.log(response);
   };
 
