@@ -16,7 +16,7 @@ export default function DailyAverage() {
     String((new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1)
   );
   const { sortedItems, requestSort, sortConfig } = useSortableData(
-    Object.values(data.categoryTotals)
+    Object.values(data.categoryTotals || [])
   );
 
   return (

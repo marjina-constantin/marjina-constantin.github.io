@@ -42,11 +42,37 @@ export interface AuthState {
   weeklyBudget: string;
   monthlyBudget: string;
   userIsLoggedIn: boolean;
+  loading: boolean;
+  errorMessage: null | any;
+  userDetails: string | any;
+}
+
+export interface DataItems {
+  raw: TransactionOrIncomeItem[];
+  filtered_raw?: TransactionOrIncomeItem[];
+  groupedData?: Record<string, TransactionOrIncomeItem[]> | null;
+  totals?: Record<string, number> | null;
+  filtered?: any;
+  incomeData?: any;
+  incomeTotals?: any;
+  categoryTotals?: Record<string, { name: string; y: number }> | never[];
+  loading: boolean;
+  totalIncomePerYearAndMonth?: any;
+  totalSpent: number;
+  totalPerYear?: ItemTotal;
+  category?: string;
+  textFilter?: string;
+  totalsPerYearAndMonth?: Record<string, Record<string, number>>;
+  totalIncomePerYear?: ItemTotal;
 }
 
 export interface DataState {
   dataDispatch: (action: any) => void;
-  data: any;
+  data: DataItems;
+}
+
+export interface ItemTotal {
+  [key: string]: string | number;
 }
 
 export interface LoginPayload {
@@ -56,4 +82,33 @@ export interface LoginPayload {
 export interface UserData {
   current_user: any;
   errors: string[];
+}
+
+export interface ActionType {
+  type: string;
+  payload?: any;
+  error?: any;
+  category?: string;
+  textFilter?: string;
+  groupedData?: Record<string, TransactionOrIncomeItem[]>;
+  totals?: Record<string, number>;
+  raw?: any[];
+  incomeData?: any;
+  incomeTotals?: any;
+  categoryTotals?: Record<string, { name: string; y: number }>;
+  loading?: boolean;
+  totalSpent?: number;
+  totalsPerYearAndMonth?: Record<string, Record<string, number>>;
+  totalIncomePerYear?: ItemTotal;
+  totalIncomePerYearAndMonth?: any;
+  totalPerYear?: ItemTotal;
+}
+
+export interface Accumulator {
+  groupedData: Record<string, TransactionOrIncomeItem[]>;
+  totals: Record<string, number>;
+  totalsPerYearAndMonth: Record<string, Record<string, number>>;
+  totalPerYear: ItemTotal;
+  totalSpent: number;
+  categoryTotals: Record<string, { name: string; y: number }>;
 }

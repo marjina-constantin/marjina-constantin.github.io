@@ -1,20 +1,27 @@
 import { categories, monthNames } from '../utils/constants';
+import {
+  AuthState,
+  ActionType,
+  TransactionOrIncomeItem,
+  Accumulator,
+  DataItems,
+} from '../type/types';
 
 const user = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser'))
+  ? JSON.parse(localStorage.getItem('currentUser')!)
   : '';
 const token = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser')).jwt_token
+  ? JSON.parse(localStorage.getItem('currentUser')!).jwt_token
   : '';
 const theme = localStorage.getItem('theme')
-  ? JSON.parse(localStorage.getItem('theme'))
+  ? JSON.parse(localStorage.getItem('theme')!)
   : '';
 const weeklyBudget = localStorage.getItem('weeklyBudget')
-  ? JSON.parse(localStorage.getItem('weeklyBudget'))
+  ? JSON.parse(localStorage.getItem('weeklyBudget')!)
   : '';
 
 const monthlyBudget = localStorage.getItem('monthlyBudget')
-  ? JSON.parse(localStorage.getItem('monthlyBudget'))
+  ? JSON.parse(localStorage.getItem('monthlyBudget')!)
   : '';
 
 export const initialState = {
@@ -38,9 +45,10 @@ export const initialData = {
   incomeTotals: null,
   categoryTotals: [],
   loading: true,
+  totalSpent: 0,
 };
 
-export const AuthReducer = (initialState, action) => {
+export const AuthReducer = (initialState: AuthState, action: ActionType) => {
   switch (action.type) {
     case 'REQUEST_LOGIN':
       return {
@@ -81,7 +89,7 @@ export const AuthReducer = (initialState, action) => {
   }
 };
 
-export const DataReducer = (initialState, action) => {
+export const DataReducer = (initialState: DataItems, action: ActionType) => {
   switch (action.type) {
     case 'SET_DATA':
       return {
@@ -106,7 +114,10 @@ export const DataReducer = (initialState, action) => {
         initialState.raw
       ) {
         const { raw } = initialState;
-        let filtered = raw?.filter((item) => item.type === 'transaction') || [];
+        let filtered =
+          raw?.filter(
+            (item: TransactionOrIncomeItem) => item.type === 'transaction'
+          ) || [];
 
         if (action.category) {
           filtered = filtered.filter((item) => item.cat === action.category);
@@ -119,19 +130,22 @@ export const DataReducer = (initialState, action) => {
           );
         }
         const newState = filtered.reduce(
-          (accumulator, item) => {
-            const date = new Date(item.dt);
+          (accumulator: Accumulator, item: TransactionOrIncomeItem) => {
+            const date = new Date((item as TransactionOrIncomeItem).dt);
             const year = date.getFullYear();
             const month = `${monthNames[date.getMonth()]} ${year}`;
             accumulator.groupedData[month] =
               accumulator.groupedData[month] || [];
-            accumulator.groupedData[month].push(item);
+            accumulator.groupedData[month].push(
+              item as TransactionOrIncomeItem
+            );
 
             accumulator.totals[month] =
-              (accumulator.totals[month] || 0) + parseFloat(item.sum);
-            accumulator.totalSpent = (
-              parseFloat(accumulator.totalSpent) + parseFloat(item.sum)
-            ).toFixed(2);
+              (accumulator.totals[month] || 0) +
+              parseFloat((item as TransactionOrIncomeItem).sum);
+            accumulator.totalSpent =
+              accumulator.totalSpent +
+              parseFloat((item as TransactionOrIncomeItem).sum);
 
             accumulator.totalsPerYearAndMonth[year] =
               accumulator.totalsPerYearAndMonth[year] || {};
@@ -140,22 +154,23 @@ export const DataReducer = (initialState, action) => {
               parseFloat(item.sum);
 
             accumulator.totalPerYear[year] =
-              (accumulator.totalPerYear[year] || 0) + parseFloat(item.sum);
+              ((accumulator.totalPerYear[year] as number) || 0) +
+              parseFloat((item as TransactionOrIncomeItem).sum);
 
-            if (!accumulator.categoryTotals[item.cat] && item.cat) {
-              accumulator.categoryTotals[item.cat] = {
-                name: '',
-                y: 0,
-              };
+            const cat = (item as TransactionOrIncomeItem).cat;
+            if (cat !== undefined) {
+              if (!accumulator.categoryTotals[cat]) {
+                accumulator.categoryTotals[cat] = {
+                  name: '',
+                  y: 0,
+                };
+              }
+              accumulator.categoryTotals[cat].name =
+                // @ts-expect-error YBC
+                categories[cat]?.label || '';
+              accumulator.categoryTotals[cat].y +=
+                parseFloat((item as TransactionOrIncomeItem).sum) || 0;
             }
-            accumulator.categoryTotals[item.cat].name =
-              categories[item.cat].label;
-            accumulator.categoryTotals[item.cat].y = parseFloat(
-              (
-                parseFloat(accumulator.categoryTotals[item.cat].y) +
-                parseFloat(item.sum)
-              ).toFixed(2)
-            );
 
             return accumulator;
           },

@@ -7,7 +7,7 @@ import { TransactionOrIncomeItem, Daily, DataState } from '../type/types';
 export default function DailyAverageTrend() {
   const { data } = useData() as DataState;
 
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<TransactionOrIncomeItem[]>([]);
   const isFiltered = !!data.filtered_raw;
 
   // Re-render the component only when dependencies are changed.

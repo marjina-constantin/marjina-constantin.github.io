@@ -1,12 +1,15 @@
 import React, { useReducer } from 'react';
 import { AuthReducer, DataReducer, initialData, initialState } from './reducer';
-import { AuthState, DataState } from '../type/types';
+import { AuthState, DataItems, DataState } from '../type/types';
 
 const AuthStateContext = React.createContext<AuthState | null>(null);
 const AuthDispatchContext = React.createContext<React.Dispatch<any> | null>(
   null
 );
-const DataContext = React.createContext<DataState | null>(null);
+export const DataContext = React.createContext<DataState>({
+  data: { ...initialData },
+  dataDispatch: () => {},
+});
 
 export function useAuthState() {
   const context = React.useContext(AuthStateContext);
@@ -41,7 +44,11 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, dispatch] = useReducer(AuthReducer, initialState);
-  const [data, dataDispatch] = useReducer(DataReducer, initialData);
+  // @ts-expect-error
+  const [data, dataDispatch] = useReducer(
+    DataReducer,
+    initialData as DataItems
+  );
 
   return (
     <AuthStateContext.Provider value={user}>

@@ -16,7 +16,7 @@ export default function MonthlyAverage() {
   const monthsPassed: number = daysPassed / 30.42;
   const monthlyAverage: number = data.totalSpent / monthsPassed;
   const { sortedItems, requestSort, sortConfig } = useSortableData(
-    Object.values(data.categoryTotals)
+    Object.values(data.categoryTotals || [])
   );
 
   return (
