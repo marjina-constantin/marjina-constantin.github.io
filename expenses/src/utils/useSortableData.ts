@@ -1,7 +1,15 @@
 import { useMemo, useState } from 'react';
 
-export const useSortableData = (items, config = null) => {
-  const [sortConfig, setSortConfig] = useState(config);
+interface SortConfig {
+  key: string;
+  direction: 'ascending' | 'descending';
+}
+
+export const useSortableData = (
+  items: any[],
+  config: SortConfig | null = null
+) => {
+  const [sortConfig, setSortConfig] = useState<SortConfig | null>(config);
 
   const sortedItems = useMemo(() => {
     const sortableItems = [...items];
@@ -17,8 +25,8 @@ export const useSortableData = (items, config = null) => {
     return sortableItems;
   }, [items, sortConfig]);
 
-  const requestSort = (key) => {
-    let direction = 'ascending';
+  const requestSort = (key: string) => {
+    let direction: 'ascending' | 'descending' = 'ascending';
     if (
       sortConfig &&
       sortConfig.key === key &&
@@ -29,8 +37,10 @@ export const useSortableData = (items, config = null) => {
     setSortConfig({ key, direction });
   };
 
-  return { sortedItems: sortedItems, requestSort, sortConfig };
+  return { sortedItems, requestSort, sortConfig };
 };
 
-export const getClassNamesFor = (sortConfig, name) =>
-  sortConfig && sortConfig.key === name ? sortConfig.direction : '';
+export const getClassNamesFor = (
+  sortConfig: SortConfig | null,
+  name: string
+) => (sortConfig && sortConfig.key === name ? sortConfig.direction : '');
