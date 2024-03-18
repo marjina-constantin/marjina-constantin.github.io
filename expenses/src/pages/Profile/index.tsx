@@ -11,27 +11,31 @@ import { currencies } from '../../utils/constants';
 import { FaUserCircle } from 'react-icons/fa';
 import { fetchRequest } from '../../utils/utils';
 import { notificationType, themeList } from '../../utils/constants';
+import { AuthState } from '../../type/types';
 
 const Profile = () => {
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
   const { userDetails, token, currency, weeklyBudget, monthlyBudget } =
-    useAuthState();
-  let { theme } = useAuthState();
+    useAuthState() as AuthState;
+  let { theme } = useAuthState() as AuthState;
   const [state, setState] = useState({
     weeklyBudget: weeklyBudget,
     monthlyBudget: monthlyBudget,
   });
+  // @ts-expect-error
   theme = themeList[theme] ? theme : 'blue-pink-gradient';
   const navigate = useNavigate();
-  const handleLogout = (e) => {
-    e.preventDefault();
+  const handleLogout = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    event.preventDefault();
     logout(dispatch, dataDispatch);
     navigate('/expenses/login'); //navigate to logout page on logout
   };
 
-  const handleChange = (event) => {
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const fetchOptions = {
       method: 'PATCH',
       headers: new Headers({
@@ -42,14 +46,15 @@ const Profile = () => {
       body: JSON.stringify({ field_currency: [event.target.value] }),
     };
     const url = `https://dev-expenses-api.pantheonsite.io/user/${userDetails.current_user.uid}?_format=json`;
-    fetchRequest(url, fetchOptions, dataDispatch, dispatch, (data) => {
+    fetchRequest(url, fetchOptions, dataDispatch, dispatch, (data: any) => {
       if (data.uid) {
         userDetails.current_user.currency = data.field_currency[0].value;
         localStorage.setItem('currentUser', JSON.stringify(userDetails));
-        dispatch({
-          type: 'UPDATE_USER',
-          payload: { currency: data.field_currency[0].value },
-        });
+        dispatch &&
+          dispatch({
+            type: 'UPDATE_USER',
+            payload: { currency: data.field_currency[0].value },
+          });
         setBlink(true);
         setTimeout(() => setBlink(false), 2000);
       } else {
@@ -61,23 +66,24 @@ const Profile = () => {
     });
   };
 
-  const handleThemeChange = (event) => {
+  const handleThemeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     localStorage.setItem('theme', JSON.stringify(event.target.value));
-    dispatch({
-      type: 'UPDATE_USER',
-      payload: { theme: event.target.value },
-    });
+    dispatch &&
+      dispatch({
+        type: 'UPDATE_USER',
+        payload: { theme: event.target.value },
+      });
   };
 
-  const onBlur = (event) => {
+  const onBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const value = event.target.value;
     const name = event.target.name;
     event.preventDefault();
     localStorage.setItem(name, JSON.stringify(value));
-    dispatch({ type: 'UPDATE_USER', payload: { [name]: value } });
+    dispatch && dispatch({ type: 'UPDATE_USER', payload: { [name]: value } });
   };
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     const name = event.target.name;
     event.preventDefault();
