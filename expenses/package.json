@@ -26,8 +26,7 @@
     "start": "react-scripts start",
     "build": "GENERATE_SOURCEMAP=false react-scripts build && mv build home",
     "eject": "react-scripts eject",
-    "lint": "eslint --fix src/",
-    "tsc": "tsc"
+    "lint": "eslint --fix src/"
   },
   "eslintConfig": {
     "extends": [
