@@ -84,7 +84,7 @@ export const fetchData = (
   token: string,
   dataDispatch: any,
   dispatch: any,
-  category = null,
+  category: string = '',
   textFilter: string = ''
 ) => {
   const fetchOptions = {

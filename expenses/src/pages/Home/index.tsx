@@ -12,10 +12,11 @@ import TransactionsTable from '../../components/TransactionsTable';
 import Filters from '../../components/Filters';
 import { notificationType } from '../../utils/constants';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { AuthState, TransactionOrIncomeItem } from '../../type/types';
 
 const Home = () => {
   const showNotification = useNotification();
-  const { token } = useAuthState();
+  const { token } = useAuthState() as AuthState;
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const { data, dataDispatch } = useData();
@@ -34,8 +35,10 @@ const Home = () => {
 
   const [focusedItem, setFocusedItem] = useState({});
 
-  const handleEdit = (id) => {
-    const item = items.groupedData[currentMonth].find((item) => item.id === id);
+  const handleEdit = (id: string) => {
+    const item = items.groupedData[currentMonth].find(
+      (item: TransactionOrIncomeItem) => item.id === id
+    );
     setFocusedItem({
       nid: item.id,
       field_date: item.dt,
@@ -46,9 +49,10 @@ const Home = () => {
     setShowEditModal(true);
   };
 
-  const handleDelete = (showDeleteModal, token) => {
+  const handleDelete = (showDeleteModal: boolean, token: string) => {
     setIsSubmitting(true);
-    deleteNode(showDeleteModal, token, (response) => {
+    // @ts-expect-error
+    deleteNode(showDeleteModal, token, (response: Response) => {
       if (response.ok) {
         showNotification(
           'Transaction was successfully deleted.',
@@ -60,7 +64,13 @@ const Home = () => {
         setIsSubmitting(false);
       }
       setShowDeleteModal(false);
-      fetchData(token, dataDispatch, dispatch, data.category, data.textFilter);
+      fetchData(
+        token,
+        dataDispatch,
+        dispatch,
+        data.category as string,
+        data.textFilter as string
+      );
     });
   };
 
@@ -73,9 +83,10 @@ const Home = () => {
   useEffect(() => {
     if (data?.filtered) {
       const index = Object.keys(months).find(
-        (key) => months[key] === currentMonth
+        // @ts-expect-error
+        (key: string) => months[key] === currentMonth
       );
-      setCurrentMonthIndex(parseInt(index));
+      setCurrentMonthIndex(parseInt(index as string));
     } else {
       setCurrentMonthIndex(0);
     }
@@ -147,6 +158,7 @@ const Home = () => {
                 incomeTotals={items.incomeTotals}
                 items={items.groupedData[currentMonth]}
                 handleEdit={handleEdit}
+                // @ts-expect-error
                 setShowDeleteModal={setShowDeleteModal}
               />
               <div className="pager-navigation">
