@@ -18,7 +18,7 @@ const createTransporter = async () => {
   });
 
   const accessToken = await new Promise((resolve, reject) => {
-    oauth2Client.getAccessToken((err, token) => {
+    oauth2Client.getAccessToken((err: any, token: string) => {
       if (err) {
         reject(err);
       }
@@ -40,7 +40,12 @@ const createTransporter = async () => {
 };
 
 //emailOptions - who sends what to whom
-const sendEmail = async (emailOptions) => {
+const sendEmail = async (emailOptions: {
+  subject: string;
+  text: string;
+  to: string | undefined;
+  from: string | undefined;
+}) => {
   let emailTransporter = await createTransporter();
   await emailTransporter.sendMail(emailOptions);
 };
