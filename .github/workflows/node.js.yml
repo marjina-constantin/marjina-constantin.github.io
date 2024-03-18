@@ -39,7 +39,7 @@ jobs:
           git commit -m "Push built application"
           git push -f origin prod
           sleep 50s
-          node expenses/sendEmail.ts "$LAST_COMMIT_MSG"
+          node expenses/sendEmail.js "$LAST_COMMIT_MSG"
         env:
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
