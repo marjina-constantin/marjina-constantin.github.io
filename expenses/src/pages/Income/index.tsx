@@ -11,10 +11,11 @@ import Modal from '../../components/Modal';
 import IncomeTable from '../../components/IncomeTable';
 import { notificationType } from '../../utils/constants';
 import YearIncomeAverageTrend from '../../components/YearIncomeAverageTrend';
+import { AuthState, TransactionOrIncomeItem } from '../../type/types';
 
 const Income = () => {
   const showNotification = useNotification();
-  const { token } = useAuthState();
+  const { token } = useAuthState() as AuthState;
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [isNewModal, setIsNewModal] = useState(false);
@@ -29,22 +30,29 @@ const Income = () => {
     }
   }, [data, dataDispatch, noData, token, dispatch]);
 
-  const [focusedItem, setFocusedItem] = useState({});
+  const [focusedItem, setFocusedItem] = useState({
+    nid: '',
+    field_date: '',
+    field_amount: '',
+    field_description: '',
+  });
 
-  const handleEdit = (id) => {
-    const item = data.incomeData.find((item) => item.id === id);
+  const handleEdit = (id: string) => {
+    const item = data.incomeData.find(
+      (item: TransactionOrIncomeItem) => item.id === id
+    );
     setFocusedItem({
       nid: item.id,
       field_date: item.dt,
       field_amount: item.sum,
-      field_category: item.cat,
       field_description: item.dsc,
     });
     setShowEditModal(true);
   };
 
-  const handleDelete = (showDeleteModal, token) => {
+  const handleDelete = (showDeleteModal: boolean, token: string) => {
     setIsSubmitting(true);
+    // @ts-expect-error
     deleteNode(showDeleteModal, token, (response) => {
       if (response.ok) {
         showNotification(
@@ -123,6 +131,7 @@ const Income = () => {
               key={'income'}
               items={data.incomeData ?? []}
               handleEdit={handleEdit}
+              // @ts-expect-error
               setShowDeleteModal={setShowDeleteModal}
             />
           ) : (

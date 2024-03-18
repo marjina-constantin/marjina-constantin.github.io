@@ -12,7 +12,7 @@ import { AuthState, DataState, NodeData } from '../type/types';
 interface IncomeFormProps {
   formType: string;
   values: {
-    nid: number;
+    nid: string;
     field_amount: string;
     field_date: string;
     field_description: string;
