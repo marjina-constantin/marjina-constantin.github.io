@@ -5,7 +5,8 @@
   },
   "extends": [
     "eslint:recommended",
-    "eslint-config-react-app"
+    "plugin:react-hooks/recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
   "parserOptions": {
     "ecmaVersion": "latest",
@@ -15,6 +16,7 @@
     }
   },
   "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
     "no-undef": "off",
