@@ -6,7 +6,7 @@ export default defineConfig({
   base: '/expenses/',
   plugins: [
     react(),
-    VitePWA()
+    VitePWA({ registerType: 'autoUpdate' })
   ],
   server: {
     port: 3000,

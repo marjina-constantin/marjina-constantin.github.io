@@ -2,6 +2,9 @@ import React from 'react';
 import './index.css';
 import App from './App';
 import { createRoot } from 'react-dom/client';
+import { registerSW } from 'virtual:pwa-register';
+
+registerSW({ immediate: true });
 
 const container = document.getElementById('root');
 
