@@ -51,7 +51,6 @@ export default function YearIncomeAverageTrend() {
 
   let sumDiff: number = 0;
   let sumIncome: number = 0;
-  console.log(1, (totalSpent / sumIncome - 1) * -100);
   return (
     <>
       <HighchartsReact
