@@ -211,6 +211,7 @@ export const suggestions = {
     'happy hour',
     'benzinarie',
     'ceai/cafea parc',
+    'ceai/cafea',
     'restaurant',
     'ingetata',
     'ciocolata',
@@ -227,6 +228,8 @@ export const suggestions = {
     'apa',
     'inghetata',
     'straus/glovo food',
+    'local',
+    'linela',
   ],
   4: ['flori'],
   5: [
@@ -252,7 +255,7 @@ export const suggestions = {
   ],
   10: ['gaz', 'lumina', 'starnet', 'infocom', 'orange', 'infobon'],
   11: [],
-  12: ['Nelea'],
+  12: ['Nelea', 'Leo'],
   13: ['nunta', 'cumatrie'],
   14: ['vin', 'bere', 'whiskey', 'cognac', 'gin', 'cocktails'],
 };
