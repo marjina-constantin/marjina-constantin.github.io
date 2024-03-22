@@ -112,7 +112,7 @@ const Income = () => {
           }}
         />
       </Modal>
-      <h2>Incomes 232</h2>
+      <h2>Incomes</h2>
       {noData ? (
         ''
       ) : (
