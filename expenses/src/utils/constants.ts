@@ -210,7 +210,6 @@ export const suggestions = {
   2: [
     'happy hour',
     'benzinarie',
-    'ceai/cafea parc',
     'ceai/cafea',
     'restaurant',
     'ingetata',
