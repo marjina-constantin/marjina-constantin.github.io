@@ -3,7 +3,7 @@ import { useAuthState, useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { categories } from '../utils/constants';
-import {AuthState} from "../type/types";
+import { AuthState } from '../type/types';
 
 export default function LastMonth() {
   // Last month section
@@ -32,8 +32,8 @@ export default function LastMonth() {
       }
       // @ts-expect-error
       lastMonthTotals[category].y = parseFloat(
+        // @ts-expect-error
         (
-          // @ts-expect-error
           parseFloat(lastMonthTotals[category].y) + parseFloat(item.sum)
         ).toFixed(2)
       );

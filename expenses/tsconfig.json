@@ -6,7 +6,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "target": "es2022",
-
+    "types": ["vite-plugin-pwa/client"],
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,

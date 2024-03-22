@@ -23,6 +23,7 @@ const Income = () => {
   const noData = data.groupedData === null;
   const dispatch = useAuthDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [nrOfItemsToShow, setNrOfItemsToShow] = useState(20);
 
   useEffect(() => {
     if (noData) {
@@ -129,13 +130,24 @@ const Income = () => {
           {data.incomeData && data.incomeData.length ? (
             <IncomeTable
               key={'income'}
-              items={data.incomeData ?? []}
+              items={data.incomeData.slice(0, nrOfItemsToShow)}
               handleEdit={handleEdit}
               // @ts-expect-error
               setShowDeleteModal={setShowDeleteModal}
             />
           ) : (
             ''
+          )}
+
+          {data.incomeData?.length > nrOfItemsToShow && (
+            <div className="load-more">
+              <button
+                onClick={() => setNrOfItemsToShow(nrOfItemsToShow + 10)}
+                className="btn-outline"
+              >
+                Load more
+              </button>
+            </div>
           )}
         </div>
       )}

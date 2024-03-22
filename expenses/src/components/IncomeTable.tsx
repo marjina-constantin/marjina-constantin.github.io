@@ -2,9 +2,8 @@ import React, { useRef } from 'react';
 import useSwipeActions from '../hooks/useSwipeActions';
 import { FaPen, FaTrash } from 'react-icons/fa';
 import { getClassNamesFor, useSortableData } from '../utils/useSortableData';
-import { useAuthState } from '../context';
 import { formatNumber } from '../utils/utils';
-import { AuthState, TransactionOrIncomeItem } from '../type/types';
+import { TransactionOrIncomeItem } from '../type/types';
 
 interface IncomeTableProps {
   items: TransactionOrIncomeItem[];
@@ -17,16 +16,7 @@ const IncomeTable: React.FC<IncomeTableProps> = ({
   handleEdit,
   setShowDeleteModal,
 }) => {
-  const total =
-    items && items.length
-      ? items.reduce(
-          (accumulator: number, curValue: TransactionOrIncomeItem) =>
-            accumulator + (parseFloat(curValue['sum']) || 0),
-          0
-        )
-      : 0;
   const { sortedItems, requestSort, sortConfig } = useSortableData(items);
-  const { currency } = useAuthState() as AuthState;
   const tableRef = useRef(null);
   const {
     handleTouchStart,
@@ -39,9 +29,7 @@ const IncomeTable: React.FC<IncomeTableProps> = ({
 
   return (
     <div className="table-wrapper">
-      <div className="month-badge">
-        Incomes: {formatNumber(total)} {currency}
-      </div>
+      <div className="month-badge">Incomes</div>
       <table className="expenses-table" cellSpacing="0" cellPadding="0">
         <thead>
           <tr>
