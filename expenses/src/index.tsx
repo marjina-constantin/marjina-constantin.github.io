@@ -4,7 +4,7 @@ import App from './App';
 import { createRoot } from 'react-dom/client';
 import { registerSW } from 'virtual:pwa-register';
 
-registerSW({ immediate: true });
+registerSW({ immediate: true, scope: '/expenses/' });
 
 const container = document.getElementById('root');
 
