@@ -1,21 +1,12 @@
 import React, { useRef } from 'react';
 import { getClassNamesFor, useSortableData } from '../utils/useSortableData';
-import { categories as categoriesArray, monthNames } from '../utils/constants';
+import { monthNames } from '../utils/constants';
 import useSwipeActions from '../hooks/useSwipeActions';
 import { FaPen, FaTrash } from 'react-icons/fa';
 import NumberDisplay from './NumberDisplay';
 import { useAuthState, useData } from '../context';
-import { formatNumber } from '../utils/utils';
+import { formatNumber, getCategory } from '../utils/utils';
 import { AuthState, DataState, TransactionOrIncomeItem } from '../type/types';
-
-const categories: { [key: string]: string } = categoriesArray.reduce(
-  (acc, item) => {
-    // @ts-expect-error TBC
-    acc[item.value] = item.label;
-    return acc;
-  },
-  {}
-);
 
 interface TransactionsTableProps {
   month: string;
@@ -193,7 +184,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
               >
                 <td>{element.dt.split('-')[2]}</td>
                 <td>{formatNumber(element.sum)}</td>
-                <td>{categories[element.cat]}</td>
+                <td>{getCategory[element.cat]}</td>
                 <td>{element.dsc}</td>
                 <td className="desktop-only">
                   <button

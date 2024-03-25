@@ -237,3 +237,12 @@ export const formatNumber = (value: unknown): string => {
     return 'Invalid Input';
   }
 };
+
+export const getCategory: { [key: string]: string } = categories.reduce(
+  (acc, item) => {
+    // @ts-expect-error TBC
+    acc[item.value] = item.label;
+    return acc;
+  },
+  {}
+);

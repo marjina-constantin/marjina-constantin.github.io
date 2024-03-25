@@ -6,6 +6,7 @@ import { fetchData } from '../../utils/utils';
 import Filters from '../../components/Filters';
 import MonthlyTotals from '../../components/MonthlyTotals';
 import YearAverageTrend from '../../components/YearAverageTrend';
+import MostExpensiveProductDisplay from '../../components/MostExpensiveProductDisplay';
 import Boost from 'highcharts/modules/boost';
 import NoData from 'highcharts/modules/no-data-to-display';
 import { AuthState } from '../../type/types';
@@ -156,6 +157,12 @@ const Charts = () => {
             <div className="charts-section">
               <Suspense fallback="">
                 <LastTwoMonthsAverage />
+              </Suspense>
+            </div>
+
+            <div className="charts-section">
+              <Suspense fallback="">
+                <MostExpensiveProductDisplay />
               </Suspense>
             </div>
           </div>
