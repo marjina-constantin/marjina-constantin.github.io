@@ -107,7 +107,7 @@ body {
   height: 50px;
 }
 .navbar.open {
-  height: 250px;
+  height: 300px;
 }
 .navbar ul {
   margin: 0;
@@ -144,6 +144,9 @@ body {
   .navbar ul li:first-child:nth-last-child(5),
   .navbar ul li:first-child:nth-last-child(5) ~ li {
     width: 20%;
+  }
+  .navbar ul li {
+    width: 16%;
   }
   .expenses-table td {
     min-width: 100px;
@@ -801,4 +804,17 @@ li.selected-suggestion {
   100% {
     transform: translateY(0);
   }
+}
+
+.loan-details {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+.loan-details li {
+  flex: 1 1 100%;
+  padding: 10px;
+  box-sizing: border-box;
 }

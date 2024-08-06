@@ -6,6 +6,7 @@ import {
   useData,
 } from './context';
 import { NotificationProvider, useNotification } from './notification';
+import { LoanProvider, useLoan } from './loan';
 
 export {
   AuthProvider,
@@ -16,4 +17,6 @@ export {
   logout,
   useNotification,
   NotificationProvider,
+  LoanProvider,
+  useLoan
 };

@@ -6,6 +6,7 @@ import {
   FaMoneyBill,
   FaPlus,
   FaUser,
+  FaPiggyBank,
 } from 'react-icons/fa';
 import React, { useState } from 'react';
 import { AuthState } from '../type/types';
@@ -50,28 +51,33 @@ export default function Navbar() {
       <ul>
         <li>
           <NavLink to="/expenses/" end>
-            <FaHome />
+            <FaHome/>
           </NavLink>
         </li>
         <li>
           <NavLink to="/expenses/charts">
-            <FaChartPie />
+            <FaChartPie/>
           </NavLink>
         </li>
         <li>
           <NavLink to="/expenses/add-transaction">
-            <FaPlus />
+            <FaPlus/>
           </NavLink>
         </li>
         <li>
           <NavLink to="/expenses/income">
-            <FaMoneyBill />
+            <FaMoneyBill/>
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/expenses/loans">
+            <FaPiggyBank/>
           </NavLink>
         </li>
         {userIsLoggedIn ? (
           <li>
             <NavLink to="/expenses/user">
-              <FaUser />
+              <FaUser/>
             </NavLink>
           </li>
         ) : (
