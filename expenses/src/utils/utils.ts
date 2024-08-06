@@ -305,6 +305,7 @@ export const transformDateFormat = (dateString: string): string => {
 };
 
 export const addOneDay = (dateStr: string) => {
+  if (!dateStr) return null;
   const date = new Date(dateStr);
   date.setDate(date.getDate() + 1);
   return date.toISOString().slice(0, 10);

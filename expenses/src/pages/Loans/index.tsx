@@ -17,12 +17,12 @@ const Loans = () => {
   const { token } = useAuthState() as AuthState;
   const dispatch = useAuthDispatch();
   const { loans } = data;
-  const noData = data.loans === null;
+  const noData = !data.loans || data?.loans?.length === 0;
   useEffect(() => {
     if (noData) {
       fetchLoans(token, dataDispatch, dispatch);
     }
-  }, [data, dataDispatch, noData, token, dispatch]);
+  }, [dataDispatch, noData, token, dispatch]);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -152,8 +152,9 @@ const Loans = () => {
       {noData ? (
         'No loans found'
       ) : (
-        <table className="expenses-table" cellSpacing="0" cellPadding="0">
-          <thead>
+        <div className="table-wrapper">
+          <table className="expenses-table" cellSpacing="0" cellPadding="0">
+            <thead>
             <tr>
               <th>Title</th>
               <th>Principal</th>
@@ -163,8 +164,8 @@ const Loans = () => {
               <th className="desktop-only"></th>
               <th className="desktop-only"></th>
             </tr>
-          </thead>
-          <tbody ref={tableRef}>
+            </thead>
+            <tbody ref={tableRef}>
             {loans?.map((loan) => {
               return (
                 <tr
@@ -194,7 +195,7 @@ const Loans = () => {
                       onClick={() => handleEdit(loan.id)}
                       className="btn-outline"
                     >
-                      <MdEdit />
+                      <MdEdit/>
                     </button>
                   </td>
                   <td className="desktop-only">
@@ -202,26 +203,27 @@ const Loans = () => {
                       onClick={() => setShowDeleteModal(loan.id)}
                       className="btn-outline"
                     >
-                      <MdDelete />
+                      <MdDelete/>
                     </button>
                   </td>
                 </tr>
               );
             })}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       )}
       {deleteVisible && (
-        <div style={{ ...extraRowStyle }}>
+        <div style={{...extraRowStyle}}>
           <div className="action delete">
-            <FaTrash />
+            <FaTrash/>
           </div>
         </div>
       )}
       {editVisible && (
-        <div style={{ ...extraRowStyle }}>
+        <div style={{...extraRowStyle}}>
           <div className="action edit">
-            <FaPen />
+            <FaPen/>
           </div>
         </div>
       )}

@@ -818,3 +818,21 @@ li.selected-suggestion {
   padding: 10px;
   box-sizing: border-box;
 }
+
+.modal-content {
+  position: relative;
+  width: 80%;
+  max-width: 600px;
+  max-height: 80%;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-body {
+  overflow-y: auto;
+  padding: 20px;
+  flex-grow: 1;
+}

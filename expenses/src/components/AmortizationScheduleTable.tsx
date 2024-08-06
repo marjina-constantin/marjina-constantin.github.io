@@ -2,7 +2,7 @@ import React from 'react';
 
 const AmortizationScheduleTable = ({ amortizationSchedule }) => {
   return (
-    <>
+    <div className="table-wrapper">
       <table className="expenses-table" cellSpacing="0" cellPadding="0">
         <thead>
           <tr>
@@ -29,7 +29,7 @@ const AmortizationScheduleTable = ({ amortizationSchedule }) => {
           ))}
         </tbody>
       </table>
-    </>
+    </div>
   );
 };
 
