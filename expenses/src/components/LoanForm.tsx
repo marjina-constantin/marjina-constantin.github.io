@@ -18,12 +18,9 @@ interface LoanFormProps {
     field_day_count_method?: string;
     field_initial_fee?: number;
 
-    field_recurring_amount?: number;
     field_recurring_payment_method?: string;
     field_rec_first_payment_date?: string;
     field_recurring_payment_day?: number;
-    field_recurring_payment_fee?: number;
-    field_recurring_payment_period?: number;
   };
   onSuccess: () => void;
 }
@@ -42,12 +39,8 @@ const LoanForm: React.FC<LoanFormProps> = ({ formType, values, onSuccess }) => {
     field_day_count_method: 'act/365',
     field_initial_fee: '',
 
-    field_recurring_amount: '',
-    field_recurring_payment_method: 'equal_installment',
     field_rec_first_payment_date: null,
     field_recurring_payment_day: '',
-    field_recurring_payment_fee: '',
-    field_recurring_payment_period: '',
   };
 
   const [formState, setFormState] = useState(
@@ -79,14 +72,8 @@ const LoanForm: React.FC<LoanFormProps> = ({ formType, values, onSuccess }) => {
       field_rate: [formState.field_rate],
       field_day_count_method: [formState.field_day_count_method],
       field_initial_fee: [formState.field_initial_fee],
-      field_recurring_amount: [formState.field_recurring_amount],
-      // field_recurring_payment_method: [formState.field_recurring_payment_method],
       field_rec_first_payment_date: [formState.field_rec_first_payment_date],
       field_recurring_payment_day: [formState.field_recurring_payment_day],
-      field_recurring_payment_fee: [formState.field_recurring_payment_fee],
-      field_recurring_payment_period: [
-        formState.field_recurring_payment_period,
-      ],
     };
 
     const fetchOptions = {
@@ -191,26 +178,6 @@ const LoanForm: React.FC<LoanFormProps> = ({ formType, values, onSuccess }) => {
 
         <input
           required
-          placeholder="Recurring payment"
-          type="number"
-          name="field_recurring_amount"
-          value={formState.field_recurring_amount}
-          onChange={handleChange}
-        />
-        <select
-          value={formState.field_recurring_payment_method}
-          name="field_recurring_payment_method"
-          onChange={handleChange}
-        >
-          {['equal_installment', 'equal_reduction'].map((item) => (
-            <option key={item} value={item}>
-              {item}
-            </option>
-          ))}
-        </select>
-
-        <input
-          required
           placeholder="1st recurring payment date"
           type="date"
           max={formState.field_end_date}
@@ -225,20 +192,6 @@ const LoanForm: React.FC<LoanFormProps> = ({ formType, values, onSuccess }) => {
           type="number"
           name="field_recurring_payment_day"
           value={formState.field_recurring_payment_day}
-          onChange={handleChange}
-        />
-        <input
-          placeholder="Recurring payment period"
-          type="number"
-          name="field_recurring_payment_period"
-          value={formState.field_recurring_payment_period}
-          onChange={handleChange}
-        />
-        <input
-          placeholder="Recurring payment fee"
-          type="number"
-          name="field_recurring_payment_fee"
-          value={formState.field_recurring_payment_fee}
           onChange={handleChange}
         />
 

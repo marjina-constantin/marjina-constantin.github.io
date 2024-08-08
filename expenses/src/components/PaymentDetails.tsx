@@ -24,12 +24,8 @@ const PaymentDetails = (props) => {
   const [focusedItem, setFocusedItem] = useState({
     field_date: new Date().toISOString().slice(0, 10),
     field_rate: '',
-    field_recurring_amount: '',
     field_pay_installment: '',
-    field_pay_reduction: '',
-    field_payment_method: '',
     field_pay_single_fee: '',
-    field_recurring_fee_amount: '',
   });
 
   const {
@@ -48,12 +44,8 @@ const PaymentDetails = (props) => {
       title: item.title,
       field_date: item.fdt,
       field_rate: item.fr,
-      field_recurring_amount: item.fra,
       field_pay_installment: item.fpi,
-      field_pay_reduction: item.fpr,
-      field_payment_method: item.fpm,
       field_pay_single_fee: item.fpsf,
-      field_recurring_fee_amount: item.frfa,
     });
     setShowEditModal(true);
   };
@@ -139,54 +131,54 @@ const PaymentDetails = (props) => {
           <h2>Payments</h2>
           <table className="expenses-table" cellSpacing="0" cellPadding="0">
             <thead>
-              <tr>
-                <th>Date</th>
-                <th>Title</th>
-                <th className="desktop-only"></th>
-                <th className="desktop-only"></th>
-              </tr>
+            <tr>
+              <th>Date</th>
+              <th>Title</th>
+              <th className="desktop-only"></th>
+              <th className="desktop-only"></th>
+            </tr>
             </thead>
             <tbody ref={tableRef}>
-              {payments?.map((payment) => {
-                return (
-                  <tr
-                    key={payment.id}
-                    data-id={payment.id}
-                    onTouchStart={(e) =>
-                      handleTouchStart(e, payment.id, tableRef)
-                    }
-                    onTouchMove={(e) => handleTouchMove(e, tableRef)}
-                    onTouchEnd={(e) =>
-                      handleTouchEnd(
-                        e,
-                        tableRef,
-                        payment.id,
-                        handleEdit,
-                        setShowDeleteModal
-                      )
-                    }
-                  >
-                    <td>{payment.fdt}</td>
-                    <td>{payment.title}</td>
-                    <td className="desktop-only">
-                      <button
-                        onClick={() => handleEdit(payment.id)}
-                        className="btn-outline"
-                      >
-                        <MdEdit />
-                      </button>
-                    </td>
-                    <td className="desktop-only">
-                      <button
-                        onClick={() => setShowDeleteModal(payment.id)}
-                        className="btn-outline"
-                      >
-                        <MdDelete />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
+            {payments?.map((payment) => {
+              return (
+                <tr
+                  key={payment.id}
+                  data-id={payment.id}
+                  onTouchStart={(e) =>
+                    handleTouchStart(e, payment.id, tableRef)
+                  }
+                  onTouchMove={(e) => handleTouchMove(e, tableRef)}
+                  onTouchEnd={(e) =>
+                    handleTouchEnd(
+                      e,
+                      tableRef,
+                      payment.id,
+                      handleEdit,
+                      setShowDeleteModal
+                    )
+                  }
+                >
+                  <td>{payment.fdt}</td>
+                  <td>{payment.title}</td>
+                  <td className="desktop-only">
+                    <button
+                      onClick={() => handleEdit(payment.id)}
+                      className="btn-outline"
+                    >
+                      <MdEdit />
+                    </button>
+                  </td>
+                  <td className="desktop-only">
+                    <button
+                      onClick={() => setShowDeleteModal(payment.id)}
+                      className="btn-outline"
+                    >
+                      <MdDelete />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
             </tbody>
           </table>
 

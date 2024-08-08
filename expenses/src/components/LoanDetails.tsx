@@ -7,7 +7,7 @@ const LoanDetails = (props) => {
 
   return (
     <>
-      <h2>Predication for this loan</h2>
+      <h2>Prediction for this loan</h2>
       <ul className="loan-details">
         <li>Sum of interests: {loan?.sum_of_interests}</li>
         <li>Sum of reductions: {loan?.sum_of_reductions}</li>

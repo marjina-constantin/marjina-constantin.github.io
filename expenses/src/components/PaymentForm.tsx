@@ -14,24 +14,20 @@ interface PaymentFormProps {
     title: string;
     field_date: string;
     field_rate?: number;
-    field_recurring_amount?: number;
     field_pay_installment?: number;
-    field_pay_reduction?: number;
-    field_payment_method?: string;
     field_pay_single_fee?: number;
-    field_recurring_fee_amount?: number;
   };
   onSuccess: () => void;
   startDate?: string;
   endDate?: string;
 }
 const PaymentForm: React.FC<PaymentFormProps> = ({
-  formType,
-  values,
-  onSuccess,
-  startDate,
-  endDate,
-}) => {
+                                                   formType,
+                                                   values,
+                                                   onSuccess,
+                                                   startDate,
+                                                   endDate,
+                                                 }) => {
   const { id } = useParams();
 
   const showNotification = useNotification();
@@ -41,12 +37,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     field_date: new Date().toISOString().slice(0, 10),
     title: '',
     field_rate: '',
-    field_recurring_amount: '',
     field_pay_installment: '',
-    field_pay_reduction: '',
-    field_payment_method: '',
     field_pay_single_fee: '',
-    field_recurring_fee_amount: '',
     field_loan_reference: id,
   };
   const [formState, setFormState] = useState(
@@ -69,12 +61,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
       title: [formState.title],
       field_date: [formState.field_date],
       field_rate: [formState.field_rate],
-      field_recurring_amount: [formState.field_recurring_amount],
       field_pay_installment: [formState.field_pay_installment],
-      field_pay_reduction: [formState.field_pay_reduction],
-      field_payment_method: [formState.field_payment_method],
       field_pay_single_fee: [formState.field_pay_single_fee],
-      field_recurring_fee_amount: [formState.field_recurring_fee_amount],
       field_loan_reference: [id],
     };
     const fetchOptions = {
@@ -142,49 +130,17 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           onChange={handleChange}
         />
         <input
-          placeholder="New recurring payment amount"
-          type="number"
-          name="field_recurring_amount"
-          value={formState.field_recurring_amount}
-          onChange={handleChange}
-        />
-        <input
-          placeholder="Individual installment payment"
+          placeholder="Installment payment"
           type="number"
           name="field_pay_installment"
           value={formState.field_pay_installment}
           onChange={handleChange}
         />
         <input
-          placeholder="Individual principal reduction payment"
-          type="number"
-          name="field_pay_reduction"
-          value={formState.field_pay_reduction}
-          onChange={handleChange}
-        />
-        <select
-          value={formState.field_payment_method}
-          name="field_payment_method"
-          onChange={handleChange}
-        >
-          {['equal_installment', 'equal_reduction'].map((item) => (
-            <option key={item} value={item}>
-              {item}
-            </option>
-          ))}
-        </select>
-        <input
           placeholder="Individual fee"
           type="number"
           name="field_pay_single_fee"
           value={formState.field_pay_single_fee}
-          onChange={handleChange}
-        />
-        <input
-          placeholder="New recurring payment fee amount"
-          type="number"
-          name="field_recurring_fee_amount"
-          value={formState.field_recurring_fee_amount}
           onChange={handleChange}
         />
 
