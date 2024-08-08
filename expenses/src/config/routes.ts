@@ -4,6 +4,8 @@ import Login from '../pages/Login';
 import Profile from '../pages/Profile';
 import AddTransaction from '../pages/AddTransaction';
 import Income from '../pages/Income';
+import Loans from '../pages/Loans';
+import Loan from '../pages/Loan';
 
 const routes = [
   {
@@ -34,6 +36,16 @@ const routes = [
   {
     path: '/expenses/income',
     component: Income,
+    isPrivate: true,
+  },
+  {
+    path: '/expenses/loans',
+    component: Loans,
+    isPrivate: true,
+  },
+  {
+    path: '/expenses/loan/:id',
+    component: Loan,
     isPrivate: true,
   },
 ];

@@ -26,11 +26,13 @@ export default function Modal({ show, onClose, children }: ModalProps) {
     <>
       {show ? (
         <div className="modal-window">
-          <div ref={ref}>
+          <div ref={ref} className="modal-content">
             <a href="/" onClick={onClose} title="Close" className="modal-close">
               Close
             </a>
-            {children}
+            <div className="modal-body">
+              {children}
+            </div>
           </div>
         </div>
       ) : (
