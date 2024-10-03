@@ -204,7 +204,7 @@ body {
       background: linear-gradient(
         90deg,
         rgba(255, 107, 250, 1) 0%,
-        rgba(108, 108, 244, 1) 100%
+        var(--accent-color) 100%
       );
     }
 
@@ -212,7 +212,7 @@ body {
       justify-content: right;
       background: linear-gradient(
         90deg,
-        rgba(108, 108, 244, 1) 0%,
+        var(--accent-color) 0%,
         #7bd0c9 100%
       );
     }
