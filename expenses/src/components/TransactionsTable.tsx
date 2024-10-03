@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, {useEffect, useRef} from 'react';
 import { getClassNamesFor, useSortableData } from '../utils/useSortableData';
 import { monthNames } from '../utils/constants';
 import useSwipeActions from '../hooks/useSwipeActions';
@@ -9,12 +9,14 @@ import { formatNumber, getCategory } from '../utils/utils';
 import { AuthState, DataState, TransactionOrIncomeItem } from '../type/types';
 
 interface TransactionsTableProps {
-  month: string;
-  total: number;
-  items: TransactionOrIncomeItem[];
-  handleEdit: (id: string) => void;
-  setShowDeleteModal: (id: string) => void;
-  incomeTotals: { [month: string]: number };
+  month: string,
+  total: number,
+  items: TransactionOrIncomeItem[],
+  handleEdit: (id: string) => void,
+  setShowDeleteModal: (id: string) => void,
+  incomeTotals: { [month: string]: number },
+  changedItems?: any
+  handleClearChangedItem?: any
 }
 
 const TransactionsTable: React.FC<TransactionsTableProps> = ({
@@ -24,8 +26,32 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
   handleEdit,
   setShowDeleteModal,
   incomeTotals,
+  handleClearChangedItem,
+  changedItems
 }) => {
-  const { sortedItems, requestSort, sortConfig } = useSortableData(items || []);
+  useEffect(() => {
+    Object.keys(changedItems).forEach((id) => {
+      const timer = setTimeout(() => {
+        handleClearChangedItem(id);
+      }, 2000);
+      return () => clearTimeout(timer);
+    });
+  }, [changedItems, handleClearChangedItem]);
+
+  const allItems = [...items, ...Object.values(changedItems)
+    .filter(item => item.type === 'removed')
+    .map(item => item.data)
+  ].sort((a, b) => {
+    // First, compare by 'dt'
+    const dateComparison = new Date(b.dt).getTime() - new Date(a.dt).getTime();
+    if (dateComparison !== 0) {
+      return dateComparison;
+    }
+    // If 'dt' values are equal, compare by 'created'
+    return b.cr - a.cr;
+  });
+
+  const { sortedItems, requestSort, sortConfig } = useSortableData(allItems || []);
 
   const { data } = useData() as DataState;
 
@@ -166,44 +192,48 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
             </tr>
           </thead>
           <tbody ref={tableRef}>
-            {sortedItems.map((element) => (
-              <tr
-                key={element.id}
-                data-id={element.id}
-                onTouchStart={(e) => handleTouchStart(e, element.id, tableRef)}
-                onTouchMove={(e) => handleTouchMove(e, tableRef)}
-                onTouchEnd={(e) =>
-                  handleTouchEnd(
-                    e,
-                    tableRef,
-                    element.id,
-                    handleEdit,
-                    setShowDeleteModal
-                  )
-                }
-              >
-                <td>{element.dt.split('-')[2]}</td>
-                <td>{formatNumber(element.sum)}</td>
-                <td>{getCategory[element.cat]}</td>
-                <td>{element.dsc}</td>
-                <td className="desktop-only">
-                  <button
-                    onClick={() => handleEdit(element.id)}
-                    className="btn-outline"
-                  >
-                    Edit
-                  </button>
-                </td>
-                <td className="desktop-only">
-                  <button
-                    onClick={() => setShowDeleteModal(element.id)}
-                    className="btn-outline"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {sortedItems.map((element) => {
+              const changeType = changedItems[element.id]?.type;
+              return (
+                <tr
+                  key={element.id}
+                  className={`transaction-item ${changeType || ''}`}
+                  data-id={element.id}
+                  onTouchStart={(e) => handleTouchStart(e, element.id, tableRef)}
+                  onTouchMove={(e) => handleTouchMove(e, tableRef)}
+                  onTouchEnd={(e) =>
+                    handleTouchEnd(
+                      e,
+                      tableRef,
+                      element.id,
+                      handleEdit,
+                      setShowDeleteModal
+                    )
+                  }
+                >
+                  <td>{element.dt.split('-')[2]}</td>
+                  <td>{formatNumber(element.sum)}</td>
+                  <td>{getCategory[element.cat]}</td>
+                  <td>{element.dsc}</td>
+                  <td className="desktop-only">
+                    <button
+                      onClick={() => handleEdit(element.id)}
+                      className="btn-outline"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                  <td className="desktop-only">
+                    <button
+                      onClick={() => setShowDeleteModal(element.id)}
+                      className="btn-outline"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
         {deleteVisible && (

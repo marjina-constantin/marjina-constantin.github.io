@@ -301,7 +301,7 @@ input[type='submit'] {
   cursor: pointer;
 }
 .table-wrapper {
-  overflow-x: auto;
+  overflow: hidden;
   margin-top: 30px;
   padding: 0 15px;
 }
@@ -806,5 +806,57 @@ li.selected-suggestion {
   }
   100% {
     transform: translateY(0);
+  }
+}
+
+.transaction-item {
+  position: relative;
+}
+
+.transaction-item.new::after,
+.transaction-item.updated::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-top: 1px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
+  transition: opacity 2s ease-out;
+  animation: expandBorder 2s forwards;
+}
+@keyframes expandBorder {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.transaction-item.removed {
+  animation: highlight-removed forwards 1s ease-out;
+}
+
+@keyframes highlight-removed {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: none;
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.2);
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 0;
+    background-color: #db5463;
+    transform: scale(0);
+    filter: blur(5px);
   }
 }

@@ -64,6 +64,7 @@ export interface DataItems {
   textFilter?: string;
   totalsPerYearAndMonth?: DataStructure;
   totalIncomePerYear?: ItemTotal;
+  changedItems: any;
 }
 
 export interface DataState {

@@ -46,6 +46,7 @@ export const initialData = {
   categoryTotals: [],
   loading: true,
   totalSpent: 0,
+  changedItems: {},
 };
 
 export const AuthReducer = (initialState: AuthState, action: ActionType) => {
@@ -92,20 +93,22 @@ export const AuthReducer = (initialState: AuthState, action: ActionType) => {
 export const DataReducer = (initialState: DataItems, action: ActionType) => {
   switch (action.type) {
     case 'SET_DATA':
+      const changedItems = compareData(initialState.raw, action.raw);
       return {
         ...initialState,
-        groupedData: action.groupedData,
-        totals: action.totals,
-        raw: action.raw,
-        incomeData: action.incomeData,
-        incomeTotals: action.incomeTotals,
-        categoryTotals: action.categoryTotals,
-        loading: action.loading,
-        totalSpent: action.totalSpent,
-        totalsPerYearAndMonth: action.totalsPerYearAndMonth,
-        totalIncomePerYear: action.totalIncomePerYear,
-        totalIncomePerYearAndMonth: action.totalIncomePerYearAndMonth,
-        totalPerYear: action.totalPerYear,
+        ...action,
+        changedItems: {
+          ...initialState.changedItems,
+          ...changedItems
+        },
+      };
+
+    case 'CLEAR_CHANGED_ITEM':
+      const newChangedItems = { ...initialState.changedItems };
+      delete newChangedItems[action.id];
+      return {
+        ...initialState,
+        changedItems: newChangedItems
       };
 
     case 'FILTER_DATA':
@@ -205,4 +208,31 @@ export const DataReducer = (initialState: DataItems, action: ActionType) => {
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
   }
+};
+
+const compareData = (oldData, newData) => {
+  const changedItems = {};
+  if (oldData.length === 0) {
+    return changedItems;
+  }
+
+  const oldMap = new Map(oldData.map(item => [item.id, item]));
+  const newMap = new Map(newData.map(item => [item.id, item]));
+
+  newData.forEach(item => {
+    const oldItem = oldMap.get(item.id);
+    if (!oldItem) {
+      changedItems[item.id] = { type: 'new', data: item };
+    } else if (JSON.stringify(item) !== JSON.stringify(oldItem)) {
+      changedItems[item.id] = { type: 'updated', data: item };
+    }
+  });
+
+  oldData.forEach(item => {
+    if (!newMap.has(item.id)) {
+      changedItems[item.id] = { type: 'removed', data: item };
+    }
+  });
+
+  return changedItems;
 };
