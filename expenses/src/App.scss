@@ -61,6 +61,12 @@ $color-map: (
     bg-color: #13122d,
     text-color: $white,
   ),
+  cambridge-blue: (
+    accent-color: #a6c5a7,
+    secondary-color: #374151,
+    bg-color: #111827,
+    text-color: $white,
+  ),
 );
 
 @each $class, $colors in $color-map {

@@ -268,10 +268,11 @@ export const themeList = {
   'bondi-blue': 'Bondi blue',
   'maximum-green-yellow': 'Maximum green yellow',
   'indian-red': 'Indian red',
-  'carrot-orange': 'Carrot Orange',
+  'carrot-orange': 'Carrot orange',
   saffron: 'Saffron',
   inchworm: 'Inchworm',
   cadetblue: 'Cadet blue',
   'blue-pink-gradient': 'Blue pink gradient',
-  'pearl-aqua': 'Pearl Aqua',
+  'pearl-aqua': 'Pearl aqua',
+  'cambridge-blue': 'Cambridge blue',
 };
