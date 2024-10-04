@@ -39,7 +39,7 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
   }, [changedItems, handleClearChangedItem]);
 
   const allItems = [...items, ...Object.values(changedItems)
-    .filter(item => item.type === 'removed')
+    .filter(item => item.type === 'removed' && item.data.type === 'transaction')
     .map(item => item.data)
   ].sort((a, b) => {
     // First, compare by 'dt'

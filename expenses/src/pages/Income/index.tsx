@@ -70,6 +70,10 @@ const Income = () => {
     });
   };
 
+  const handleClearChangedItem = (id: string) => {
+    dataDispatch({ type: 'CLEAR_CHANGED_ITEM', id });
+  };
+
   return (
     <div className="incomes-page">
       <Modal
@@ -108,6 +112,7 @@ const Income = () => {
           values={focusedItem}
           onSuccess={() => {
             setShowEditModal(false);
+            setIsNewModal(false);
             fetchData(token, dataDispatch, dispatch);
           }}
         />
@@ -134,6 +139,8 @@ const Income = () => {
               handleEdit={handleEdit}
               // @ts-expect-error
               setShowDeleteModal={setShowDeleteModal}
+              changedItems={data.changedItems}
+              handleClearChangedItem={handleClearChangedItem}
             />
           ) : (
             ''
