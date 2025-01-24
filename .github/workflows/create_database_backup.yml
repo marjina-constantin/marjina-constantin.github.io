@@ -12,7 +12,7 @@ jobs:
       - name: Install terminus
         run: |
           mkdir -p ~/terminus && cd ~/terminus
-          curl -L https://github.com/pantheon-systems/terminus/releases/download/3.2.2/terminus.phar --output terminus
+          curl -L https://github.com/pantheon-systems/terminus/releases/download/3.6.1/terminus.phar --output terminus
           chmod +x terminus
           sudo ln -s ~/terminus/terminus /usr/local/bin/terminus
       - name: Login to terminus
