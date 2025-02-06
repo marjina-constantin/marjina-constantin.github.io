@@ -49,6 +49,7 @@
   "start_url": "/expenses/",
   "scope": "/expenses/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "theme_color": "#282a36",
   "background_color": "#ffffff"
 }
