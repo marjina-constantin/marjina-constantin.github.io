@@ -103,11 +103,11 @@ body {
   transition: all 0.3s ease-in-out;
   z-index: 99;
   touch-action: none;
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  box-shadow: inset 0 0 0 200px rgba(255, 255, 255, 0.08);
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  background: rgba(150, 150, 150, 0.08); /* A very slight white background */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* For Safari support */
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* A more pronounced shadow for depth */
+
 }
 .navbar.closed {
   height: 50px;
@@ -120,37 +120,19 @@ body {
   list-style-type: none;
   padding: 0;
   height: 50px;
+  display: flex;
+  justify-content: space-around;
 }
 .navbar ul li {
   height: 100%;
-  /*line-height: 50px;*/
-  float: left;
-  width: 33.3333%;
+  flex-grow: 1;
   transition: all 0.3s ease-in-out;
 }
 .navbar.open ul li {
   width: 100%;
 }
-/*.navbar ul li:first-child:nth-last-child(1) {*/
-/*  width: 100%;*/
-/*}*/
-/*.navbar ul li:first-child:nth-last-child(2),*/
-/*.navbar ul li:first-child:nth-last-child(2) ~ li {*/
-/*  width: 50%;*/
-/*}*/
-/*.navbar ul li:first-child:nth-last-child(3),*/
-/*.navbar ul li:first-child:nth-last-child(3) ~ li {*/
-/*  width: 33.3333%;*/
-/*}*/
+
 @media only screen and (min-width: 600px) {
-  .navbar ul li:first-child:nth-last-child(4),
-  .navbar ul li:first-child:nth-last-child(4) ~ li {
-    width: 25%;
-  }
-  .navbar ul li:first-child:nth-last-child(5),
-  .navbar ul li:first-child:nth-last-child(5) ~ li {
-    width: 20%;
-  }
   .expenses-table td {
     min-width: 100px;
   }
@@ -168,6 +150,7 @@ body {
 .navbar ul li a:focus,
 .navbar ul li a.active {
   color: var(--accent-color);
+  filter: drop-shadow(0 0 15px var(--accent-color));
 }
 
 @media only screen and (max-width: 600px) {
@@ -689,10 +672,10 @@ li.selected-suggestion {
   button {
     width: 50%;
     height: 100%;
-    background: transparent;
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    box-shadow: inset 0 0 0 200px rgba(255, 255, 255, 0.08);
+    background: rgba(150, 150, 150, 0.08); /* A very slight white background */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* For Safari support */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     border: none;
 
     &:first-child {
