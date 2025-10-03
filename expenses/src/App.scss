@@ -150,7 +150,7 @@ body {
 .navbar ul li a:focus,
 .navbar ul li a.active {
   color: var(--accent-color);
-  filter: drop-shadow(0 0 15px var(--accent-color));
+  filter: drop-shadow(0 0 10px var(--accent-color));
 }
 
 @media only screen and (max-width: 600px) {
