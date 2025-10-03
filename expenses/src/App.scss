@@ -684,9 +684,10 @@ li.selected-suggestion {
     padding: 0;
     margin: 0 15px; // Space between the buttons
 
-    // 4. Accent Color Ring/Border on Active
-    //border: 2px solid transparent; // Create space for the border
-    transition: all 0.2s ease-in-out;
+    // ADD FLEXBOX TO CENTER THE ICON
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     background: rgba(150, 150, 150, 0.08); /* A very slight white background */
     backdrop-filter: blur(10px);
