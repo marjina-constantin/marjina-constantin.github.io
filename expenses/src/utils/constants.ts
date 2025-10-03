@@ -274,5 +274,5 @@ export const themeList = {
   'pearl-aqua': 'Pearl aqua',
   'cambridge-blue': 'Cambridge blue',
   'malachite-green': 'Malachite green',
-  'deep-sky-blue': 'Deep sky blue',
+  'deep-space-indigo': 'Deep space indigo',
 };
