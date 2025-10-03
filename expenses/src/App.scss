@@ -138,7 +138,7 @@ body {
   }
 }
 .navbar ul li a {
-  color: #607d8b;
+  color: #9BA4B5;
   font-size: 35px;
   height: 100%;
   display: flex;
@@ -664,34 +664,63 @@ li.selected-suggestion {
 }
 
 .pager-navigation {
+  // 1. Position/Layout adjustments
   position: fixed;
-  bottom: 51px;
-  width: 100%;
+  bottom: 51px; // Positioned right above the main navbar
+  left: 0;
+  right: 0;
   height: 50px;
+  display: flex;
+  justify-content: center; // Center the buttons
+  align-items: center;
+  z-index: 90; // Below the main navbar (z-index: 99)
 
   button {
-    width: 50%;
-    height: 100%;
+    // 2. Button Sizing and Shape
+    width: 45px;
+    height: 45px;
+    border-radius: 50%; // Make them perfectly circular
+    border: none;
+    padding: 0;
+    margin: 0 15px; // Space between the buttons
+
+    // 4. Accent Color Ring/Border on Active
+    //border: 2px solid transparent; // Create space for the border
+    transition: all 0.2s ease-in-out;
+
     background: rgba(150, 150, 150, 0.08); /* A very slight white background */
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px); /* For Safari support */
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    border: none;
 
-    &:first-child {
-      border-right: 2px solid var(--bg-color);
+    &:hover:not(:disabled) {
+      cursor: pointer;
+      border-color: var(--accent-color);
+      transform: scale(1.05); // Slight hover effect
     }
 
+    &:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+
+    // 5. Disabled State
     &:disabled {
+      opacity: 0.5;
+      box-shadow: none;
       svg {
         fill: rgba(255, 255, 255, 0.1);
       }
     }
 
     svg {
-      width: 25px;
-      height: auto;
-      fill: var(--accent-color);
+      // 6. Icon Styling
+      width: 22px;
+      height: 22px;
+      fill: var(--accent-color); // Use fill for solid color (Lucide uses stroke, but we'll use fill here)
+      stroke: var(--accent-color);
+      stroke-width: 2.5; // Make the line art a bit bolder
+      transition: all 0.2s ease-in-out;
     }
   }
 }

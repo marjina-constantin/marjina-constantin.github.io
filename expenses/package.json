@@ -7,6 +7,7 @@
     "googleapis": "^134",
     "highcharts": "^11.2.0",
     "highcharts-react-official": "^3.2.1",
+    "lucide-react": "^0.544.0",
     "nodemailer": "^6.9.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

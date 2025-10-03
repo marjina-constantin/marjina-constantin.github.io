@@ -1,12 +1,12 @@
 import { NavLink } from 'react-router-dom';
 import { useAuthState } from '../context';
 import {
-  FaChartPie,
-  FaHome,
-  FaMoneyBill,
-  FaPlus,
-  FaUser,
-} from 'react-icons/fa';
+  List,
+  PieChart,
+  PlusCircle,
+  TrendingUp,
+  User,
+} from 'lucide-react';
 import React, { useState } from 'react';
 import { AuthState } from '../type/types';
 
@@ -21,57 +21,62 @@ export default function Navbar() {
     setYDown(firstTouch.clientY);
   };
 
-  const handleTouchMove = (event: React.TouchEvent) => {
-    if (!xDown || !yDown) {
-      return;
-    }
-    const xUp = event.touches[0].clientX;
-    const yUp = event.touches[0].clientY;
-    const xDiff = xDown - xUp;
-    const yDiff = yDown - yUp;
-    if (Math.abs(xDiff) < Math.abs(yDiff)) {
-      if (yDiff > 0) {
-        setCssClass('open');
-      } else {
-        setCssClass('closed');
-      }
-    }
-    /* reset values */
-    setXDown(null);
-    setYDown(null);
-  };
+  // const handleTouchMove = (event: React.TouchEvent) => {
+  //   if (!xDown || !yDown) {
+  //     return;
+  //   }
+  //   const xUp = event.touches[0].clientX;
+  //   const yUp = event.touches[0].clientY;
+  //   const xDiff = xDown - xUp;
+  //   const yDiff = yDown - yUp;
+  //
+  //   // This logic ensures the swipe is primarily vertical
+  //   if (Math.abs(xDiff) < Math.abs(yDiff)) {
+  //     if (yDiff > 0) {
+  //       // Swiping Up (to open/reveal the navbar)
+  //       setCssClass('open');
+  //     } else {
+  //       // Swiping Down (to close/hide the navbar)
+  //       setCssClass('closed');
+  //     }
+  //   }
+  //
+  //   /* reset values */
+  //   setXDown(null);
+  //   setYDown(null);
+  // };
 
   return (
     <div
       className={`navbar ${cssClass}`}
-      onTouchStart={(touchStartEvent) => handleTouchStart(touchStartEvent)}
-      onTouchMove={(touchMoveEvent) => handleTouchMove(touchMoveEvent)}
+      // onTouchStart={(touchStartEvent) => handleTouchStart(touchStartEvent)}
+      // onTouchMove={(touchMoveEvent) => handleTouchMove(touchMoveEvent)}
     >
       <ul>
         <li>
           <NavLink to="/expenses/" end>
-            <FaHome />
+            <List />
           </NavLink>
         </li>
         <li>
           <NavLink to="/expenses/charts">
-            <FaChartPie />
+            <PieChart />
           </NavLink>
         </li>
         <li>
           <NavLink to="/expenses/add-transaction">
-            <FaPlus />
+            <PlusCircle />
           </NavLink>
         </li>
         <li>
           <NavLink to="/expenses/income">
-            <FaMoneyBill />
+            <TrendingUp />
           </NavLink>
         </li>
         {userIsLoggedIn ? (
           <li>
             <NavLink to="/expenses/user">
-              <FaUser />
+              <User />
             </NavLink>
           </li>
         ) : (

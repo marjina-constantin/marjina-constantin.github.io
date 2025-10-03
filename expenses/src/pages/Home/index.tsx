@@ -11,7 +11,7 @@ import TransactionForm from '../../components/TransactionForm';
 import TransactionsTable from '../../components/TransactionsTable';
 import Filters from '../../components/Filters';
 import { notificationType } from '../../utils/constants';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { AuthState, TransactionOrIncomeItem } from '../../type/types';
 
 const Home = () => {
@@ -172,13 +172,14 @@ const Home = () => {
                   disabled={!months[currentMonthIndex + 1]}
                   onClick={() => setCurrentMonthIndex(currentMonthIndex + 1)}
                 >
-                  <FaArrowLeft />
+                  <ChevronLeft />
                 </button>
+
                 <button
                   disabled={!months[currentMonthIndex - 1]}
                   onClick={() => setCurrentMonthIndex(currentMonthIndex - 1)}
                 >
-                  <FaArrowRight />
+                  <ChevronRight />
                 </button>
               </div>
             </>
