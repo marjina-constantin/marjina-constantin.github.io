@@ -100,17 +100,17 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 99;
   touch-action: none;
-  background: rgba(150, 150, 150, 0.08); /* A very slight white background */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px); /* For Safari support */
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* A more pronounced shadow for depth */
-
+  background: rgba(26, 29, 46, 0.85);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 .navbar.closed {
-  height: 50px;
+  height: 60px;
 }
 .navbar.open {
   height: 250px;
@@ -119,14 +119,15 @@ body {
   margin: 0;
   list-style-type: none;
   padding: 0;
-  height: 50px;
+  height: 60px;
   display: flex;
   justify-content: space-around;
+  align-items: center;
 }
 .navbar ul li {
   height: 100%;
   flex-grow: 1;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .navbar.open ul li {
   width: 100%;
@@ -138,24 +139,45 @@ body {
   }
 }
 .navbar ul li a {
-  color: #9BA4B5;
-  font-size: 35px;
+  color: rgba(155, 164, 181, 0.7);
+  font-size: 28px;
   height: 100%;
   display: flex;
   align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 3px;
+    background: var(--accent-color);
+    border-radius: 0 0 3px 3px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
 }
 .navbar ul li a svg {
   margin: 0 auto;
+  transition: all 0.3s ease;
 }
 .navbar ul li a:focus,
 .navbar ul li a.active {
   color: var(--accent-color);
-  filter: drop-shadow(0 0 10px var(--accent-color));
+  
+  &::after {
+    opacity: 1;
+  }
 }
 
 @media only screen and (max-width: 600px) {
   .navbar ul li a {
-    font-size: 30px;
+    font-size: 24px;
   }
   .filters {
     text-align: center !important;
@@ -453,38 +475,39 @@ button:hover {
 .lds-ripple {
   display: inline-block;
   position: relative;
-  top: 50px;
-  width: 110px;
-  height: 110px;
+  top: 80px;
+  width: 80px;
+  height: 80px;
 }
 .lds-ripple div {
   position: absolute;
-  border: 4px solid var(--accent-color);
+  border: 3px solid var(--accent-color);
   opacity: 1;
   border-radius: 50%;
-  animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  animation: lds-ripple 1.2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  box-shadow: 0 0 20px rgba(var(--accent-color-rgb, 0, 168, 173), 0.3);
 }
 .lds-ripple div:nth-child(2) {
-  animation-delay: -0.5s;
+  animation-delay: -0.6s;
 }
 @keyframes lds-ripple {
   0% {
-    top: 50px;
-    left: 50px;
+    top: 40px;
+    left: 40px;
     width: 0;
     height: 0;
     opacity: 0;
   }
   4.9% {
-    top: 50px;
-    left: 50px;
+    top: 40px;
+    left: 40px;
     width: 0;
     height: 0;
     opacity: 0;
   }
   5% {
-    top: 50px;
-    left: 50px;
+    top: 40px;
+    left: 40px;
     width: 0;
     height: 0;
     opacity: 1;
@@ -492,8 +515,8 @@ button:hover {
   100% {
     top: 0;
     left: 0;
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     opacity: 0;
   }
 }
@@ -664,62 +687,61 @@ li.selected-suggestion {
 }
 
 .pager-navigation {
-  // 1. Position/Layout adjustments
   position: fixed;
-  bottom: 51px; // Positioned right above the main navbar
+  bottom: 61px;
   left: 0;
   right: 0;
-  height: 50px;
+  height: 56px;
   display: flex;
-  justify-content: center; // Center the buttons
+  justify-content: center;
   align-items: center;
-  z-index: 90; // Below the main navbar (z-index: 99)
+  z-index: 90;
+  background: linear-gradient(180deg, transparent 0%, rgba(26, 29, 46, 0.6) 50%);
 
   button {
-    // 2. Button Sizing and Shape
-    width: 45px;
-    height: 45px;
-    border-radius: 50%; // Make them perfectly circular
-    border: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 0;
-    margin: 0 15px; // Space between the buttons
-
-    // ADD FLEXBOX TO CENTER THE ICON
+    margin: 0 12px;
     display: flex;
     justify-content: center;
     align-items: center;
-
-    background: rgba(150, 150, 150, 0.08); /* A very slight white background */
+    background: rgba(40, 42, 54, 0.7);
     backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px); /* For Safari support */
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     &:hover:not(:disabled) {
       cursor: pointer;
       border-color: var(--accent-color);
+      background: rgba(40, 42, 54, 0.9);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     }
 
     &:focus {
       outline: none;
       border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb, 0, 168, 173), 0.2);
     }
 
-    // 5. Disabled State
     &:disabled {
-      opacity: 0.5;
+      opacity: 0.3;
       box-shadow: none;
+      cursor: not-allowed;
       svg {
-        fill: rgba(255, 255, 255, 0.1);
+        opacity: 0.3;
       }
     }
 
     svg {
-      // 6. Icon Styling
-      width: 22px;
-      height: 22px;
-      fill: var(--accent-color); // Use fill for solid color (Lucide uses stroke, but we'll use fill here)
+      width: 20px;
+      height: 20px;
       stroke: var(--accent-color);
-      stroke-width: 2.5; // Make the line art a bit bolder
+      stroke-width: 2.5;
       transition: all 0.2s ease-in-out;
     }
   }
