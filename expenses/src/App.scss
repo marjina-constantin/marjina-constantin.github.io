@@ -234,10 +234,13 @@ body {
 }
 
 select,
-input {
+input,
+textarea {
   background: var(--bg-color);
   color: #fff;
   border: 1px solid var(--accent-color);
+  font-size: 13px;
+  line-height: 1.4;
 
   &::placeholder {
     color: #fff;
@@ -427,6 +430,7 @@ button:hover {
     background: var(--bg-color);
     height: 40px;
     box-sizing: border-box;
+    appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     text-align: center;
@@ -445,6 +449,7 @@ button:hover {
   > * {
     height: 40px;
     box-sizing: border-box;
+    appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     text-align: center;
