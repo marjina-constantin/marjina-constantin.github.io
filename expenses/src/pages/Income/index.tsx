@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState, useMemo } from 'react';
 import IncomeForm from '../../components/IncomeForm';
 import { deleteNode, fetchData } from '../../utils/utils';
 import {
@@ -9,9 +9,11 @@ import {
 } from '../../context';
 import Modal from '../../components/Modal';
 import IncomeList from '../../components/IncomeList';
+import StatCard from '../../components/StatCard';
 import { notificationType } from '../../utils/constants';
 import YearIncomeAverageTrend from '../../components/YearIncomeAverageTrend';
 import { AuthState, TransactionOrIncomeItem } from '../../type/types';
+import { ArrowUpCircle, TrendingUp } from 'lucide-react';
 
 const Income = () => {
   const showNotification = useNotification();
@@ -74,6 +76,25 @@ const Income = () => {
     dataDispatch({ type: 'CLEAR_CHANGED_ITEM', id });
   };
 
+  // Calculate income statistics
+  const totalIncome = useMemo(() => {
+    if (!data.incomeData || !data.incomeData.length) return 0;
+    return data.incomeData.reduce(
+      (sum: number, item: TransactionOrIncomeItem) =>
+        sum + parseFloat(item.sum || '0'),
+      0
+    );
+  }, [data.incomeData]);
+
+  const averageIncome = useMemo(() => {
+    if (!data.raw || !data.raw.length || totalIncome === 0) return 0;
+    const firstDay = data.raw[data.raw.length - 1]?.dt;
+    if (!firstDay) return 0;
+    const daysPassed = (new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1;
+    const monthsPassed = daysPassed / 30.42;
+    return totalIncome / monthsPassed;
+  }, [data.raw, totalIncome]);
+
   return (
     <div className="incomes-page">
       <Modal
@@ -122,6 +143,22 @@ const Income = () => {
         ''
       ) : (
         <div>
+          {/* Stats Cards */}
+          {data.incomeData && data.incomeData.length > 0 && (
+            <div className="stats-grid">
+              <StatCard
+                icon={<ArrowUpCircle />}
+                value={totalIncome}
+                label="Total Income"
+              />
+              <StatCard
+                icon={<TrendingUp />}
+                value={averageIncome}
+                label="Average Income"
+              />
+            </div>
+          )}
+
           <div className="income-button-container">
             <button
               onClick={() => {
