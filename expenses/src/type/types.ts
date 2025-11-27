@@ -5,6 +5,7 @@ export interface TransactionOrIncomeItem {
   type: string;
   cat?: string;
   dsc?: string;
+  cr?: number; // Created timestamp for sorting
 }
 
 export interface Daily {
