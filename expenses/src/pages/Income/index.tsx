@@ -8,7 +8,7 @@ import {
   useNotification,
 } from '../../context';
 import Modal from '../../components/Modal';
-import IncomeTable from '../../components/IncomeTable';
+import IncomeList from '../../components/IncomeList';
 import { notificationType } from '../../utils/constants';
 import YearIncomeAverageTrend from '../../components/YearIncomeAverageTrend';
 import { AuthState, TransactionOrIncomeItem } from '../../type/types';
@@ -86,7 +86,7 @@ const Income = () => {
         <h3>Are you sure you want to delete the income?</h3>
         <button
           onClick={() => handleDelete(showDeleteModal, token)}
-          className="button wide"
+          className="button-primary"
         >
           {isSubmitting ? (
             <div className="loader">
@@ -117,28 +117,28 @@ const Income = () => {
           }}
         />
       </Modal>
-      <h2>Incomes</h2>
+      <h2 style={{ padding: '0 1.5rem', marginBottom: '1rem' }}>Incomes</h2>
       {noData ? (
         ''
       ) : (
         <div>
-          <button
-            onClick={() => {
-              setShowEditModal(true);
-              setIsNewModal(true);
-            }}
-            className="button wide"
-          >
-            Add new income
-          </button>
+          <div className="income-button-container">
+            <button
+              onClick={() => {
+                setShowEditModal(true);
+                setIsNewModal(true);
+              }}
+              className="button-primary income-add-button"
+            >
+              Add new income
+            </button>
+          </div>
 
           {data.incomeData && data.incomeData.length ? (
-            <IncomeTable
-              key={'income'}
-              items={data.incomeData.slice(0, nrOfItemsToShow)}
-              handleEdit={handleEdit}
-              // @ts-expect-error
-              setShowDeleteModal={setShowDeleteModal}
+            <IncomeList
+              transactions={data.incomeData.slice(0, nrOfItemsToShow)}
+              onEdit={handleEdit}
+              onDelete={(id) => setShowDeleteModal(id)}
               changedItems={data.changedItems}
               handleClearChangedItem={handleClearChangedItem}
             />
@@ -147,10 +147,10 @@ const Income = () => {
           )}
 
           {data.incomeData?.length > nrOfItemsToShow && (
-            <div className="load-more">
+            <div style={{ padding: '0 1.5rem', marginTop: '1.5rem', textAlign: 'center' }}>
               <button
                 onClick={() => setNrOfItemsToShow(nrOfItemsToShow + 10)}
-                className="btn-outline"
+                className="button-secondary"
               >
                 Load more
               </button>

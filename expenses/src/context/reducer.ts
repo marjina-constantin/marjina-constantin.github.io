@@ -11,8 +11,6 @@ import {
 let cachedUser: any = null;
 let cachedToken: string = '';
 let cachedTheme: string = '';
-let cachedWeeklyBudget: string = '';
-let cachedMonthlyBudget: string = '';
 
 const getCachedUser = () => {
   if (cachedUser === null) {
@@ -40,35 +38,9 @@ const getCachedTheme = () => {
   return cachedTheme;
 };
 
-const getCachedWeeklyBudget = () => {
-  if (!cachedWeeklyBudget) {
-    try {
-      const budgetStr = localStorage.getItem('weeklyBudget');
-      cachedWeeklyBudget = budgetStr ? JSON.parse(budgetStr) : '';
-    } catch {
-      cachedWeeklyBudget = '';
-    }
-  }
-  return cachedWeeklyBudget;
-};
-
-const getCachedMonthlyBudget = () => {
-  if (!cachedMonthlyBudget) {
-    try {
-      const budgetStr = localStorage.getItem('monthlyBudget');
-      cachedMonthlyBudget = budgetStr ? JSON.parse(budgetStr) : '';
-    } catch {
-      cachedMonthlyBudget = '';
-    }
-  }
-  return cachedMonthlyBudget;
-};
-
 const user = getCachedUser();
 const token = cachedToken;
 const theme = getCachedTheme();
-const weeklyBudget = getCachedWeeklyBudget();
-const monthlyBudget = getCachedMonthlyBudget();
 
 export const initialState = {
   userDetails: '' || user,
@@ -78,8 +50,6 @@ export const initialState = {
   userIsLoggedIn: !!user,
   currency: user?.current_user?.currency || 'MDL',
   theme: theme || 'blue-pink-gradient',
-  weeklyBudget,
-  monthlyBudget,
 };
 
 export const initialData = {

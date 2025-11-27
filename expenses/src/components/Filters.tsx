@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useRef, useState, useCallback } from 'react';
 import { categories } from '../utils/constants';
 import { useData } from '../context';
-import { FaSearch } from 'react-icons/fa';
+import { Search, X } from 'lucide-react';
 import { DataState } from '../type/types';
 
 function Filters() {
@@ -65,27 +65,50 @@ function Filters() {
 
   return (
     <div className="filters">
-      {!showTextFilter && (
-        <FaSearch
-          onClick={() => {
-            setShowTextFilter(true);
-          }}
-        />
-      )}
-      {showTextFilter && (
-        <input
-          ref={textInputRef}
-          type="text"
-          value={state.textFilter}
-          name="textFilter"
-          onChange={handleTextFilterChange}
-          placeholder="Filter by text"
-        />
-      )}
+      <div className="filters__search">
+        {!showTextFilter ? (
+          <button
+            className="filters__search-button"
+            onClick={() => setShowTextFilter(true)}
+            aria-label="Search"
+          >
+            <Search size={18} />
+          </button>
+        ) : (
+          <div className="filters__search-input-wrapper">
+            <Search size={18} className="filters__search-icon" />
+            <input
+              ref={textInputRef}
+              type="text"
+              value={state.textFilter}
+              name="textFilter"
+              onChange={handleTextFilterChange}
+              placeholder="Filter by text"
+              className="filters__input"
+            />
+            <button
+              className="filters__close-button"
+              onClick={() => {
+                setShowTextFilter(false);
+                setState((prev) => ({ ...prev, textFilter: '' }));
+                dataDispatch({
+                  type: 'FILTER_DATA',
+                  category: state.category,
+                  textFilter: '',
+                });
+              }}
+              aria-label="Close search"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        )}
+      </div>
       <select
         value={state.category}
         name="category"
         onChange={handleCategoryChange}
+        className="filters__select"
       >
         {categories.map((category, id) => (
           <option key={id} value={category.value}>
@@ -94,7 +117,7 @@ function Filters() {
         ))}
       </select>
       {(state.textFilter || state.category) && (
-        <button onClick={handleClearFilters} className="btn-outline">
+        <button onClick={handleClearFilters} className="filters__clear-button">
           Clear Filters
         </button>
       )}

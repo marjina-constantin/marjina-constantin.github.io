@@ -17,13 +17,9 @@ const Profile = () => {
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
-  const { userDetails, token, currency, weeklyBudget, monthlyBudget } =
+  const { userDetails, token, currency } =
     useAuthState() as AuthState;
   let { theme } = useAuthState() as AuthState;
-  const [state, setState] = useState({
-    weeklyBudget: weeklyBudget,
-    monthlyBudget: monthlyBudget,
-  });
   // @ts-expect-error
   theme = themeList[theme] ? theme : 'blue-pink-gradient';
   const navigate = useNavigate();
@@ -83,15 +79,6 @@ const Profile = () => {
     dispatch && dispatch({ type: 'UPDATE_USER', payload: { [name]: value } });
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    const name = event.target.name;
-    event.preventDefault();
-    setState({
-      ...state,
-      [name]: value,
-    });
-  };
 
   const sortedCurrencies = Object.entries(currencies).sort((a, b) => {
     return a[1] < b[1] ? -1 : 1;
@@ -129,24 +116,6 @@ const Profile = () => {
             </option>
           ))}
         </select>
-        <input
-          required
-          placeholder="Week Budget"
-          type="number"
-          name="weeklyBudget"
-          value={state.weeklyBudget}
-          onChange={handleInputChange}
-          onBlur={onBlur}
-        />
-        <input
-          required
-          placeholder="Month Budget"
-          type="number"
-          name="monthlyBudget"
-          value={state.monthlyBudget}
-          onChange={handleInputChange}
-          onBlur={onBlur}
-        />
         <button className="button logout" onClick={handleLogout}>
           Logout
         </button>

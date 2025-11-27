@@ -8,16 +8,16 @@ import {
 import { deleteNode, fetchData } from '../../utils/utils';
 import Modal from '../../components/Modal';
 import TransactionForm from '../../components/TransactionForm';
-import TransactionsTable from '../../components/TransactionsTable';
+import TransactionList from '../../components/TransactionList';
 import Filters from '../../components/Filters';
-import { notificationType } from '../../utils/constants';
+import { notificationType, categories } from '../../utils/constants';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { AuthState, TransactionOrIncomeItem } from '../../type/types';
 
 const Home = () => {
   const showNotification = useNotification();
   const { token } = useAuthState() as AuthState;
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<string | false>(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const { data, dataDispatch } = useData();
   const noData = data.groupedData === null;
@@ -54,10 +54,10 @@ const Home = () => {
     setShowEditModal(true);
   };
 
-  const handleDelete = (showDeleteModal: boolean, token: string) => {
+  const confirmDelete = (id: string | false) => {
+    if (!id) return;
     setIsSubmitting(true);
-    // @ts-expect-error
-    deleteNode(showDeleteModal, token, (response: Response) => {
+    deleteNode(id, token, (response: Response) => {
       setShowDeleteModal(false);
       if (response.ok) {
         showNotification(
@@ -105,7 +105,7 @@ const Home = () => {
   }, [data.filtered]);
 
   return (
-    <div>
+    <div style={{ overflowX: 'hidden', width: '100%' }}>
       <Modal
         show={showDeleteModal}
         onClose={(e) => {
@@ -115,8 +115,8 @@ const Home = () => {
       >
         <h3>Are you sure you want to delete the transaction?</h3>
         <button
-          onClick={() => handleDelete(showDeleteModal, token)}
-          className="button wide"
+          onClick={() => confirmDelete(showDeleteModal)}
+          className="button-primary"
         >
           {isSubmitting ? (
             <div className="loader">
@@ -154,10 +154,10 @@ const Home = () => {
           }}
         />
       </Modal>
-      <h2>{currentMonth || 'Expenses'}</h2>
+      <h2 style={{ padding: '0 1.5rem', marginBottom: '1rem' }}>{currentMonth || 'Expenses'}</h2>
       <Filters />
       {loading ? (
-        <div className="lds-ripple">
+        <div className="lds-ripple" style={{ marginTop: '2rem' }}>
           <div></div>
           <div></div>
         </div>
@@ -167,16 +167,16 @@ const Home = () => {
         <div>
           {Object.keys(items.groupedData).length ? (
             <>
-              <TransactionsTable
-                total={items.totals[currentMonth]}
-                month={currentMonth}
-                incomeTotals={items.incomeTotals}
-                items={items.groupedData[currentMonth]}
-                handleEdit={handleEdit}
+              <TransactionList
+                transactions={items.groupedData[currentMonth]}
+                categoryLabels={categories}
+                onEdit={handleEdit}
+                onDelete={(id) => setShowDeleteModal(id)}
                 changedItems={data.changedItems}
                 handleClearChangedItem={handleClearChangedItem}
-                // @ts-expect-error
-                setShowDeleteModal={setShowDeleteModal}
+                month={currentMonth}
+                total={items.totals[currentMonth]}
+                incomeTotals={items.incomeTotals}
               />
               <div className="pager-navigation">
                 <button

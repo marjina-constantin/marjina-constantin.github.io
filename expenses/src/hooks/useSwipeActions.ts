@@ -11,18 +11,18 @@ interface SwipeActions {
   handleTouchStart: (
     e: React.TouchEvent<HTMLDivElement>,
     id: string,
-    tableRef: React.RefObject<HTMLTableElement>
+    listRef: React.RefObject<HTMLDivElement>
   ) => void;
   handleTouchMove: (
     e: React.TouchEvent<HTMLDivElement>,
-    tableRef: React.RefObject<HTMLTableElement>
+    listRef: React.RefObject<HTMLDivElement>
   ) => void;
   handleTouchEnd: (
     e: React.TouchEvent<HTMLDivElement>,
-    tableRef: React.RefObject<HTMLTableElement>,
+    listRef: React.RefObject<HTMLDivElement>,
     id: string,
     handleEdit: (id: string) => void,
-    setShowDeleteModal: (id: string) => void
+    onDelete: (id: string) => void
   ) => void;
 }
 
@@ -38,7 +38,7 @@ const useSwipeActions = (): SwipeActions => {
   const handleTouchStart = (
     e: React.TouchEvent<HTMLDivElement>,
     id: string,
-    tableRef: React.RefObject<HTMLTableElement>
+    listRef: React.RefObject<HTMLDivElement>
   ) => {
     const touch = e.touches[0];
     if (touch) {
@@ -46,26 +46,18 @@ const useSwipeActions = (): SwipeActions => {
       setStartY(touch.clientY);
       setSwipedItemId(id);
 
-      const trElement = tableRef.current?.querySelector(
+      const itemElement = listRef.current?.querySelector(
         `[data-id="${id}"]`
       ) as HTMLElement;
-      if (trElement) {
-        trElement.style.transition = 'transform 0s';
-        const rect = trElement.getBoundingClientRect();
-        setExtraRowStyle({
-          position: 'fixed',
-          zIndex: '-1',
-          top: `${rect.top}px`,
-          width: `${rect.width}px`,
-          height: `${rect.height}px`,
-        });
+      if (itemElement) {
+        itemElement.style.transition = 'transform 0s';
       }
     }
   };
 
   const handleTouchMove = (
     e: React.TouchEvent<HTMLDivElement>,
-    tableRef: React.RefObject<HTMLTableElement>
+    listRef: React.RefObject<HTMLDivElement>
   ) => {
     if (isSwiping === null) {
       const touch = e.touches[0];
@@ -78,14 +70,14 @@ const useSwipeActions = (): SwipeActions => {
       document.body.style.overflow = 'hidden';
 
       const diff = e.touches[0].clientX - (startX ?? 0);
-      const trElement = tableRef.current?.querySelector(
+      const itemElement = listRef.current?.querySelector(
         `[data-id="${swipedItemId}"]`
       ) as HTMLElement;
-      if (trElement) {
-        trElement.style.transform = `translateX(${diff}px)`;
-        const trWidth = trElement.getBoundingClientRect().width;
+      if (itemElement) {
+        itemElement.style.transform = `translateX(${diff}px)`;
+        const itemWidth = itemElement.getBoundingClientRect().width;
         const absDiff = Math.abs(e.touches[0].clientX - (startX ?? 0));
-        const diffPercentage = (absDiff / trWidth) * 100;
+        const diffPercentage = (absDiff / itemWidth) * 100;
         if (diffPercentage > 40) {
           const body = document.querySelector('body');
           if (body) {
@@ -107,36 +99,36 @@ const useSwipeActions = (): SwipeActions => {
 
   const handleTouchEnd = (
     e: React.TouchEvent<HTMLDivElement>,
-    tableRef: React.RefObject<HTMLTableElement>,
+    listRef: React.RefObject<HTMLDivElement>,
     id: string,
     handleEdit: (id: string) => void,
-    setShowDeleteModal: (id: string) => void
+    onDelete: (id: string) => void
   ) => {
     document.body.style.overflow = '';
 
     const touch = e.changedTouches[0];
     if (touch && startX !== null) {
       const endX = touch.clientX;
-      const trElement = tableRef.current?.querySelector(
+      const itemElement = listRef.current?.querySelector(
         `[data-id="${id}"]`
       ) as HTMLElement;
 
       if (isSwiping) {
         const diff = Math.abs(endX - startX);
-        const trWidth = trElement.getBoundingClientRect().width;
-        const diffPercentage = (diff / trWidth) * 100;
+        const itemWidth = itemElement?.getBoundingClientRect().width || 0;
+        const diffPercentage = itemWidth > 0 ? (diff / itemWidth) * 100 : 0;
         if (diffPercentage > 40) {
           if (endX > startX) {
-            setShowDeleteModal(id);
+            onDelete(id);
           } else {
             handleEdit(id);
           }
         }
       }
 
-      if (trElement) {
-        trElement.style.transition = 'all .3s ease';
-        trElement.style.transform = 'translateX(0)';
+      if (itemElement) {
+        itemElement.style.transition = 'all .3s ease';
+        itemElement.style.transform = 'translateX(0)';
       }
 
       setStartX(null);

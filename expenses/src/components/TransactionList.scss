@@ -1,0 +1,401 @@
+// Stats Grid
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0 1.5rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 0.5rem;
+    padding: 0 1rem;
+  }
+  
+  // For very small screens, ensure cards fit
+  @media (max-width: 400px) {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 0.4rem;
+  }
+}
+
+.transaction-list-component {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+  // Prevent horizontal scroll on mobile, but allow swipe gestures on items
+  overflow-x: hidden;
+  overflow-y: auto;
+  // Allow vertical scroll
+  // Safari iOS specific fixes
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y pinch-zoom;
+  // Allow vertical scrolling and pinch zoom
+  // Additional Safari fix
+  -webkit-transform: translateZ(0);
+  // Force hardware acceleration
+  transform: translateZ(0);
+
+  @media (max-width: 640px) {
+    padding: 0 1rem;
+  }
+  
+  &.income-list {
+    padding: 0 1.5rem;
+    
+    @media (max-width: 640px) {
+      padding: 0 1rem;
+    }
+  }
+
+  // Transaction Item Wrapper
+  .transaction-item-wrapper {
+    position: relative;
+    width: 100%;
+
+    // Apply same animations as table items
+    &.new {
+      animation: fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+      .transaction-list-item::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 2px solid var(--accent-color);
+        border-radius: 16px;
+        opacity: 0;
+        animation: borderPulse 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        pointer-events: none;
+        z-index: 2;
+      }
+    }
+
+    &.updated {
+      .transaction-list-item {
+        animation: highlightPulse 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+
+        &::after {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            var(--accent-color) 50%,
+            transparent 100%
+          );
+          opacity: 0.1;
+          animation: shimmer 1.2s ease-in-out forwards;
+          pointer-events: none;
+          z-index: 0;
+        }
+      }
+    }
+
+    &.removed {
+      animation: slideOutFade 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      pointer-events: none;
+    }
+
+    .swipe-actions-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      border-radius: 16px;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+
+      &.visible {
+        opacity: 1;
+      }
+
+      // Component-specific overrides (circular buttons)
+      .delete-action-bg,
+      .edit-action-bg {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+        svg {
+          font-size: 1.25rem;
+          color: #ffffff;
+        }
+      }
+
+      .delete-action-bg {
+        left: 20px;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      }
+
+      .edit-action-bg {
+        right: 20px;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      }
+
+      // Scale up when threshold is reached
+      body.action-active & {
+        .delete-action-bg,
+        .edit-action-bg {
+          transform: scale(1.3);
+          transition: transform 0.2s ease-out;
+        }
+      }
+    }
+  }
+
+  // Sort Controls
+  .sort-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+
+    .sort-button {
+      background: rgba(255, 255, 255, 0.05);
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+
+      svg {
+        font-size: 0.875rem;
+        color: var(--accent-color);
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      &.active {
+        background: color-mix(in srgb, var(--accent-color) 20%, transparent);
+        color: var(--accent-color);
+        font-weight: 500;
+      }
+    }
+  }
+
+  .transaction-list-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 1rem;
+    padding-right: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    min-height: fit-content;
+    box-sizing: border-box;
+    // Allow swipe gestures but prevent horizontal scroll
+    touch-action: pan-y pan-x pinch-zoom;
+    overflow: hidden;
+    // Safari iOS - prevent horizontal scroll
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .transaction-date-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 50px;
+      flex-shrink: 0;
+
+      .date-day {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1;
+      }
+
+      .date-month {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 0.25rem;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    .transaction-category-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 80px;
+      max-width: 100px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 0.5rem 0.75rem;
+      flex-shrink: 0;
+
+      .category-name {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.7);
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .transaction-content {
+      flex: 1;
+      min-width: 0;
+
+      .transaction-name {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #ffffff;
+        line-height: 1.4;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+      }
+    }
+
+    .transaction-price {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      padding-right: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .transaction-actions-desktop {
+      display: none;
+      gap: 0.5rem;
+      flex-shrink: 0;
+
+      @media (min-width: 641px) {
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .transaction-action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      padding: 0;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+        transform: scale(1.05);
+      }
+
+      &--edit {
+        &:hover {
+          border-color: #3b82f6;
+          color: #3b82f6;
+          background: rgba(59, 130, 246, 0.1);
+        }
+      }
+
+      &--delete {
+        &:hover {
+          border-color: #ef4444;
+          color: #ef4444;
+          background: rgba(239, 68, 68, 0.1);
+        }
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 640px) {
+  .transaction-list-component {
+    .transaction-list-item {
+      gap: 0.75rem;
+
+      .transaction-date-box {
+        min-width: 45px;
+
+        .date-day {
+          font-size: 1.25rem;
+        }
+
+        .date-month {
+          font-size: 0.7rem;
+        }
+      }
+
+      .transaction-category-box {
+        min-width: 70px;
+        max-width: 90px;
+        padding: 0.4rem 0.625rem;
+
+        .category-name {
+          font-size: 0.75rem;
+        }
+      }
+
+      .transaction-content {
+        .transaction-name {
+          font-size: 0.95rem;
+        }
+      }
+
+      .transaction-price {
+        font-size: 1rem;
+        padding-right: 0.5rem;
+      }
+    }
+
+    .swipe-action {
+      width: 50px;
+      height: 50px;
+
+      svg {
+        font-size: 1.25rem;
+      }
+    }
+  }
+}
+
