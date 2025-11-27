@@ -157,7 +157,7 @@ const Home = () => {
       <h2 style={{ padding: '0 1.5rem', marginBottom: '1rem' }}>{currentMonth || 'Expenses'}</h2>
       <Filters />
       {loading ? (
-        <div className="lds-ripple" style={{ marginTop: '2rem' }}>
+        <div className="lds-ripple">
           <div></div>
           <div></div>
         </div>

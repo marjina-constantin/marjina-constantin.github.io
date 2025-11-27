@@ -675,12 +675,15 @@ button:hover {
   margin-top: 25px;
 }
 .lds-ripple {
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
-  top: 80px;
   width: 80px;
   height: 80px;
+  margin: 4rem auto;
 }
+
 .lds-ripple div {
   position: absolute;
   border: 3px solid var(--accent-color);
@@ -689,9 +692,11 @@ button:hover {
   animation: lds-ripple 1.2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
   box-shadow: 0 0 20px rgba(var(--accent-color-rgb, 0, 168, 173), 0.3);
 }
+
 .lds-ripple div:nth-child(2) {
   animation-delay: -0.6s;
 }
+
 @keyframes lds-ripple {
   0% {
     top: 40px;
