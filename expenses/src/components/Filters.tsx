@@ -1,10 +1,10 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState, useCallback } from 'react';
 import { categories } from '../utils/constants';
 import { useData } from '../context';
 import { FaSearch } from 'react-icons/fa';
 import { DataState } from '../type/types';
 
-export default function Filters() {
+function Filters() {
   const { data, dataDispatch } = useData() as DataState;
 
   const [state, setState] = useState({
@@ -14,9 +14,7 @@ export default function Filters() {
   const [showTextFilter, setShowTextFilter] = useState(false);
   const textInputRef = useRef<HTMLInputElement | null>(null);
 
-  const prevFilterState = useRef(state);
-
-  const handleCategoryChange = (
+  const handleCategoryChange = useCallback((
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const category = event.target.value;
@@ -24,9 +22,14 @@ export default function Filters() {
       ...prevState,
       category,
     }));
-  };
+    dataDispatch({
+      type: 'FILTER_DATA',
+      category,
+      textFilter: state.textFilter,
+    });
+  }, [dataDispatch, state.textFilter]);
 
-  const handleTextFilterChange = (
+  const handleTextFilterChange = useCallback((
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const textFilter = event.target.value;
@@ -34,27 +37,25 @@ export default function Filters() {
       ...prevState,
       textFilter,
     }));
-  };
+    dataDispatch({
+      type: 'FILTER_DATA',
+      category: state.category,
+      textFilter,
+    });
+  }, [dataDispatch, state.category]);
 
-  const handleClearFilters = () => {
+  const handleClearFilters = useCallback(() => {
     setState({
       category: '',
       textFilter: '',
     });
     setShowTextFilter(false);
-  };
-
-  useEffect(() => {
-    if (prevFilterState.current !== state) {
-      // Run the effect only when filterState changes
-      dataDispatch({
-        type: 'FILTER_DATA',
-        category: state.category,
-        textFilter: state.textFilter,
-      });
-      prevFilterState.current = state;
-    }
-  }, [state]);
+    dataDispatch({
+      type: 'FILTER_DATA',
+      category: '',
+      textFilter: '',
+    });
+  }, [dataDispatch]);
 
   useLayoutEffect(() => {
     if (showTextFilter && textInputRef.current) {
@@ -75,14 +76,14 @@ export default function Filters() {
         <input
           ref={textInputRef}
           type="text"
-          value={data.textFilter}
+          value={state.textFilter}
           name="textFilter"
           onChange={handleTextFilterChange}
           placeholder="Filter by text"
         />
       )}
       <select
-        value={data.category}
+        value={state.category}
         name="category"
         onChange={handleCategoryChange}
       >
@@ -100,3 +101,5 @@ export default function Filters() {
     </div>
   );
 }
+
+export default React.memo(Filters);

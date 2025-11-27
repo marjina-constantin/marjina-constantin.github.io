@@ -13,7 +13,10 @@ const AddTransaction = () => {
       formType="add"
       values={null}
       onSuccess={() => {
-        fetchData(token, dataDispatch, dispatch);
+        // Refetch in background - use setTimeout to avoid blocking UI
+        setTimeout(() => {
+          fetchData(token, dataDispatch, dispatch);
+        }, 0);
       }}
     />
   );

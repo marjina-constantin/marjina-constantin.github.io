@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useMemo} from 'react';
 import { getClassNamesFor, useSortableData } from '../utils/useSortableData';
 import { monthNames } from '../utils/constants';
 import useSwipeActions from '../hooks/useSwipeActions';
@@ -38,77 +38,95 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
     });
   }, [changedItems, handleClearChangedItem]);
 
-  const allItems = [...items, ...Object.values(changedItems)
-    .filter(item => item.type === 'removed' && item.data.type === 'transaction')
-    .map(item => item.data)
-  ].sort((a, b) => {
-    // First, compare by 'dt'
-    const dateComparison = new Date(b.dt).getTime() - new Date(a.dt).getTime();
-    if (dateComparison !== 0) {
-      return dateComparison;
-    }
-    // If 'dt' values are equal, compare by 'created'
-    return b.cr - a.cr;
-  });
+  const allItems = useMemo(() => {
+    return [...items, ...Object.values(changedItems)
+      .filter(item => item.type === 'removed' && item.data.type === 'transaction')
+      .map(item => item.data)
+    ].sort((a, b) => {
+      // First, compare by 'dt'
+      const dateComparison = new Date(b.dt).getTime() - new Date(a.dt).getTime();
+      if (dateComparison !== 0) {
+        return dateComparison;
+      }
+      // If 'dt' values are equal, compare by 'created'
+      return b.cr - a.cr;
+    });
+  }, [items, changedItems]);
 
   const { sortedItems, requestSort, sortConfig } = useSortableData(allItems || []);
 
   const { data } = useData() as DataState;
 
   // Get today's date
-  const today = new Date();
-  let totalSumForCategory = 0;
-  let weekPercentage;
-  let monthPercentage = 100;
+  const today = useMemo(() => new Date(), []);
   const { weeklyBudget, monthlyBudget } = useAuthState() as AuthState;
-  const isCurrentMonth =
-    `${monthNames[today.getMonth()]} ${today.getFullYear()}` === month;
+  const isCurrentMonth = useMemo(
+    () => `${monthNames[today.getMonth()]} ${today.getFullYear()}` === month,
+    [today, month]
+  );
 
   const isWeekBudget = !data?.filtered && isCurrentMonth && weeklyBudget;
   const isMonthBudget = !data?.filtered && isCurrentMonth && monthlyBudget;
-  if (isMonthBudget) {
-    monthPercentage = 100 - (total / parseInt(monthlyBudget)) * 100;
-    monthPercentage = monthPercentage <= 0 ? 0.01 : monthPercentage;
-  }
-  if (isWeekBudget) {
-    // Calculate the date of the last Monday
-    const lastMonday = new Date(today);
-    lastMonday.setDate(lastMonday.getDate() - ((today.getDay() + 6) % 7));
-    // Get the parts of the date
-    const year = lastMonday.getFullYear();
-    const month = String(lastMonday.getMonth() + 1).padStart(2, '0');
-    const day = String(lastMonday.getDate()).padStart(2, '0');
-    // Form the formatted date string 'YYYY-MM-DD'
-    const formattedLastMonday = `${year}-${month}-${day}`;
 
-    totalSumForCategory =
-      data?.raw
-        ?.filter(
-          (transaction: TransactionOrIncomeItem) =>
-            transaction.dt >= formattedLastMonday
-        )
-        ?.filter(
-          (transaction: TransactionOrIncomeItem) =>
-            transaction.type === 'transaction'
-        )
-        ?.filter(
-          (transaction: TransactionOrIncomeItem) =>
-            ![6, 9, 10, 12, 13, 11].includes(
-              parseInt(transaction.cat as string)
-            )
-        )
-        ?.reduce(
-          (total: number, transaction: TransactionOrIncomeItem) =>
-            total + parseFloat(transaction.sum),
-          0
-        ) || 0;
+  // Memoize expensive budget calculations
+  const { monthPercentage, weekPercentage, totalSumForCategory } = useMemo(() => {
+    let monthPct = 100;
+    let weekPct: number | undefined;
+    let totalSum = 0;
 
-    weekPercentage = 100 - (totalSumForCategory / parseInt(weeklyBudget)) * 100;
-    weekPercentage = weekPercentage <= 0 ? 0.01 : weekPercentage;
-  }
+    if (isMonthBudget) {
+      monthPct = 100 - (total / parseInt(monthlyBudget)) * 100;
+      monthPct = monthPct <= 0 ? 0.01 : monthPct;
+    }
+    
+    if (isWeekBudget) {
+      // Calculate the date of the last Monday
+      const lastMonday = new Date(today);
+      lastMonday.setDate(lastMonday.getDate() - ((today.getDay() + 6) % 7));
+      // Get the parts of the date
+      const year = lastMonday.getFullYear();
+      const monthNum = String(lastMonday.getMonth() + 1).padStart(2, '0');
+      const day = String(lastMonday.getDate()).padStart(2, '0');
+      // Form the formatted date string 'YYYY-MM-DD'
+      const formattedLastMonday = `${year}-${monthNum}-${day}`;
 
-  const income = incomeTotals ? incomeTotals[month] : -1;
-  const profit = parseFloat((income - total).toFixed(2));
+      totalSum =
+        data?.raw
+          ?.filter(
+            (transaction: TransactionOrIncomeItem) =>
+              transaction.dt >= formattedLastMonday
+          )
+          ?.filter(
+            (transaction: TransactionOrIncomeItem) =>
+              transaction.type === 'transaction'
+          )
+          ?.filter(
+            (transaction: TransactionOrIncomeItem) =>
+              ![6, 9, 10, 12, 13, 11].includes(
+                parseInt(transaction.cat as string)
+              )
+          )
+          ?.reduce(
+            (total: number, transaction: TransactionOrIncomeItem) =>
+              total + parseFloat(transaction.sum),
+            0
+          ) || 0;
+
+      weekPct = 100 - (totalSum / parseInt(weeklyBudget)) * 100;
+      weekPct = weekPct <= 0 ? 0.01 : weekPct;
+    }
+
+    return { monthPercentage: monthPct, weekPercentage: weekPct, totalSumForCategory: totalSum };
+  }, [isMonthBudget, isWeekBudget, total, monthlyBudget, weeklyBudget, today, data?.raw]);
+
+  const income = useMemo(
+    () => incomeTotals ? incomeTotals[month] : -1,
+    [incomeTotals, month]
+  );
+  const profit = useMemo(
+    () => parseFloat((income - total).toFixed(2)),
+    [income, total]
+  );
 
   const tableRef = useRef(null);
   const {
@@ -255,4 +273,4 @@ const TransactionsTable: React.FC<TransactionsTableProps> = ({
   );
 };
 
-export default TransactionsTable;
+export default React.memo(TransactionsTable);

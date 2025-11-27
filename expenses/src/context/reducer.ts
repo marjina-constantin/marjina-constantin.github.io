@@ -7,22 +7,68 @@ import {
   DataItems,
 } from '../type/types';
 
-const user = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser')!)
-  : '';
-const token = localStorage.getItem('currentUser')
-  ? JSON.parse(localStorage.getItem('currentUser')!).jwt_token
-  : '';
-const theme = localStorage.getItem('theme')
-  ? JSON.parse(localStorage.getItem('theme')!)
-  : '';
-const weeklyBudget = localStorage.getItem('weeklyBudget')
-  ? JSON.parse(localStorage.getItem('weeklyBudget')!)
-  : '';
+// Cache localStorage values to avoid repeated parsing
+let cachedUser: any = null;
+let cachedToken: string = '';
+let cachedTheme: string = '';
+let cachedWeeklyBudget: string = '';
+let cachedMonthlyBudget: string = '';
 
-const monthlyBudget = localStorage.getItem('monthlyBudget')
-  ? JSON.parse(localStorage.getItem('monthlyBudget')!)
-  : '';
+const getCachedUser = () => {
+  if (cachedUser === null) {
+    try {
+      const userStr = localStorage.getItem('currentUser');
+      cachedUser = userStr ? JSON.parse(userStr) : '';
+      cachedToken = cachedUser?.jwt_token || '';
+    } catch {
+      cachedUser = '';
+      cachedToken = '';
+    }
+  }
+  return cachedUser;
+};
+
+const getCachedTheme = () => {
+  if (!cachedTheme) {
+    try {
+      const themeStr = localStorage.getItem('theme');
+      cachedTheme = themeStr ? JSON.parse(themeStr) : '';
+    } catch {
+      cachedTheme = '';
+    }
+  }
+  return cachedTheme;
+};
+
+const getCachedWeeklyBudget = () => {
+  if (!cachedWeeklyBudget) {
+    try {
+      const budgetStr = localStorage.getItem('weeklyBudget');
+      cachedWeeklyBudget = budgetStr ? JSON.parse(budgetStr) : '';
+    } catch {
+      cachedWeeklyBudget = '';
+    }
+  }
+  return cachedWeeklyBudget;
+};
+
+const getCachedMonthlyBudget = () => {
+  if (!cachedMonthlyBudget) {
+    try {
+      const budgetStr = localStorage.getItem('monthlyBudget');
+      cachedMonthlyBudget = budgetStr ? JSON.parse(budgetStr) : '';
+    } catch {
+      cachedMonthlyBudget = '';
+    }
+  }
+  return cachedMonthlyBudget;
+};
+
+const user = getCachedUser();
+const token = cachedToken;
+const theme = getCachedTheme();
+const weeklyBudget = getCachedWeeklyBudget();
+const monthlyBudget = getCachedMonthlyBudget();
 
 export const initialState = {
   userDetails: '' || user,
@@ -210,6 +256,7 @@ export const DataReducer = (initialState: DataItems, action: ActionType) => {
   }
 };
 
+// Optimized compareData - avoids expensive JSON.stringify
 const compareData = (oldData, newData) => {
   const changedItems = {};
   if (oldData.length === 0) {
@@ -219,11 +266,23 @@ const compareData = (oldData, newData) => {
   const oldMap = new Map(oldData.map(item => [item.id, item]));
   const newMap = new Map(newData.map(item => [item.id, item]));
 
+  // Helper to compare objects by key fields instead of JSON.stringify
+  const hasChanged = (oldItem, newItem) => {
+    return (
+      oldItem.dt !== newItem.dt ||
+      oldItem.sum !== newItem.sum ||
+      oldItem.cat !== newItem.cat ||
+      oldItem.dsc !== newItem.dsc ||
+      oldItem.type !== newItem.type ||
+      oldItem.cr !== newItem.cr
+    );
+  };
+
   newData.forEach(item => {
     const oldItem = oldMap.get(item.id);
     if (!oldItem) {
       changedItems[item.id] = { type: 'new', data: item };
-    } else if (JSON.stringify(item) !== JSON.stringify(oldItem)) {
+    } else if (hasChanged(oldItem, item)) {
       changedItems[item.id] = { type: 'updated', data: item };
     }
   });

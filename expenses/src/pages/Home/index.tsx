@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   useAuthDispatch,
   useAuthState,
@@ -26,10 +26,11 @@ const Home = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (noData) {
+    if (noData && token) {
       fetchData(token, dataDispatch, dispatch);
     }
-  }, [data, dataDispatch, token, noData, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [noData, token]); // Removed data, dataDispatch, dispatch from deps to avoid unnecessary re-fetches
 
   const items = data.filtered || data;
 
@@ -57,32 +58,39 @@ const Home = () => {
     setIsSubmitting(true);
     // @ts-expect-error
     deleteNode(showDeleteModal, token, (response: Response) => {
+      setShowDeleteModal(false);
       if (response.ok) {
         showNotification(
           'Transaction was successfully deleted.',
           notificationType.SUCCESS
         );
         setIsSubmitting(false);
+        // Refetch in background - use setTimeout to avoid blocking UI
+        setTimeout(() => {
+          fetchData(
+            token,
+            dataDispatch,
+            dispatch,
+            data.category as string,
+            data.textFilter as string
+          );
+        }, 0);
       } else {
         showNotification('Something went wrong.', notificationType.ERROR);
         setIsSubmitting(false);
       }
-      setShowDeleteModal(false);
-      fetchData(
-        token,
-        dataDispatch,
-        dispatch,
-        data.category as string,
-        data.textFilter as string
-      );
     });
   };
 
-  const months = items.groupedData ? Object.keys(items.groupedData) : [];
+  const months = useMemo(
+    () => items.groupedData ? Object.keys(items.groupedData) : [],
+    [items.groupedData]
+  );
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
-  const currentMonth = months[currentMonthIndex]
-    ? months[currentMonthIndex]
-    : months[0];
+  const currentMonth = useMemo(
+    () => months[currentMonthIndex] ? months[currentMonthIndex] : months[0],
+    [months, currentMonthIndex]
+  );
 
   useEffect(() => {
     if (data?.filtered) {
@@ -133,13 +141,16 @@ const Home = () => {
           values={focusedItem}
           onSuccess={() => {
             setShowEditModal(false);
-            fetchData(
-              token,
-              dataDispatch,
-              dispatch,
-              data.category,
-              data.textFilter
-            );
+            // Refetch in background - use setTimeout to avoid blocking UI
+            setTimeout(() => {
+              fetchData(
+                token,
+                dataDispatch,
+                dispatch,
+                data.category,
+                data.textFilter
+              );
+            }, 0);
           }}
         />
       </Modal>

@@ -101,10 +101,11 @@ const Charts = () => {
   const dispatch = useAuthDispatch();
 
   useEffect(() => {
-    if (noData) {
+    if (noData && token) {
       fetchData(token, dataDispatch, dispatch);
     }
-  }, [data, dataDispatch, noData, token, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [noData, token]); // Removed data, dataDispatch, dispatch from deps to avoid unnecessary re-fetches
 
   return (
     <div>
