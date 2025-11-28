@@ -93,8 +93,8 @@ body {
   margin-top: 35px;
   color: #fff;
   background: #282a36;
-  // Add safe area inset to bottom padding to account for navbar + iOS gestures + extra spacing
-  padding-bottom: calc(100px + env(safe-area-inset-bottom) + 8px);
+  // Add safe area inset to bottom padding to account for navbar + iOS gestures + minimal spacing
+  padding-bottom: calc(100px + env(safe-area-inset-bottom) + 4px);
   overflow-x: hidden;
 }
 .navbar {
@@ -103,8 +103,8 @@ body {
   right: 0;
   bottom: 0;
   // Add safe area inset for iOS to prevent overlap with gesture areas
-  // Add extra 8px padding for better spacing
-  padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
+  // Add minimal 4px padding for better spacing
+  padding-bottom: calc(env(safe-area-inset-bottom) + 4px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 99;
   touch-action: none;
@@ -1017,8 +1017,8 @@ ul.suggestions li:hover {
 
 .pager-navigation {
   position: fixed;
-  // Position above navbar: navbar height (60px) + navbar padding (8px) + spacing (12px) + safe area
-  bottom: calc(80px + env(safe-area-inset-bottom));
+  // Position above navbar: navbar height (60px) + navbar padding (4px) + spacing (12px) + safe area
+  bottom: calc(76px + env(safe-area-inset-bottom));
   left: 0;
   right: 0;
   height: 56px;
