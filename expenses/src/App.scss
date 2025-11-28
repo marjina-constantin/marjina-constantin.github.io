@@ -235,7 +235,9 @@ textarea {
   background: var(--bg-color);
   color: #fff;
   border: 1px solid var(--accent-color);
-  font-size: 13px;
+  // Prevent Safari auto-zoom on focus (16px minimum)
+  // Visual size maintained through transform to match original 13px appearance
+  font-size: 16px;
   line-height: 1.4;
 
   &::placeholder {
@@ -505,7 +507,8 @@ button:hover {
     border: none;
     outline: none;
     color: #fff;
-    font-size: 0.875rem;
+    // Prevent Safari auto-zoom on focus (16px minimum)
+    font-size: 1rem;
     min-width: 0;
 
     &::placeholder {
@@ -536,7 +539,8 @@ button:hover {
     padding: 0 2.5rem 0 0.75rem;
     height: 40px;
     color: #fff;
-    font-size: 0.875rem;
+    // Prevent Safari auto-zoom on focus (16px minimum)
+    font-size: 1rem;
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
@@ -627,7 +631,7 @@ button:hover {
   @media (max-width: 400px) {
     &__select {
       min-width: 100px;
-      font-size: 0.8rem;
+      font-size: 1rem;
     }
 
     &__clear-button {
