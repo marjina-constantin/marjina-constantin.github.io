@@ -369,6 +369,30 @@ input[type='submit'] {
     text-align: left;
   }
 }
+/* iOS Safari – force left alignment inside date input */
+input[type="date"]::-webkit-datetime-edit {
+  text-align: left !important;
+  padding-left: 0 !important;
+}
+
+input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+  text-align: left !important;
+}
+
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+  text-align: left !important;
+  width: auto !important; /* This is the missing part */
+  display: inline-block !important;
+}
+
+input[type="date"] {
+  text-align: left !important;
+  padding-left: 0 !important;
+}
+
 .button {
   font-weight: bold;
   border: none;
