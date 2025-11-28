@@ -3,10 +3,11 @@ import { Edit, Trash2, ArrowUpDown, ChevronUp, ChevronDown, Wallet, ArrowUpCircl
 import { formatNumber, getCategory } from '../utils/utils';
 import { TransactionOrIncomeItem } from '../type/types';
 import StatCard from './StatCard';
-import { useAuthState, useData } from '../context';
+import { useAuthState, useData, useSyncStatus } from '../context';
 import { AuthState, DataState } from '../type/types';
 import { monthNames } from '../utils/constants';
 import useSwipeActions from '../hooks/useSwipeActions';
+import ItemSyncIndicator from './ItemSyncIndicator';
 import './TransactionList.scss';
 
 interface TransactionListProps {
@@ -39,6 +40,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
   const [sortField, setSortField] = useState<SortField>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const { data } = useData() as DataState;
+  const { syncedItems } = useSyncStatus();
 
   const { handleTouchStart, handleTouchMove, handleTouchEnd, deleteVisible, editVisible, swipedItemId } = useSwipeActions();
 
@@ -203,7 +205,10 @@ const TransactionList: React.FC<TransactionListProps> = ({
                 </div>
                 {/* Content */}
                 <div className="transaction-content">
-                  <div className="transaction-name">{transaction.dsc}</div>
+                  <div className="transaction-name">
+                    {transaction.dsc}
+                    <ItemSyncIndicator show={syncedItems.has(transaction.id)} />
+                  </div>
                 </div>
                 {/* Price */}
                 <div className="transaction-price">{formatNumber(transaction.sum)}</div>

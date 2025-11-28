@@ -6,6 +6,7 @@ export interface TransactionOrIncomeItem {
   cat?: string;
   dsc?: string;
   cr?: number; // Created timestamp for sorting
+  upd?: number; // Last updated timestamp for conflict resolution
 }
 
 export interface Daily {

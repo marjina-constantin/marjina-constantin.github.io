@@ -69,21 +69,36 @@ export const fetchRequest = (
     .catch((error) => console.log(error));
 };
 
-export const deleteNode = (nid: string, token: string, callback: any) => {
-  const fetchOptions = {
-    method: 'DELETE',
-    headers: new Headers({
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'JWT-Authorization': 'Bearer ' + token,
-    }),
-  };
-  fetch(
-    `https://dev-expenses-api.pantheonsite.io/node/${nid}?_format=json`,
-    fetchOptions
-  ).then((response) => {
-    callback(response);
-  });
+export const deleteNode = async (nid: string, token: string, callback: any) => {
+  // Import offline API dynamically to avoid circular dependencies
+  const { deleteItemOffline } = await import('./offlineAPI');
+  const { getItemFromDB } = await import('./indexedDB');
+  
+  // Get item to determine type
+  const item = await getItemFromDB(nid);
+  const itemType = item?.type === 'transaction' ? 'transaction' : 'incomes';
+  
+  await deleteItemOffline(
+    nid,
+    itemType,
+    token,
+    () => {
+      // Success callback - return a mock Response object for compatibility
+      callback({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+      });
+    },
+    (error: string) => {
+      // Error callback - return a mock Response object for compatibility
+      callback({
+        ok: false,
+        status: 500,
+        statusText: error,
+      });
+    }
+  );
 };
 
 // Process data using Web Worker (if available) or fallback to main thread
@@ -286,33 +301,52 @@ export const fetchData = async (
     }
   }
 
-  // Fetch fresh data from API
-  const fetchOptions = {
-    method: 'GET',
-    headers: new Headers({
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'JWT-Authorization': 'Bearer ' + token,
-    }),
-  };
-
-  fetchRequest(
-    'https://dev-expenses-api.pantheonsite.io/api/expenses',
-    fetchOptions,
-    dataDispatch,
-    dispatch,
-    async (data: TransactionOrIncomeItem[]) => {
-      // Save to IndexedDB for next time
-      if (isIndexedDBAvailable()) {
-        await saveExpensesToDB(data);
-      }
-
-      // Process data (using Web Worker if available)
-      processData(data, (processed) => {
-        dispatchProcessedData(data, processed, dataDispatch, category, textFilter);
+  // Sync with server (handles online/offline automatically)
+  const { syncWithServer, syncPendingOperations } = await import('./syncService');
+  
+  try {
+    // First sync pending operations (callbacks handled in App.tsx SyncSetup)
+    await syncPendingOperations(token);
+    
+    // Then sync data from server
+    const syncedData = await syncWithServer(token, dataDispatch);
+    
+    // Process synced data
+    if (syncedData && syncedData.length > 0) {
+      processData(syncedData, (processed) => {
+        dispatchProcessedData(syncedData, processed, dataDispatch, category, textFilter);
       });
     }
-  );
+  } catch (error) {
+    console.error('Error during sync:', error);
+    // Fallback to direct API call if sync fails
+    const fetchOptions = {
+      method: 'GET',
+      headers: new Headers({
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'JWT-Authorization': 'Bearer ' + token,
+      }),
+    };
+
+    fetchRequest(
+      'https://dev-expenses-api.pantheonsite.io/api/expenses',
+      fetchOptions,
+      dataDispatch,
+      dispatch,
+      async (data: TransactionOrIncomeItem[]) => {
+        // Save to IndexedDB for next time
+        if (isIndexedDBAvailable()) {
+          await saveExpensesToDB(data);
+        }
+
+        // Process data (using Web Worker if available)
+        processData(data, (processed) => {
+          dispatchProcessedData(data, processed, dataDispatch, category, textFilter);
+        });
+      }
+    );
+  }
 };
 
 export const formatNumber = (value: unknown): string => {

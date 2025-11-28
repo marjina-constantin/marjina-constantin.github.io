@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { fetchRequest } from '../utils/utils';
 import {
   useAuthDispatch,
   useAuthState,
   useData,
   useNotification,
+  useSyncStatus,
 } from '../context';
 import { notificationType } from '../utils/constants';
-import { AuthState, DataState, NodeData } from '../type/types';
+import { AuthState, DataState, TransactionOrIncomeItem } from '../type/types';
+import { addItemOffline, updateItemOffline } from '../utils/offlineAPI';
+import { getItemFromDB } from '../utils/indexedDB';
+import { fetchData } from '../utils/utils';
 
 interface IncomeFormProps {
   formType: string;
@@ -27,7 +30,8 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
 }) => {
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
-  const { dataDispatch } = useData() as DataState;
+  const { data, dataDispatch } = useData() as DataState;
+  const { markItemSynced } = useSyncStatus();
   const initialState = {
     field_amount: '',
     field_date: new Date().toISOString().substr(0, 10),
@@ -47,7 +51,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
     });
   };
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
     const node = {
@@ -57,39 +61,75 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
       field_date: [formState.field_date],
       field_description: [formState.field_description],
     };
-    const fetchOptions = {
-      method: formType === 'add' ? 'POST' : 'PATCH',
-      headers: new Headers({
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'JWT-Authorization': 'Bearer ' + token,
-      }),
-      body: JSON.stringify(node),
-    };
-    const url =
-      formType === 'add'
-        ? 'https://dev-expenses-api.pantheonsite.io/node?_format=json'
-        : `https://dev-expenses-api.pantheonsite.io/node/${values.nid}?_format=json`;
-    fetchRequest(
-      url,
-      fetchOptions,
-      dataDispatch,
-      dispatch,
-      (data: NodeData) => {
-        if (data.nid) {
-          onSuccess();
-          showNotification('Success!', notificationType.SUCCESS);
-          setIsSubmitting(false);
-          setFormState(initialState);
-        } else {
+
+    try {
+      if (formType === 'add') {
+        await addItemOffline(
+          node,
+          token,
+          async (item: TransactionOrIncomeItem) => {
+            // Mark as synced if it was synced immediately (has real ID, not temp)
+            if (item.id && !item.id.startsWith('temp_')) {
+              markItemSynced(item.id);
+            }
+            onSuccess();
+            showNotification('Success!', notificationType.SUCCESS);
+            setIsSubmitting(false);
+            setFormState(initialState);
+            // Refresh data to show new item
+            setTimeout(() => {
+              fetchData(token, dataDispatch, dispatch);
+            }, 0);
+          },
+          (error: string) => {
+            showNotification(error, notificationType.ERROR);
+            setIsSubmitting(false);
+          }
+        );
+      } else {
+        // Edit mode
+        const existingItem = await getItemFromDB(values.nid);
+        if (!existingItem) {
           showNotification(
-            'Something went wrong, please contact Sergiu S :)',
+            'Item not found in local cache',
             notificationType.ERROR
           );
           setIsSubmitting(false);
+          return;
         }
+
+        await updateItemOffline(
+          node,
+          values.nid,
+          token,
+          existingItem,
+          async (item: TransactionOrIncomeItem) => {
+            // Mark as synced if it was synced immediately
+            if (item.id && !item.id.startsWith('temp_')) {
+              markItemSynced(item.id);
+            }
+            onSuccess();
+            showNotification('Success!', notificationType.SUCCESS);
+            setIsSubmitting(false);
+            setFormState(initialState);
+            // Refresh data to show updated item
+            setTimeout(() => {
+              fetchData(token, dataDispatch, dispatch);
+            }, 0);
+          },
+          (error: string) => {
+            showNotification(error, notificationType.ERROR);
+            setIsSubmitting(false);
+          }
+        );
       }
-    );
+    } catch (error) {
+      showNotification(
+        'Something went wrong, please contact Sergiu S :)',
+        notificationType.ERROR
+      );
+      setIsSubmitting(false);
+    }
   };
 
   const today: Date = new Date();
