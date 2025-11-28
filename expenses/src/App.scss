@@ -237,7 +237,7 @@ textarea {
   border: 1px solid var(--accent-color);
   // Prevent Safari auto-zoom on focus (16px minimum)
   // Visual size maintained through transform to match original 13px appearance
-  font-size: 16px;
+  font-size: 13px;
   line-height: 1.4;
 
   &::placeholder {
@@ -263,7 +263,7 @@ textarea {
   transition: all 0.3s ease-in-out;
   color: #ccc;
   // Ensure consistent font-size to prevent Safari zoom and maintain consistency
-  font-size: 16px !important;
+  font-size: 13px !important;
   line-height: 1.4;
   padding: 0;
   -webkit-appearance: none;
@@ -278,7 +278,8 @@ textarea {
 .add-transaction input[type='number'],
 .add-transaction input[type='text'],
 .add-transaction input[type='date'] {
-  font-size: 16px !important;
+  font-size: 13px !important;
+  text-align: left;
   // Remove iOS number input spinners if needed
   &::-webkit-inner-spin-button,
   &::-webkit-outer-spin-button {
@@ -291,18 +292,18 @@ textarea {
   // Ensure select dropdown arrow is styled consistently
   background-image: none;
   cursor: pointer;
-  font-size: 16px !important;
+  font-size: 13px !important;
   
   option {
     background: var(--bg-color);
     color: #ccc;
-    font-size: 16px;
+    font-size: 13px;
     padding: 10px;
   }
 }
 
 .add-transaction textarea {
-  font-size: 16px !important;
+  font-size: 13px !important;
   resize: vertical;
   min-height: 60px;
   // Ensure textarea text is consistent
@@ -318,7 +319,7 @@ textarea {
 .add-transaction select::placeholder {
   color: #ccc;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 13px;
   opacity: 1;
 }
 input[type='submit'] {
@@ -328,26 +329,29 @@ input[type='submit'] {
   border: none;
   background: var(--accent-color);
   color: #282a36;
-  font-size: 16px;
+  font-size: 13px;
   font-weight: bold;
   cursor: pointer;
 }
 .add-transaction input[type='date'] {
   // Date inputs need special handling for iOS
   position: relative;
+  text-align: left !important;
   
   &::-webkit-calendar-picker-indicator {
     filter: invert(1);
     cursor: pointer;
   }
   
-  // Ensure date input text is visible and consistent
+  // Ensure date input text is visible and consistent, left-aligned
   &::-webkit-datetime-edit {
     color: #ccc;
+    text-align: left;
   }
   
   &::-webkit-datetime-edit-fields-wrapper {
     color: #ccc;
+    text-align: left;
   }
   
   &::-webkit-datetime-edit-text {
@@ -358,6 +362,7 @@ input[type='submit'] {
   &::-webkit-datetime-edit-day-field,
   &::-webkit-datetime-edit-year-field {
     color: #ccc;
+    text-align: left;
   }
 }
 .button {
