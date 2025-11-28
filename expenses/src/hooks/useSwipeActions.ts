@@ -62,11 +62,19 @@ const useSwipeActions = (): SwipeActions => {
     if (isSwiping === null) {
       const touch = e.touches[0];
       if (touch && startX !== null && startY !== null) {
-        const distanceX = startX - touch.clientX;
-        const distanceY = startY - touch.clientY;
-        setIsSwiping(Math.abs(distanceX) > Math.abs(distanceY));
+        const distanceX = Math.abs(startX - touch.clientX);
+        const distanceY = Math.abs(startY - touch.clientY);
+        const isHorizontalSwipe = distanceX > distanceY;
+        setIsSwiping(isHorizontalSwipe);
+        
+        // Prevent default scrolling on iOS when we detect horizontal swipe
+        if (isHorizontalSwipe && distanceX > 5) {
+          e.preventDefault();
+        }
       }
     } else if (isSwiping) {
+      // Prevent default scrolling on iOS during horizontal swipe
+      e.preventDefault();
       document.body.style.overflow = 'hidden';
 
       const diff = e.touches[0].clientX - (startX ?? 0);

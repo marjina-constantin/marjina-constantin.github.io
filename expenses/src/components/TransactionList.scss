@@ -223,6 +223,11 @@
     // Safari iOS - prevent horizontal scroll
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
+    
+    // When actively swiping horizontally, prevent vertical scrolling on iOS
+    body.action-active & {
+      touch-action: pan-x pinch-zoom;
+    }
 
     &:hover {
       background: rgba(255, 255, 255, 0.08);
