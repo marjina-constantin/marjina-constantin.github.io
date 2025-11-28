@@ -102,9 +102,6 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  // Add safe area inset for iOS to prevent overlap with gesture areas
-  // Add minimal 4px padding for better spacing
-  padding-bottom: env(safe-area-inset-bottom);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 99;
   touch-action: none;
