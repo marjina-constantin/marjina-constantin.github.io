@@ -70,11 +70,13 @@ const useSwipeActions = (): SwipeActions => {
         // Prevent default scrolling on iOS when we detect horizontal swipe
         if (isHorizontalSwipe && distanceX > 5) {
           e.preventDefault();
+          document.body.classList.add('swiping');
         }
       }
     } else if (isSwiping) {
       // Prevent default scrolling on iOS during horizontal swipe
       e.preventDefault();
+      document.body.classList.add('swiping');
       document.body.style.overflow = 'hidden';
 
       const diff = e.touches[0].clientX - (startX ?? 0);
@@ -112,6 +114,7 @@ const useSwipeActions = (): SwipeActions => {
     handleEdit: (id: string) => void,
     onDelete: (id: string) => void
   ) => {
+    document.body.classList.remove("swiping");
     document.body.style.overflow = '';
 
     const touch = e.changedTouches[0];
