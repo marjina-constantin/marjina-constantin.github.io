@@ -1017,7 +1017,8 @@ ul.suggestions li:hover {
 
 .pager-navigation {
   position: fixed;
-  bottom: calc(61px + env(safe-area-inset-bottom));
+  // Position above navbar: navbar height (60px) + navbar padding (8px) + spacing (12px) + safe area
+  bottom: calc(80px + env(safe-area-inset-bottom));
   left: 0;
   right: 0;
   height: 56px;
