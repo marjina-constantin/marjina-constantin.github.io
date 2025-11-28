@@ -997,8 +997,7 @@ ul.suggestions li:hover {
 }
 .notification {
   position: fixed;
-  // Position above navbar: navbar height (60px) + spacing (8px) + safe area
-  bottom: calc(68px + env(safe-area-inset-bottom));
+  bottom: 72px;
   left: 50%;
   transform: translateX(-50%);
   color: white;
@@ -1016,8 +1015,7 @@ ul.suggestions li:hover {
 
 .pager-navigation {
   position: fixed;
-  // Position above navbar: navbar height (60px) + spacing (12px) + safe area
-  bottom: calc(72px + env(safe-area-inset-bottom));
+  bottom: 76px;
   left: 0;
   right: 0;
   height: 56px;
