@@ -94,7 +94,7 @@ body {
   color: #fff;
   background: #282a36;
   // Add safe area inset to bottom padding to account for navbar + iOS gestures + minimal spacing
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
   overflow-x: hidden;
 }
 .navbar {
