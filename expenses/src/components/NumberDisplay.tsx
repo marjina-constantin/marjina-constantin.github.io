@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { formatNumber } from '../utils/utils';
 
 const BASE_DURATION = 300;
-const MAX_DURATION = 1200;
+const MAX_DURATION = 300;
 
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
