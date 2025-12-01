@@ -148,7 +148,7 @@ const IncomeList: React.FC<IncomeListProps> = ({
               {/* Content */}
               <div className="transaction-content">
                 <div className="transaction-name">
-                  {transaction.dsc || 'No description'}
+                  {transaction.dsc || ''}
                   <ItemSyncIndicator itemId={transaction.id} failed={transaction.failed} />
                 </div>
               </div>
