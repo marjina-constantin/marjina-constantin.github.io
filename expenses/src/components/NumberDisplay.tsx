@@ -1,5 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { formatNumber } from '../utils/utils';
+
+const BASE_DURATION = 300;
+const MAX_DURATION = 1200;
+
+const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
 interface NumberDisplayProps {
   number: number;
@@ -7,46 +12,54 @@ interface NumberDisplayProps {
 
 const NumberDisplay: React.FC<NumberDisplayProps> = ({ number }) => {
   const [displayedNumber, setDisplayedNumber] = useState(0);
-  const transitionTime = 10;
-  const steps = Math.abs(number - displayedNumber);
-  const intervalDuration = transitionTime / steps;
+  const animationFrameRef = useRef<number | null>(null);
+  const displayedValueRef = useRef(displayedNumber);
+  displayedValueRef.current = displayedNumber;
 
   useEffect(() => {
-    if (number !== displayedNumber) {
-      const intervalId = setInterval(() => {
-        setDisplayedNumber((prevNumber) => {
-          const diff = Math.abs(number - prevNumber);
-          let step;
-          switch (true) {
-            case diff > 10000:
-              step = 5000;
-              break;
-            case diff > 1000:
-              step = 500;
-              break;
-            case diff > 100:
-              step = 50;
-              break;
-            case diff > 10:
-              step = 5;
-              break;
-            default:
-              step = 1;
-          }
-          if (prevNumber < number) {
-            return Math.min(prevNumber + step, number);
-          } else if (prevNumber > number) {
-            return Math.max(prevNumber - step, number);
-          }
-          clearInterval(intervalId);
-          return prevNumber;
-        });
-      }, intervalDuration);
-
-      return () => {
-        clearInterval(intervalId);
-      };
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
     }
+
+    const startValue = displayedValueRef.current;
+    const diff = number - startValue;
+
+    if (diff === 0) {
+      return;
+    }
+
+    const duration = Math.min(
+      MAX_DURATION,
+      BASE_DURATION + Math.log10(Math.abs(diff) + 1) * 250
+    );
+    const startTime = performance.now();
+
+    const tick = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutCubic(progress);
+      const nextValue = startValue + diff * easedProgress;
+      const roundedValue =
+        progress < 1 ? Math.round(nextValue) : Math.round(number);
+
+      setDisplayedNumber(roundedValue);
+
+      if (progress < 1) {
+        animationFrameRef.current = requestAnimationFrame(tick);
+      } else {
+        animationFrameRef.current = null;
+      }
+    };
+
+    animationFrameRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+    };
   }, [number]);
 
   return <div>{formatNumber(displayedNumber)}</div>;

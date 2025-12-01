@@ -40,14 +40,13 @@ const SyncStatusIndicator: React.FC = () => {
     modifier = 'success';
   } else {
     icon = <CheckCircle2 size={16} />;
-    label = 'All data synced';
     modifier = 'idle';
   }
 
   return (
     <div className={`sync-status-indicator sync-status-indicator--${modifier}`}>
       {icon}
-      <span>{label}</span>
+      {label && <span>{label}</span>}
     </div>
   );
 };
