@@ -527,7 +527,15 @@ async function resolveConflicts(
     }
   }
 
-  return merged;
+  // Sort merged data by date (descending) to maintain consistent ordering
+  // This ensures calculations that rely on array order (like averageIncome) work correctly
+  return merged.sort((a, b) => {
+    const dateComparison = new Date(b.dt).getTime() - new Date(a.dt).getTime();
+    if (dateComparison !== 0) {
+      return dateComparison;
+    }
+    return (b.cr || 0) - (a.cr || 0);
+  });
 }
 
 export function scheduleBackgroundSync(token: string) {
