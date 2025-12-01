@@ -4,7 +4,6 @@ import {
   useAuthState,
   useData,
   useNotification,
-  useSyncStatus,
 } from '../context';
 import { notificationType } from '../utils/constants';
 import { AuthState, DataState, TransactionOrIncomeItem } from '../type/types';
@@ -31,7 +30,6 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
   const { data, dataDispatch } = useData() as DataState;
-  const { markItemSynced } = useSyncStatus();
   const initialState = {
     field_amount: '',
     field_date: new Date().toISOString().substr(0, 10),
@@ -67,11 +65,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
         await addItemOffline(
           node,
           token,
-          async (item: TransactionOrIncomeItem) => {
-            // Mark as synced if it was synced immediately (has real ID, not temp)
-            if (item.id && !item.id.startsWith('temp_')) {
-              markItemSynced(item.id);
-            }
+          async (_item: TransactionOrIncomeItem) => {
             onSuccess();
             showNotification('Success!', notificationType.SUCCESS);
             setIsSubmitting(false);
@@ -103,11 +97,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
           values.nid,
           token,
           existingItem,
-          async (item: TransactionOrIncomeItem) => {
-            // Mark as synced if it was synced immediately
-            if (item.id && !item.id.startsWith('temp_')) {
-              markItemSynced(item.id);
-            }
+          async (_item: TransactionOrIncomeItem) => {
             onSuccess();
             showNotification('Success!', notificationType.SUCCESS);
             setIsSubmitting(false);

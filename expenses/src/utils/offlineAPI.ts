@@ -4,9 +4,12 @@ import {
   updateItemInDB,
   deleteItemFromDB,
   PendingOperation,
+  getQueueOperationsByItemId,
+  removeQueueOperationsByItemId,
+  updateQueueOperation,
 } from './indexedDB';
 import { TransactionOrIncomeItem } from '../type/types';
-import { isOnline, generateTempId } from './syncService';
+import { isOnline, generateTempId, scheduleBackgroundSync } from './syncService';
 
 const ROOT_URL = 'https://dev-expenses-api.pantheonsite.io';
 
@@ -34,6 +37,7 @@ function convertFormDataToItem(
   const created = existingItem?.cr || now;
   // Set updated timestamp to current time for offline changes
   const updated = now;
+  const failed = existingItem?.failed || false;
 
   return {
     id,
@@ -44,6 +48,7 @@ function convertFormDataToItem(
     cat: category,
     cr: created,
     updated,
+    failed,
   };
 }
 
@@ -56,44 +61,11 @@ export async function addItemOffline(
 ): Promise<void> {
   const tempId = generateTempId();
   const item = convertFormDataToItem(formData, tempId);
+  item.failed = false;
 
   try {
     // Save to IndexedDB immediately
     await addItemToDB(item);
-
-    if (isOnline()) {
-      // Try to sync immediately if online
-      try {
-        const fetchOptions: RequestInit = {
-          method: 'POST',
-          headers: new Headers({
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            'JWT-Authorization': `Bearer ${token}`,
-          }),
-          body: JSON.stringify(formData),
-        };
-
-        const response = await fetch(
-          `${ROOT_URL}/node?_format=json`,
-          fetchOptions
-        );
-
-        if (response.ok) {
-          const nodeData = await response.json();
-          const serverItem = convertNodeDataToItem(nodeData);
-          
-          // Replace temp item with server item
-          await deleteItemFromDB(tempId);
-          await addItemToDB(serverItem);
-          
-          onSuccess(serverItem);
-          return;
-        }
-      } catch (error) {
-        console.warn('Online add failed, queueing for later:', error);
-      }
-    }
 
     // Queue for later sync
     const operation: PendingOperation = {
@@ -108,6 +80,11 @@ export async function addItemOffline(
     };
 
     await addToOfflineQueue(operation);
+
+    if (isOnline()) {
+      scheduleBackgroundSync(token);
+    }
+
     onSuccess(item);
   } catch (error) {
     console.error('Error adding item offline:', error);
@@ -127,57 +104,51 @@ export async function updateItemOffline(
   const updatedItem = convertFormDataToItem(formData, itemId, existingItem);
   // Preserve original created timestamp, but update the item
   updatedItem.cr = existingItem.cr;
+  updatedItem.failed = false;
 
   try {
     // Update in IndexedDB immediately
     await updateItemInDB(updatedItem);
 
-    if (isOnline()) {
-      // Try to sync immediately if online
-      try {
-        const fetchOptions: RequestInit = {
-          method: 'PATCH',
-          headers: new Headers({
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            'JWT-Authorization': `Bearer ${token}`,
-          }),
-          body: JSON.stringify(formData),
-        };
+    // Check existing queue operations for this item to avoid duplicates
+    const existingOperations = await getQueueOperationsByItemId(itemId);
+    const pendingAdd = existingOperations.find((op) => op.type === 'add');
+    const pendingUpdate = existingOperations.find((op) => op.type === 'update');
 
-        const response = await fetch(
-          `${ROOT_URL}/node/${itemId}?_format=json`,
-          fetchOptions
-        );
+    if (pendingAdd) {
+      const updatedOperation = {
+        ...pendingAdd,
+        data: formData,
+        timestamp: Date.now(),
+      };
+      await updateQueueOperation(updatedOperation);
+    } else if (pendingUpdate) {
+      const updatedOperation = {
+        ...pendingUpdate,
+        data: formData,
+        timestamp: Date.now(),
+      };
+      await updateQueueOperation(updatedOperation);
+    } else {
+      // Queue for later sync
+      const operation: PendingOperation = {
+        id: `update_${itemId}_${Date.now()}`,
+        type: 'update',
+        itemType: formData.type === 'transaction' ? 'transaction' : 'incomes',
+        itemId: itemId,
+        data: formData,
+        url: `${ROOT_URL}/node/${itemId}?_format=json`,
+        method: 'PATCH',
+        timestamp: Date.now(),
+      };
 
-        if (response.ok) {
-          const nodeData = await response.json();
-          const serverItem = convertNodeDataToItem(nodeData);
-          
-          // Update with server response
-          await updateItemInDB(serverItem);
-          
-          onSuccess(serverItem);
-          return;
-        }
-      } catch (error) {
-        console.warn('Online update failed, queueing for later:', error);
-      }
+      await addToOfflineQueue(operation);
     }
 
-    // Queue for later sync
-    const operation: PendingOperation = {
-      id: `update_${itemId}_${Date.now()}`,
-      type: 'update',
-      itemType: formData.type === 'transaction' ? 'transaction' : 'incomes',
-      itemId: itemId,
-      data: formData,
-      url: `${ROOT_URL}/node/${itemId}?_format=json`,
-      method: 'PATCH',
-      timestamp: Date.now(),
-    };
+    if (isOnline()) {
+      scheduleBackgroundSync(token);
+    }
 
-    await addToOfflineQueue(operation);
     onSuccess(updatedItem);
   } catch (error) {
     console.error('Error updating item offline:', error);
@@ -197,90 +168,35 @@ export async function deleteItemOffline(
     // Delete from IndexedDB immediately
     await deleteItemFromDB(itemId);
 
-    if (isOnline()) {
-      // Try to sync immediately if online
-      try {
-        const fetchOptions: RequestInit = {
-          method: 'DELETE',
-          headers: new Headers({
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            'JWT-Authorization': `Bearer ${token}`,
-          }),
-        };
+    const existingOperations = await getQueueOperationsByItemId(itemId);
+    const hadPendingAdd = existingOperations.some((op) => op.type === 'add');
 
-        const response = await fetch(
-          `${ROOT_URL}/node/${itemId}?_format=json`,
-          fetchOptions
-        );
+    if (existingOperations.length) {
+      await removeQueueOperationsByItemId(itemId);
+    }
 
-        if (response.ok) {
-          onSuccess();
-          return;
-        }
-      } catch (error) {
-        console.warn('Online delete failed, queueing for later:', error);
+    if (!hadPendingAdd && !itemId.startsWith('temp_')) {
+      // Queue delete only if item exists on server
+      const operation: PendingOperation = {
+        id: `delete_${itemId}_${Date.now()}`,
+        type: 'delete',
+        itemType,
+        itemId: itemId,
+        url: `${ROOT_URL}/node/${itemId}?_format=json`,
+        method: 'DELETE',
+        timestamp: Date.now(),
+      };
+
+      await addToOfflineQueue(operation);
+      if (isOnline()) {
+        scheduleBackgroundSync(token);
       }
     }
 
-    // Queue for later sync
-    const operation: PendingOperation = {
-      id: `delete_${itemId}_${Date.now()}`,
-      type: 'delete',
-      itemType,
-      itemId: itemId,
-      url: `${ROOT_URL}/node/${itemId}?_format=json`,
-      method: 'DELETE',
-      timestamp: Date.now(),
-    };
-
-    await addToOfflineQueue(operation);
     onSuccess();
   } catch (error) {
     console.error('Error deleting item offline:', error);
     onError('Failed to delete item. Please try again.');
   }
-}
-
-// Convert NodeData from API to TransactionOrIncomeItem format
-function convertNodeDataToItem(nodeData: any): TransactionOrIncomeItem {
-  const nid = nodeData.nid?.[0]?.value?.toString() || '';
-  const type = nodeData.type?.[0]?.value || '';
-  const amount = nodeData.field_amount?.[0]?.value || '0';
-  const date = nodeData.field_date?.[0]?.value || '';
-  const description = nodeData.field_description?.[0]?.value || '';
-  const category = nodeData.field_category?.[0]?.value || '';
-  const created = parseInt(nodeData.created?.[0]?.value || '0', 10);
-  
-  // Extract last updated timestamp - prefer 'upd' (API response), then 'updated', fallback to 'changed' or 'revision_timestamp'
-  let updated: number | undefined;
-  if (nodeData.upd !== undefined) {
-    // API response uses 'upd' for smaller payload
-    updated = typeof nodeData.upd === 'number' ? nodeData.upd : parseInt(nodeData.upd, 10);
-  } else if (nodeData.updated !== undefined) {
-    updated = typeof nodeData.updated === 'number' ? nodeData.updated : parseInt(nodeData.updated, 10);
-  } else if (nodeData.updated?.[0]?.value) {
-    // NodeData format with nested array
-    updated = parseInt(nodeData.updated[0].value, 10);
-  } else if (nodeData.changed?.[0]?.value) {
-    updated = parseInt(nodeData.changed[0].value, 10);
-  } else if (nodeData.revision_timestamp?.[0]?.value) {
-    updated = parseInt(nodeData.revision_timestamp[0].value, 10);
-  }
-  // If no updated timestamp found, use created timestamp as fallback
-  if (!updated) {
-    updated = created;
-  }
-
-  return {
-    id: nid,
-    type,
-    sum: amount,
-    dt: date,
-    dsc: description,
-    cat: category,
-    cr: created,
-    updated,
-  };
 }
 

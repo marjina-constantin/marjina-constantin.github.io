@@ -12,50 +12,108 @@ import {
   updateSyncMetadata,
   getSyncMetadata,
   PendingOperation,
+  setItemFailed,
 } from './indexedDB';
 import { TransactionOrIncomeItem } from '../type/types';
+import { processData, dispatchProcessedData } from './dataProcessing';
+import { notifyItemSynced, notifySyncFinish, notifySyncStart } from './syncCallbacks';
 
 const ROOT_URL = 'https://dev-expenses-api.pantheonsite.io';
+const SYNC_YIELD_BATCH = 5;
 
-// Convert NodeData from API to TransactionOrIncomeItem format
+let syncQueue: Promise<void> = Promise.resolve();
+let backgroundSyncHandle: number | null = null;
+let backgroundSyncToken: string | null = null;
+
+const yieldToMainThread = () =>
+  new Promise<void>((resolve) => {
+    setTimeout(resolve, 0);
+  });
+
+const parseTimestamp = (value: any): number | undefined => {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+  if (typeof value === 'number') {
+    return value > 1e12 ? value : value * 1000;
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return undefined;
+    }
+    const numeric = Number(trimmed);
+    if (!Number.isNaN(numeric)) {
+      return numeric > 1e12 ? numeric : numeric * 1000;
+    }
+    const parsed = Date.parse(trimmed);
+    if (!Number.isNaN(parsed)) {
+      return parsed;
+    }
+  }
+  return undefined;
+};
+
+// Convert API payload (list or single node) to TransactionOrIncomeItem
 function convertNodeDataToItem(nodeData: any): TransactionOrIncomeItem {
-  const nid = nodeData.nid?.[0]?.value?.toString() || '';
-  const type = nodeData.type?.[0]?.value || '';
-  const amount = nodeData.field_amount?.[0]?.value || '0';
-  const date = nodeData.field_date?.[0]?.value || '';
-  const description = nodeData.field_description?.[0]?.value || '';
-  const category = nodeData.field_category?.[0]?.value || '';
-  const created = parseInt(nodeData.created?.[0]?.value || '0', 10);
-  
-  // Extract last updated timestamp - prefer 'upd' (API response), then 'updated', fallback to 'changed' or 'revision_timestamp'
-  let updated: number | undefined;
-  if (nodeData.upd !== undefined) {
-    // API response uses 'upd' for smaller payload
-    updated = typeof nodeData.upd === 'number' ? nodeData.upd : parseInt(nodeData.upd, 10);
-  } else if (nodeData.updated !== undefined) {
-    updated = typeof nodeData.updated === 'number' ? nodeData.updated : parseInt(nodeData.updated, 10);
-  } else if (nodeData.updated?.[0]?.value) {
-    // NodeData format with nested array
-    updated = parseInt(nodeData.updated[0].value, 10);
-  } else if (nodeData.changed?.[0]?.value) {
-    updated = parseInt(nodeData.changed[0].value, 10);
-  } else if (nodeData.revision_timestamp?.[0]?.value) {
-    updated = parseInt(nodeData.revision_timestamp[0].value, 10);
+
+  // Determine ID (handles new simplified format and legacy node payload)
+  const id =
+    (nodeData.id !== undefined ? nodeData.id : undefined)?.toString() ||
+    nodeData.nid?.[0]?.value?.toString() ||
+    '';
+
+  // Determine type
+  let type = '';
+  if (typeof nodeData.type === 'string') {
+    type = nodeData.type;
+  } else if (Array.isArray(nodeData.type) && nodeData.type.length > 0) {
+    type = nodeData.type[0]?.value || nodeData.type[0]?.target_id || '';
   }
-  // If no updated timestamp found, use created timestamp as fallback
-  if (!updated) {
-    updated = created;
-  }
+
+  const amountValue =
+    nodeData.sum ??
+    nodeData.field_amount?.[0]?.value ??
+    nodeData.field_amount?.[0]?.target_id ??
+    '0';
+  const sum = amountValue?.toString() || '0';
+
+  const date = nodeData.dt || nodeData.field_date?.[0]?.value || '';
+  const description =
+    nodeData.dsc || nodeData.field_description?.[0]?.value || '';
+
+  const categoryEntry = nodeData.field_category?.[0];
+  const category =
+    (nodeData.cat !== undefined ? nodeData.cat : undefined)?.toString() ||
+    (categoryEntry?.target_id ?? categoryEntry?.value ?? '').toString();
+
+  const created =
+    parseTimestamp(
+      nodeData.cr ??
+        nodeData.created?.[0]?.value ??
+        nodeData.created ??
+        undefined
+    ) ?? Date.now();
+
+  const updated =
+    parseTimestamp(
+      nodeData.upd ??
+        nodeData.updated ??
+        nodeData.updated?.[0]?.value ??
+        nodeData.changed?.[0]?.value ??
+        nodeData.revision_timestamp?.[0]?.value
+    ) ?? created;
 
   return {
-    id: nid,
+    id,
     type,
-    sum: amount,
+    sum,
     dt: date,
     dsc: description,
     cat: category,
     cr: created,
     updated,
+    failed: !!nodeData.failed,
   };
 }
 
@@ -130,6 +188,10 @@ async function syncOperation(
     const response = await fetch(operation.url, fetchOptions);
 
     if (!response.ok) {
+      // Treat missing remote resource for delete as success (already removed)
+      if (operation.type === 'delete' && response.status === 404) {
+        return { success: true };
+      }
       // Handle token expiration
       if (response.status === 403) {
         throw new Error('Authentication failed');
@@ -137,7 +199,14 @@ async function syncOperation(
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    let data: any = null;
+    if (response.status !== 204) {
+      try {
+        data = await response.json();
+      } catch (error) {
+        console.warn('No JSON payload returned for operation', operation.id, error);
+      }
+    }
     return { success: true, data };
   } catch (error) {
     console.error('Error syncing operation:', error);
@@ -146,10 +215,20 @@ async function syncOperation(
 }
 
 // Sync all pending operations
-export async function syncPendingOperations(
+export function syncPendingOperations(
   token: string,
   onItemSynced?: (itemId: string) => void
 ): Promise<void> {
+  syncQueue = syncQueue.catch(() => {}).then(() =>
+    processPendingOperations(token, onItemSynced)
+  );
+  return syncQueue;
+}
+
+async function processPendingOperations(
+  token: string,
+  onItemSynced?: (itemId: string) => void
+) {
   if (!isOnline()) {
     console.log('Offline - skipping sync');
     return;
@@ -160,136 +239,161 @@ export async function syncPendingOperations(
     return;
   }
 
+  notifySyncStart();
   console.log(`Syncing ${queue.length} pending operations...`);
 
-  // Sort by timestamp to process in order
-  const sortedQueue = [...queue].sort((a, b) => a.timestamp - b.timestamp);
+  let processedAny = false;
+  let encounteredError = false;
 
-  for (const operation of sortedQueue) {
-    try {
-      // Pre-check for update operations: compare with server version
-      if (operation.type === 'update' && operation.itemId) {
-        const localItem = await getItemFromDB(operation.itemId);
-        if (!localItem) {
-          console.warn(`Local item ${operation.itemId} not found, skipping update`);
-          await removeFromOfflineQueue(operation.id);
-          continue;
-        }
+  try {
+    // Sort by timestamp to process in order
+    const sortedQueue = [...queue].sort((a, b) => a.timestamp - b.timestamp);
 
-        // Fetch current server version
-        const serverItem = await fetchServerItem(operation.itemId, token);
-        
-        if (serverItem) {
-          // Compare timestamps: use updated field, fallback to created
-          const localUpdated = localItem.updated || localItem.cr || 0;
-          const serverUpdated = serverItem.updated || serverItem.cr || 0;
+    let processedCount = 0;
 
-          if (serverUpdated > localUpdated) {
-            // Server version is newer - use server version and skip local update
-            console.log(
-              `Server version is newer for item ${operation.itemId} ` +
-              `(server: ${serverUpdated}, local: ${localUpdated}). ` +
-              `Using server version and skipping local update.`
-            );
-            
-            // Update local with server version
-            await updateItemInDB(serverItem);
-            
-            // Notify that item was synced (with server version)
-            if (onItemSynced && serverItem.id) {
-              onItemSynced(serverItem.id);
-            }
-            
-            // Remove from queue (we've resolved the conflict by using server version)
+    for (const operation of sortedQueue) {
+      processedCount += 1;
+
+      try {
+        // Pre-check for update operations: compare with server version
+        if (operation.type === 'update' && operation.itemId) {
+          const localItem = await getItemFromDB(operation.itemId);
+          if (!localItem) {
+            console.warn(`Local item ${operation.itemId} not found, skipping update`);
             await removeFromOfflineQueue(operation.id);
+            processedAny = true;
             continue;
           }
-          // If local is newer or equal, proceed with the update
-        } else {
-          // Item doesn't exist on server (might have been deleted)
-          // Check if we should still try to update or skip
-          console.warn(`Item ${operation.itemId} not found on server, skipping update`);
-          await removeFromOfflineQueue(operation.id);
-          continue;
-        }
-      }
 
-      // Proceed with the sync operation
-      const result = await syncOperation(operation, token);
+          // Fetch current server version
+          const serverItem = await fetchServerItem(operation.itemId, token);
 
-      if (result.success) {
-        // Handle successful sync based on operation type
-        if (operation.type === 'add' && result.data) {
-          // Update local item with server ID if it was a temp ID
-          if (operation.itemId && operation.itemId.startsWith('temp_')) {
-            const nodeData = result.data;
-            const newItem = convertNodeDataToItem(nodeData);
-            
-            // Remove old temp item and add new one with server ID
-            await deleteItemFromDB(operation.itemId);
-            await addItemToDB(newItem);
-            
-            // Notify that item was synced
-            if (onItemSynced && newItem.id) {
-              onItemSynced(newItem.id);
+          if (serverItem) {
+            // Compare timestamps: use updated field, fallback to created
+            const localUpdated = localItem.updated || localItem.cr || 0;
+            const serverUpdated = serverItem.updated || serverItem.cr || 0;
+
+            if (serverUpdated > localUpdated) {
+              console.log(
+                `Server version is newer for item ${operation.itemId} ` +
+                  `(server: ${serverUpdated}, local: ${localUpdated}). ` +
+                  `Using server version and skipping local update.`
+              );
+
+              await updateItemInDB(serverItem);
+
+              if (serverItem.id) {
+                onItemSynced?.(serverItem.id);
+                notifyItemSynced(serverItem.id);
+              }
+
+              await removeFromOfflineQueue(operation.id);
+              processedAny = true;
+              continue;
             }
-          } else if (onItemSynced && operation.itemId) {
-            onItemSynced(operation.itemId);
+            // If local is newer or equal, proceed with the update
+          } else {
+            console.warn(
+              `Item ${operation.itemId} not found on server, deleting locally to stay in sync`
+            );
+            await deleteItemFromDB(operation.itemId);
+            await removeFromOfflineQueue(operation.id);
+            processedAny = true;
+            continue;
           }
-        } else if (operation.type === 'update' && result.data) {
-          // Update local item with server response
-          const nodeData = result.data;
-          const updatedItem = convertNodeDataToItem(nodeData);
-          await updateItemInDB(updatedItem);
-          
-          // Notify that item was synced
-          if (onItemSynced && updatedItem.id) {
-            onItemSynced(updatedItem.id);
-          }
-        } else if (operation.type === 'delete') {
-          // Item already deleted locally, just remove from queue
-          // No need to notify for deletes
         }
 
-        // Remove from queue on success
-        await removeFromOfflineQueue(operation.id);
-      } else {
-        // Increment retry count
-        const updatedOperation = {
-          ...operation,
-          lastAttempt: Date.now(),
-          retryCount: (operation.retryCount || 0) + 1,
-        };
+        // Proceed with the sync operation
+        const result = await syncOperation(operation, token);
 
-        // Remove after too many retries (e.g., 5)
-        if (updatedOperation.retryCount >= 5) {
-          console.error(`Operation ${operation.id} failed after 5 retries, removing from queue`);
+        if (result.success) {
+          processedAny = true;
+
+          if (operation.type === 'add' && result.data) {
+            if (operation.itemId && operation.itemId.startsWith('temp_')) {
+              const nodeData = result.data;
+              const newItem = convertNodeDataToItem(nodeData);
+
+              await deleteItemFromDB(operation.itemId);
+              await addItemToDB(newItem);
+
+              if (newItem.id) {
+                onItemSynced?.(newItem.id);
+                notifyItemSynced(newItem.id);
+              }
+            } else if (operation.itemId) {
+              onItemSynced?.(operation.itemId);
+              notifyItemSynced(operation.itemId);
+            }
+          } else if (operation.type === 'update' && result.data) {
+            const nodeData = result.data;
+            const updatedItem = convertNodeDataToItem(nodeData);
+            await updateItemInDB(updatedItem);
+
+            if (updatedItem.id) {
+              onItemSynced?.(updatedItem.id);
+              notifyItemSynced(updatedItem.id);
+            }
+          }
+
           await removeFromOfflineQueue(operation.id);
         } else {
-          await updateQueueOperation(updatedOperation);
-        }
-      }
-    } catch (error) {
-      console.error(`Error processing operation ${operation.id}:`, error);
-      // Continue with next operation
-    }
-  }
+          encounteredError = true;
+          const updatedOperation = {
+            ...operation,
+            lastAttempt: Date.now(),
+            retryCount: (operation.retryCount || 0) + 1,
+          };
 
-  // Update sync metadata
-  await updateSyncMetadata({ lastSyncTime: Date.now() });
+        if (updatedOperation.retryCount >= 50) {
+            console.error(
+              `Operation ${operation.id} failed after 50 retries, removing from queue`
+            );
+            if (
+              operation.itemId &&
+              (operation.type === 'add' || operation.type === 'update')
+            ) {
+              await setItemFailed(operation.itemId, true);
+            }
+            await removeFromOfflineQueue(operation.id);
+          } else {
+            await updateQueueOperation(updatedOperation);
+          }
+        }
+      } catch (error) {
+        encounteredError = true;
+        console.error(`Error processing operation ${operation.id}:`, error);
+      }
+
+      if (processedCount % SYNC_YIELD_BATCH === 0) {
+        await yieldToMainThread();
+      }
+    }
+
+    await updateSyncMetadata({ lastSyncTime: Date.now() });
+  } catch (error) {
+    encounteredError = true;
+    throw error;
+  } finally {
+    notifySyncFinish(processedAny && !encounteredError);
+  }
 }
 
 // Sync data from server and resolve conflicts
 export async function syncWithServer(
   token: string,
   dataDispatch: any,
-  onItemSynced?: (itemId: string) => void
+  category: string = '',
+  textFilter: string = ''
 ): Promise<TransactionOrIncomeItem[]> {
   if (!isOnline()) {
     // Return cached data if offline
     const cachedData = await getExpensesFromDB();
     return cachedData || [];
   }
+
+  notifySyncStart();
+  let success = false;
 
   try {
     const fetchOptions = {
@@ -320,14 +424,16 @@ export async function syncWithServer(
     const convertedData: TransactionOrIncomeItem[] = serverData.map((item: any) => {
       // If already in TransactionOrIncomeItem format (has 'id' and 'dt' directly)
       if (item.id && item.dt && !item.nid) {
-        // API response uses 'upd' for smaller payload, convert to 'updated' for local storage
-        const updated = item.upd !== undefined 
-          ? (typeof item.upd === 'number' ? item.upd : parseInt(item.upd, 10))
-          : (item.updated || item.cr || Date.now());
-        
+        const created =
+          parseTimestamp(item.cr ?? item.created) ?? Date.now();
+        const updated =
+          parseTimestamp(item.upd ?? item.updated) ?? created;
+
         return {
           ...item,
-          updated, // Store as 'updated' locally, but read from 'upd' in API response
+          cr: created,
+          updated,
+          failed: !!item.failed,
         };
       }
       // Otherwise, convert from NodeData format
@@ -342,18 +448,33 @@ export async function syncWithServer(
     // Save merged data
     await saveExpensesToDB(mergedData);
 
+    if (dataDispatch) {
+      processData(mergedData, (processed) => {
+        dispatchProcessedData(
+          mergedData,
+          processed,
+          dataDispatch,
+          category,
+          textFilter
+        );
+      });
+    }
+
     // Update sync metadata
     await updateSyncMetadata({
       lastSyncTime: Date.now(),
       lastUpdated: Date.now(),
     });
 
+    success = true;
     return mergedData;
   } catch (error) {
     console.error('Error syncing with server:', error);
     // Return cached data on error
     const cachedData = await getExpensesFromDB();
     return cachedData || [];
+  } finally {
+    notifySyncFinish(success);
   }
 }
 
@@ -366,10 +487,13 @@ async function resolveConflicts(
   const serverMap = new Map(serverData.map(item => [item.id, item]));
   const merged: TransactionOrIncomeItem[] = [];
 
-  // Get pending delete operations
+  // Inspect pending queue to understand local-only items
   const queue = await getOfflineQueue();
   const pendingDeletes = new Set(
     queue.filter(op => op.type === 'delete').map(op => op.itemId)
+  );
+  const pendingAdds = new Set(
+    queue.filter(op => op.type === 'add').map(op => op.itemId)
   );
 
   // Process all items from both sources
@@ -383,8 +507,11 @@ async function resolveConflicts(
       // Only on server - add it
       if (serverItem) merged.push(serverItem);
     } else if (!serverItem) {
-      // Only local - check if it's pending delete
-      if (!pendingDeletes.has(id)) {
+      const isTempId = id?.startsWith('temp_');
+      const hasPendingAdd = pendingAdds.has(id);
+
+      // Only keep local-only entries if they're still queued for creation
+      if ((isTempId || hasPendingAdd) && !pendingDeletes.has(id)) {
         merged.push(localItem);
       }
     } else {
@@ -401,6 +528,40 @@ async function resolveConflicts(
   }
 
   return merged;
+}
+
+export function scheduleBackgroundSync(token: string) {
+  if (!isOnline()) {
+    return;
+  }
+
+  backgroundSyncToken = token;
+
+  if (backgroundSyncHandle !== null) {
+    return;
+  }
+
+  const execute = () => {
+    backgroundSyncHandle = null;
+    if (!backgroundSyncToken) {
+      return;
+    }
+
+    syncPendingOperations(backgroundSyncToken).catch((error) => {
+      console.error('Background sync failed', error);
+    });
+  };
+
+  if (typeof window !== 'undefined') {
+    const idle = (window as any).requestIdleCallback;
+    if (typeof idle === 'function') {
+      backgroundSyncHandle = idle(execute);
+      return;
+    }
+    backgroundSyncHandle = window.setTimeout(execute, 50);
+  } else {
+    setTimeout(execute, 50);
+  }
 }
 
 // Initialize sync on app start
@@ -427,23 +588,29 @@ export async function initializeSync(token: string, dataDispatch: any): Promise<
 }
 
 // Listen for online/offline events and trigger sync
+interface FilterSnapshot {
+  category?: string;
+  textFilter?: string;
+}
+
 export function setupNetworkListener(
   token: string,
   dataDispatch: any,
-  onSyncStart?: () => void,
-  onSyncFinish?: (success: boolean) => void,
-  onItemSynced?: (itemId: string) => void
+  getFilters?: () => FilterSnapshot
 ): () => void {
   const handleOnline = async () => {
     console.log('Network online - starting sync...');
-    if (onSyncStart) onSyncStart();
     try {
-      await syncPendingOperations(token, onItemSynced);
-      await syncWithServer(token, dataDispatch, onItemSynced);
-      if (onSyncFinish) onSyncFinish(true);
+      await syncPendingOperations(token);
+      const filters = getFilters?.() || {};
+      await syncWithServer(
+        token,
+        dataDispatch,
+        filters.category || '',
+        filters.textFilter || ''
+      );
     } catch (error) {
       console.error('Error syncing after coming online:', error);
-      if (onSyncFinish) onSyncFinish(false);
     }
   };
 

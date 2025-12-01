@@ -1,39 +1,55 @@
 import React from 'react';
-import { WifiOff, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { WifiOff, RefreshCw, CheckCircle2, Clock3, AlertTriangle } from 'lucide-react';
 import { useSyncStatus } from '../context/syncStatus';
+import { useData } from '../context';
+import { DataState } from '../type/types';
 import './SyncStatusIndicator.scss';
 
 const SyncStatusIndicator: React.FC = () => {
-  const { isOnline, isSyncing, syncSuccess } = useSyncStatus();
+  const { isOnline, isSyncing, syncSuccess, pendingCount } = useSyncStatus();
+  const { data } = useData() as DataState;
+  const failedCount =
+    data?.raw?.filter((item) => item.failed).length || 0;
+
+  let icon: React.ReactNode;
+  let label = '';
+  let modifier = '';
 
   if (!isOnline) {
-    return (
-      <div className="sync-status-indicator sync-status-indicator--offline">
-        <WifiOff size={16} />
-        <span>Offline</span>
-      </div>
-    );
+    icon = <WifiOff size={16} />;
+    label = pendingCount > 0 ? `${pendingCount} pending • Offline` : 'Offline';
+    modifier = 'offline';
+  } else if (failedCount > 0) {
+    icon = <AlertTriangle size={16} />;
+    label = `Failed to sync ${failedCount} item${failedCount === 1 ? '' : 's'}`;
+    modifier = 'error';
+  } else if (isSyncing) {
+    icon = <RefreshCw size={16} className="sync-status-indicator__icon--spinning" />;
+    label =
+      pendingCount > 0
+        ? `Syncing ${pendingCount} item${pendingCount === 1 ? '' : 's'}`
+        : 'Syncing...';
+    modifier = 'syncing';
+  } else if (pendingCount > 0) {
+    icon = <Clock3 size={16} />;
+    label = `${pendingCount} item${pendingCount === 1 ? '' : 's'} pending`;
+    modifier = 'pending';
+  } else if (syncSuccess) {
+    icon = <CheckCircle2 size={16} />;
+    label = 'Synced';
+    modifier = 'success';
+  } else {
+    icon = <CheckCircle2 size={16} />;
+    label = 'All data synced';
+    modifier = 'idle';
   }
 
-  if (isSyncing) {
-    return (
-      <div className="sync-status-indicator sync-status-indicator--syncing">
-        <RefreshCw size={16} className="sync-status-indicator__icon--spinning" />
-        <span>Syncing...</span>
-      </div>
-    );
-  }
-
-  if (syncSuccess) {
-    return (
-      <div className="sync-status-indicator sync-status-indicator--success">
-        <CheckCircle2 size={16} />
-        <span>Synced</span>
-      </div>
-    );
-  }
-
-  return null;
+  return (
+    <div className={`sync-status-indicator sync-status-indicator--${modifier}`}>
+      {icon}
+      <span>{label}</span>
+    </div>
+  );
 };
 
 export default SyncStatusIndicator;

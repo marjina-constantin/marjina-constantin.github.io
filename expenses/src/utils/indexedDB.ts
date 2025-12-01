@@ -1,5 +1,6 @@
 // IndexedDB utility for caching expense data
 import { TransactionOrIncomeItem } from '../type/types';
+import { notifyQueueUpdated } from './syncCallbacks';
 
 // Sort function to match TransactionsTable sorting (by date desc, then created desc)
 const sortExpenses = (data: TransactionOrIncomeItem[]): TransactionOrIncomeItem[] => {
@@ -191,6 +192,34 @@ export async function updateItemInDB(item: TransactionOrIncomeItem): Promise<voi
   }
 }
 
+export async function setItemFailed(itemId: string, failed: boolean): Promise<void> {
+  if (!itemId) return;
+  try {
+    const db = await openDB();
+    const transaction = db.transaction(STORE_NAME, 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+
+    await new Promise<void>((resolve, reject) => {
+      const getRequest = store.get(itemId);
+      getRequest.onsuccess = () => {
+        const existing = getRequest.result;
+        if (!existing) {
+          resolve();
+          return;
+        }
+        existing.failed = failed;
+        const putRequest = store.put(existing);
+        putRequest.onsuccess = () => resolve();
+        putRequest.onerror = () => reject(putRequest.error);
+      };
+      getRequest.onerror = () => reject(getRequest.error);
+      transaction.oncomplete = () => db.close();
+    });
+  } catch (error) {
+    console.error('Error updating failed flag:', error);
+  }
+}
+
 export async function deleteItemFromDB(itemId: string): Promise<void> {
   try {
     const db = await openDB();
@@ -247,7 +276,10 @@ export async function addToOfflineQueue(operation: PendingOperation): Promise<vo
       });
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
-      transaction.oncomplete = () => db.close();
+      transaction.oncomplete = () => {
+        db.close();
+        notifyQueueUpdated();
+      };
     });
   } catch (error) {
     console.error('Error adding to offline queue:', error);
@@ -288,7 +320,10 @@ export async function removeFromOfflineQueue(operationId: string): Promise<void>
       const request = store.delete(operationId);
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
-      transaction.oncomplete = () => db.close();
+      transaction.oncomplete = () => {
+        db.close();
+        notifyQueueUpdated();
+      };
     });
   } catch (error) {
     console.error('Error removing from offline queue:', error);
@@ -306,10 +341,74 @@ export async function updateQueueOperation(operation: PendingOperation): Promise
       const request = store.put(operation);
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
-      transaction.oncomplete = () => db.close();
+      transaction.oncomplete = () => {
+        db.close();
+        notifyQueueUpdated();
+      };
     });
   } catch (error) {
     console.error('Error updating queue operation:', error);
+    throw error;
+  }
+}
+
+export async function getQueueOperationsByItemId(itemId: string): Promise<PendingOperation[]> {
+  if (!itemId) {
+    return [];
+  }
+  try {
+    const db = await openDB();
+    const transaction = db.transaction(QUEUE_STORE_NAME, 'readonly');
+    const store = transaction.objectStore(QUEUE_STORE_NAME);
+    const index = store.index('itemId');
+
+    return await new Promise((resolve, reject) => {
+      const request = index.getAll(itemId);
+      request.onsuccess = () => {
+        transaction.oncomplete = () => db.close();
+        resolve(request.result || []);
+      };
+      request.onerror = () => {
+        transaction.oncomplete = () => db.close();
+        reject(request.error);
+      };
+    });
+  } catch (error) {
+    console.error('Error getting operations by itemId:', error);
+    return [];
+  }
+}
+
+export async function removeQueueOperationsByItemId(itemId: string): Promise<void> {
+  if (!itemId) {
+    return;
+  }
+  try {
+    const db = await openDB();
+    const transaction = db.transaction(QUEUE_STORE_NAME, 'readwrite');
+    const store = transaction.objectStore(QUEUE_STORE_NAME);
+    const index = store.index('itemId');
+
+    await new Promise<void>((resolve, reject) => {
+      const request = index.openCursor(IDBKeyRange.only(itemId));
+      request.onsuccess = () => {
+        const cursor = request.result;
+        if (cursor) {
+          cursor.delete();
+          cursor.continue();
+        } else {
+          resolve();
+        }
+      };
+      request.onerror = () => reject(request.error);
+    });
+
+    transaction.oncomplete = () => {
+      db.close();
+      notifyQueueUpdated();
+    };
+  } catch (error) {
+    console.error('Error removing queue operations by itemId:', error);
     throw error;
   }
 }

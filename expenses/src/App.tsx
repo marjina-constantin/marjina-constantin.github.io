@@ -1,8 +1,8 @@
 import './App.scss';
-import { AuthProvider, NotificationProvider, SyncStatusProvider, useAuthState, useData, useSyncStatus } from './context';
+import { AuthProvider, NotificationProvider, SyncStatusProvider, useAuthState, useData } from './context';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import AppRoute from './components/AppRoute';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import routes from './config/routes';
 import Navbar from './components/Navbar';
 import SyncStatusIndicator from './components/SyncStatusIndicator';
@@ -12,22 +12,26 @@ import { AuthState } from './type/types';
 // Component to setup sync when user is logged in
 const SyncSetup: React.FC = () => {
   const { token } = useAuthState() as AuthState;
-  const { dataDispatch } = useData();
-  const { startSyncing, finishSyncing, markItemSynced } = useSyncStatus();
+  const { data, dataDispatch } = useData();
+  const filtersRef = useRef({
+    category: data?.category || '',
+    textFilter: data?.textFilter || '',
+  });
+
+  useEffect(() => {
+    filtersRef.current = {
+      category: (data && data.category) || '',
+      textFilter: (data && data.textFilter) || '',
+    };
+  }, [data?.category, data?.textFilter]);
 
   useEffect(() => {
     if (token) {
       // Setup network listener for auto-sync when coming online
-      const cleanup = setupNetworkListener(
-        token,
-        dataDispatch,
-        startSyncing,
-        finishSyncing,
-        markItemSynced
-      );
+      const cleanup = setupNetworkListener(token, dataDispatch, () => filtersRef.current);
       return cleanup;
     }
-  }, [token, dataDispatch, startSyncing, finishSyncing, markItemSynced]);
+  }, [token, dataDispatch]);
 
   return null;
 };

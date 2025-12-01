@@ -4,7 +4,6 @@ import { formatNumber } from '../utils/utils';
 import { TransactionOrIncomeItem } from '../type/types';
 import { monthNames } from '../utils/constants';
 import useSwipeActions from '../hooks/useSwipeActions';
-import { useSyncStatus } from '../context';
 import ItemSyncIndicator from './ItemSyncIndicator';
 import './TransactionList.scss';
 
@@ -29,7 +28,6 @@ const IncomeList: React.FC<IncomeListProps> = ({
   const listRef = useRef<HTMLDivElement>(null);
   const [sortField, setSortField] = useState<SortField>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-  const { syncedItems } = useSyncStatus();
 
   const { handleTouchStart, handleTouchMove, handleTouchEnd, deleteVisible, editVisible, swipedItemId } = useSwipeActions();
 
@@ -151,7 +149,7 @@ const IncomeList: React.FC<IncomeListProps> = ({
               <div className="transaction-content">
                 <div className="transaction-name">
                   {transaction.dsc || 'No description'}
-                  <ItemSyncIndicator show={syncedItems.has(transaction.id)} />
+                  <ItemSyncIndicator itemId={transaction.id} failed={transaction.failed} />
                 </div>
               </div>
               {/* Price */}

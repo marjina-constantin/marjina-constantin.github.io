@@ -43,11 +43,29 @@
     }
   }
 
+  &--pending {
+    background: rgba(251, 191, 36, 0.15);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    color: #fcd34d;
+  }
+
   &--success {
     background: rgba(34, 197, 94, 0.15);
     border: 1px solid rgba(34, 197, 94, 0.3);
     color: #86efac;
     animation: slideIn 0.3s ease-out, slideOut 0.3s ease-in 2.7s forwards;
+  }
+
+  &--idle {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    color: #bbf7d0;
+  }
+
+  &--error {
+    background: rgba(248, 113, 113, 0.15);
+    border: 1px solid rgba(248, 113, 113, 0.4);
+    color: #fecaca;
   }
 
   @keyframes spin {
