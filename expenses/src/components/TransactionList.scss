@@ -237,18 +237,25 @@
       flex-shrink: 0;
 
       .date-day {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         font-weight: 700;
         color: #ffffff;
         line-height: 1;
       }
 
       .date-month {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 600;
         color: rgba(255, 255, 255, 0.5);
         margin-top: 0.25rem;
         letter-spacing: 0.5px;
+      }
+
+      .date-year {
+        font-size: 0.65rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.4);
+        margin-top: 0.125rem;
       }
     }
 
@@ -363,6 +370,10 @@
 
         .date-month {
           font-size: 0.7rem;
+        }
+
+        .date-year {
+          font-size: 0.6rem;
         }
       }
 

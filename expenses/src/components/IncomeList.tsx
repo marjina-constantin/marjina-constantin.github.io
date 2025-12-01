@@ -112,6 +112,7 @@ const IncomeList: React.FC<IncomeListProps> = ({
         const date = new Date(transaction.dt);
         const day = date.getDate();
         const month = monthNames[date.getMonth()].substring(0, 3).toUpperCase();
+        const year = date.getFullYear();
         const isThisItemSwiped = swipedItemId === transaction.id;
 
         return (
@@ -144,6 +145,7 @@ const IncomeList: React.FC<IncomeListProps> = ({
               <div className="transaction-date-box">
                 <div className="date-day">{day}</div>
                 <div className="date-month">{month}</div>
+                <div className="date-year">{year}</div>
               </div>
               {/* Content */}
               <div className="transaction-content">
