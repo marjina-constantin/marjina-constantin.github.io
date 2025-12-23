@@ -11,21 +11,19 @@ import {
   isIndexedDBAvailable,
 } from './indexedDB';
 import { processData, dispatchProcessedData } from './dataProcessing';
+import { checkAndHandleAuthError } from './authErrorHandler';
 
-const handleErrors = (
+const handleErrors = async (
   response: Response,
   options: RequestInit,
   dataDispatch: any,
   dispatch: any
 ) => {
   if (!response.ok) {
-    fetch('https://dev-expenses-api.pantheonsite.io/jwt/token', options).then(
-      (response) => {
-        if (response.status === 403) {
-          logout(dispatch, dataDispatch);
-        }
-      }
-    );
+    // Use the centralized auth error handler
+    if (response.status === 403) {
+      await checkAndHandleAuthError(response, options);
+    }
     return response.statusText;
   }
   return response.json();
@@ -64,7 +62,7 @@ export const fetchRequest = (
   callback: any
 ) => {
   fetch(url, options)
-    .then((response) => handleErrors(response, options, dataDispatch, dispatch))
+    .then(async (response) => await handleErrors(response, options, dataDispatch, dispatch))
     .then((response) => callback(response))
     .catch((error) => console.log(error));
 };
@@ -120,7 +118,7 @@ export const fetchData = async (
   }
 
   // Sync with server (handles online/offline automatically)
-  const { syncWithServer, syncPendingOperations } = await import('./syncService');
+  const { syncWithServer, syncPendingOperations, AuthenticationError } = await import('./syncService');
   
   try {
     // First sync pending operations (callbacks handled in App.tsx SyncSetup)
@@ -134,8 +132,15 @@ export const fetchData = async (
       textFilter
     );
   } catch (error) {
+    // If it's an authentication error, the user has already been logged out
+    // Don't try to fallback to direct API call
+    if (error instanceof AuthenticationError) {
+      console.warn('Authentication failed during sync, user logged out');
+      return;
+    }
+    
     console.error('Error during sync:', error);
-    // Fallback to direct API call if sync fails
+    // Fallback to direct API call if sync fails (but not for auth errors)
     const fetchOptions = {
       method: 'GET',
       headers: new Headers({

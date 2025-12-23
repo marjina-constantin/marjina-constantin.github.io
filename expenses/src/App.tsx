@@ -1,5 +1,5 @@
 import './App.scss';
-import { AuthProvider, NotificationProvider, SyncStatusProvider, useAuthState, useData } from './context';
+import { AuthProvider, NotificationProvider, SyncStatusProvider, useAuthState, useData, useAuthDispatch } from './context';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import AppRoute from './components/AppRoute';
 import React, { useEffect, useRef } from 'react';
@@ -8,15 +8,22 @@ import Navbar from './components/Navbar';
 import SyncStatusIndicator from './components/SyncStatusIndicator';
 import { setupNetworkListener } from './utils/syncService';
 import { AuthState } from './type/types';
+import { initializeAuthErrorHandler } from './utils/authErrorHandler';
 
 // Component to setup sync when user is logged in
 const SyncSetup: React.FC = () => {
   const { token } = useAuthState() as AuthState;
   const { data, dataDispatch } = useData();
+  const dispatch = useAuthDispatch();
   const filtersRef = useRef({
     category: data?.category || '',
     textFilter: data?.textFilter || '',
   });
+
+  // Initialize authentication error handler once
+  useEffect(() => {
+    initializeAuthErrorHandler(dispatch, dataDispatch);
+  }, [dispatch, dataDispatch]);
 
   useEffect(() => {
     filtersRef.current = {

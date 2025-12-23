@@ -17,6 +17,15 @@ import {
 import { TransactionOrIncomeItem } from '../type/types';
 import { processData, dispatchProcessedData } from './dataProcessing';
 import { notifyItemSynced, notifySyncFinish, notifySyncStart } from './syncCallbacks';
+import { checkAndHandleAuthError } from './authErrorHandler';
+
+// Custom error class for authentication failures
+export class AuthenticationError extends Error {
+  constructor(message: string = 'Authentication failed') {
+    super(message);
+    this.name = 'AuthenticationError';
+  }
+}
 
 const ROOT_URL = 'https://dev-expenses-api.pantheonsite.io';
 const SYNC_YIELD_BATCH = 5;
@@ -153,7 +162,12 @@ async function fetchServerItem(
         return null;
       }
       if (response.status === 403) {
-        throw new Error('Authentication failed');
+        // Check and handle authentication error (will log out if token expired)
+        const loggedOut = await checkAndHandleAuthError(response, fetchOptions);
+        if (loggedOut) {
+          throw new AuthenticationError('Authentication failed - user logged out');
+        }
+        throw new AuthenticationError('Authentication failed');
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
@@ -194,7 +208,12 @@ async function syncOperation(
       }
       // Handle token expiration
       if (response.status === 403) {
-        throw new Error('Authentication failed');
+        // Check and handle authentication error (will log out if token expired)
+        const loggedOut = await checkAndHandleAuthError(response, fetchOptions);
+        if (loggedOut) {
+          throw new AuthenticationError('Authentication failed - user logged out');
+        }
+        throw new AuthenticationError('Authentication failed');
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
@@ -362,6 +381,10 @@ async function processPendingOperations(
         }
       } catch (error) {
         encounteredError = true;
+        // If it's an authentication error, re-throw it to stop processing
+        if (error instanceof AuthenticationError) {
+          throw error;
+        }
         console.error(`Error processing operation ${operation.id}:`, error);
       }
 
@@ -373,6 +396,10 @@ async function processPendingOperations(
     await updateSyncMetadata({ lastSyncTime: Date.now() });
   } catch (error) {
     encounteredError = true;
+    // Re-throw authentication errors so they can be handled by callers
+    if (error instanceof AuthenticationError) {
+      throw error;
+    }
     throw error;
   } finally {
     notifySyncFinish(processedAny && !encounteredError);
@@ -412,7 +439,12 @@ export async function syncWithServer(
 
     if (!response.ok) {
       if (response.status === 403) {
-        throw new Error('Authentication failed');
+        // Check and handle authentication error (will log out if token expired)
+        const loggedOut = await checkAndHandleAuthError(response, fetchOptions);
+        if (loggedOut) {
+          throw new AuthenticationError('Authentication failed - user logged out');
+        }
+        throw new AuthenticationError('Authentication failed');
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
@@ -469,8 +501,12 @@ export async function syncWithServer(
     success = true;
     return mergedData;
   } catch (error) {
+    // Re-throw authentication errors so they can be handled by callers
+    if (error instanceof AuthenticationError) {
+      throw error;
+    }
     console.error('Error syncing with server:', error);
-    // Return cached data on error
+    // Return cached data on error (but not for auth errors)
     const cachedData = await getExpensesFromDB();
     return cachedData || [];
   } finally {
@@ -556,6 +592,11 @@ export function scheduleBackgroundSync(token: string) {
     }
 
     syncPendingOperations(backgroundSyncToken).catch((error) => {
+      // Authentication errors are already handled (user logged out)
+      if (error instanceof AuthenticationError) {
+        console.warn('Background sync stopped due to authentication error');
+        return;
+      }
       console.error('Background sync failed', error);
     });
   };
@@ -590,6 +631,11 @@ export async function initializeSync(token: string, dataDispatch: any): Promise<
       // Then sync data from server
       await syncWithServer(token, dataDispatch);
     } catch (error) {
+      // Authentication errors are already handled (user logged out)
+      if (error instanceof AuthenticationError) {
+        console.warn('Initial sync stopped due to authentication error');
+        return;
+      }
       console.error('Error during initial sync:', error);
     }
   }
@@ -618,6 +664,11 @@ export function setupNetworkListener(
         filters.textFilter || ''
       );
     } catch (error) {
+      // Authentication errors are already handled (user logged out)
+      if (error instanceof AuthenticationError) {
+        console.warn('Sync after coming online stopped due to authentication error');
+        return;
+      }
       console.error('Error syncing after coming online:', error);
     }
   };
