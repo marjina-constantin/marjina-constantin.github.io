@@ -51,6 +51,31 @@ export default function YearIncomeAverageTrend() {
 
   let sumDiff: number = 0;
   let sumIncome: number = 0;
+  
+  // Sort years to calculate percentage changes correctly
+  const sortedYears = Object.keys(totalIncomePerYear).sort((a, b) => 
+    parseInt(a) - parseInt(b)
+  );
+  
+  const calculatePercentageChange = (current: number, previous: number): number | null => {
+    if (!previous || previous === 0) return null;
+    return ((current - previous) / previous) * 100;
+  };
+  
+  const formatPercentageChange = (percent: number | null, isSpent: boolean = false): React.ReactNode => {
+    if (percent === null) return null;
+    const sign = percent >= 0 ? '+' : '';
+    // For Spent column: positive % (spent more) = RED, negative % (spent less) = GREEN
+    // For Income column: positive % (earned more) = GREEN, negative % (earned less) = RED
+    let color: string;
+    if (isSpent) {
+      color = percent >= 0 ? '#f87171' : '#4ade80'; // Inverted for spent
+    } else {
+      color = percent >= 0 ? '#4ade80' : '#f87171'; // Normal for income
+    }
+    return <span style={{ color }}> ({sign}{formatNumber(percent)}%)</span>;
+  };
+  
   return (
     <>
       <HighchartsReact
@@ -69,22 +94,34 @@ export default function YearIncomeAverageTrend() {
             </tr>
           </thead>
           <tbody>
-            {Object.entries(totalIncomePerYear).map((item, key) => {
-              const diff: number =
-                (item[1] as number) - (totalPerYear[item[0]] as number);
+            {sortedYears.map((year, key) => {
+              const currentIncome = totalIncomePerYear[year] as number;
+              const currentSpent = (totalPerYear[year] as number) || 0;
+              const diff: number = currentIncome - currentSpent;
               const savingsPercent =
-                ((totalPerYear[item[0]] as number) / (item[1] as number) - 1) *
-                -100;
+                (currentSpent / currentIncome - 1) * -100;
+              
+              // Get previous year's values for percentage calculation
+              const prevYearIndex = key - 1;
+              const prevYear = prevYearIndex >= 0 ? sortedYears[prevYearIndex] : null;
+              const prevIncome = prevYear ? (totalIncomePerYear[prevYear] as number) : null;
+              const prevSpent = prevYear ? ((totalPerYear[prevYear] as number) || 0) : null;
+              
+              const incomeChange = prevIncome !== null ? calculatePercentageChange(currentIncome, prevIncome) : null;
+              const spentChange = prevSpent !== null ? calculatePercentageChange(currentSpent, prevSpent) : null;
+              
               sumDiff += diff;
-              sumIncome += parseFloat(item[1] as string);
+              sumIncome += parseFloat(currentIncome as string);
               return (
                 <tr key={key}>
-                  <td>{item[0]}</td>
+                  <td>{year}</td>
                   <td>
-                    {formatNumber(item[1])} {currency}
+                    {formatNumber(currentIncome)} {currency}
+                    {formatPercentageChange(incomeChange, false)}
                   </td>
                   <td>
-                    {formatNumber(totalPerYear[item[0]])} {currency}
+                    {formatNumber(currentSpent)} {currency}
+                    {formatPercentageChange(spentChange, true)}
                   </td>
                   <td>
                     {isFinite(savingsPercent)

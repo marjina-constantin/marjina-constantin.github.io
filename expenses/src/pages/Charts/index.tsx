@@ -6,6 +6,7 @@ import { fetchData } from '../../utils/utils';
 import Filters from '../../components/Filters';
 import MonthlyTotals from '../../components/MonthlyTotals';
 import YearAverageTrend from '../../components/YearAverageTrend';
+import TotalTransactionsCount from '../../components/TotalTransactionsCount';
 import Boost from 'highcharts/modules/boost';
 import NoData from 'highcharts/modules/no-data-to-display';
 import { AuthState } from '../../type/types';
@@ -110,6 +111,7 @@ const Charts = () => {
   return (
     <div>
       <h2>Charts page</h2>
+      {!loading && !noEntries && <TotalTransactionsCount />}
       <Filters />
       {loading ? (
         <div className="lds-ripple">

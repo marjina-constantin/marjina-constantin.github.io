@@ -19,8 +19,16 @@ export default function AllTimeSpendings() {
     String((new Date().getTime() - new Date(firstDay).getTime()) / 86400000 + 1)
   );
   const monthsPassed = daysPassed
-    ? parseFloat(String(daysPassed / 30.42)).toFixed(2)
+    ? parseFloat(String(daysPassed / 30.42))
     : 0;
+  const yearsPassed = monthsPassed >= 12 ? Math.floor(monthsPassed / 12) : 0;
+  const remainingMonths = monthsPassed >= 12 
+    ? parseFloat((monthsPassed % 12).toFixed(2))
+    : parseFloat(monthsPassed.toFixed(2));
+  
+  const timeDisplay = yearsPassed > 0
+    ? `${yearsPassed} ${yearsPassed === 1 ? 'year' : 'years'}${remainingMonths > 0 ? ` and ${remainingMonths} ${remainingMonths === 1 ? 'month' : 'months'}` : ''}`
+    : `${remainingMonths} ${remainingMonths === 1 ? 'month' : 'months'}`;
   const allTimeSpendings = {
     chart: {
       type: 'pie',
@@ -54,7 +62,7 @@ export default function AllTimeSpendings() {
       <HighchartsReact highcharts={Highcharts} options={allTimeSpendings} />
       <div className="average-spending">
         Total spent: {parseFloat(items.totalSpent)?.toLocaleString()} {currency}{' '}
-        in {monthsPassed} months
+        in {timeDisplay}
       </div>
     </>
   );

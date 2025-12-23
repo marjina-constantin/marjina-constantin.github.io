@@ -12,6 +12,7 @@ import IncomeList from '../../components/IncomeList';
 import StatCard from '../../components/StatCard';
 import { notificationType } from '../../utils/constants';
 import YearIncomeAverageTrend from '../../components/YearIncomeAverageTrend';
+import TotalIncomeCount from '../../components/TotalIncomeCount';
 import { AuthState, TransactionOrIncomeItem } from '../../type/types';
 import { ArrowUpCircle, TrendingUp } from 'lucide-react';
 
@@ -139,6 +140,7 @@ const Income = () => {
         />
       </Modal>
       <h2 style={{ padding: '0 1.5rem', marginBottom: '1rem' }}>Incomes</h2>
+      {!noData && <TotalIncomeCount />}
       {noData ? (
         ''
       ) : (
