@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuthState, useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
@@ -9,6 +9,7 @@ import { AuthState, DataState } from '../type/types';
 export default function YearIncomeAverageTrend() {
   const { data } = useData() as DataState;
   const { currency } = useAuthState() as AuthState;
+  const [clickedCells, setClickedCells] = useState<Set<string>>(new Set());
 
   const totalIncomePerYear = data?.totalIncomePerYear || {};
   const totalPerYear = data?.totalPerYear || {};
@@ -112,16 +113,64 @@ export default function YearIncomeAverageTrend() {
               
               sumDiff += diff;
               sumIncome += parseFloat(currentIncome as string);
+              
+              const incomeCellId = `income-${year}`;
+              const spentCellId = `spent-${year}`;
+              const showIncomeChange = clickedCells.has(incomeCellId);
+              const showSpentChange = clickedCells.has(spentCellId);
+              
+              const toggleCell = (cellId: string) => {
+                setClickedCells(prev => {
+                  const newSet = new Set(prev);
+                  if (newSet.has(cellId)) {
+                    newSet.delete(cellId);
+                  } else {
+                    newSet.add(cellId);
+                  }
+                  return newSet;
+                });
+              };
+              
               return (
                 <tr key={key}>
                   <td>{year}</td>
                   <td>
-                    {formatNumber(currentIncome)} {currency}
-                    {formatPercentageChange(incomeChange, false)}
+                    <span
+                      onClick={() => toggleCell(incomeCellId)}
+                      style={{
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                        transition: 'opacity 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.opacity = '0.7';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.opacity = '1';
+                      }}
+                    >
+                      {formatNumber(currentIncome)} {currency}
+                    </span>
+                    {showIncomeChange && formatPercentageChange(incomeChange, false)}
                   </td>
                   <td>
-                    {formatNumber(currentSpent)} {currency}
-                    {formatPercentageChange(spentChange, true)}
+                    <span
+                      onClick={() => toggleCell(spentCellId)}
+                      style={{
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                        transition: 'opacity 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.opacity = '0.7';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.opacity = '1';
+                      }}
+                    >
+                      {formatNumber(currentSpent)} {currency}
+                    </span>
+                    {showSpentChange && formatPercentageChange(spentChange, true)}
                   </td>
                   <td>
                     {isFinite(savingsPercent)
