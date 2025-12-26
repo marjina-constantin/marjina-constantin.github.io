@@ -140,13 +140,6 @@ export default function YearIncomeAverageTrend() {
                       style={{
                         cursor: 'pointer',
                         userSelect: 'none',
-                        transition: 'opacity 0.2s'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.opacity = '0.7';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.opacity = '1';
                       }}
                     >
                       {formatNumber(currentIncome)} {currency}
@@ -159,13 +152,6 @@ export default function YearIncomeAverageTrend() {
                       style={{
                         cursor: 'pointer',
                         userSelect: 'none',
-                        transition: 'opacity 0.2s'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.opacity = '0.7';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.opacity = '1';
                       }}
                     >
                       {formatNumber(currentSpent)} {currency}
