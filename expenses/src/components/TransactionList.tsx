@@ -177,12 +177,12 @@ const TransactionList: React.FC<TransactionListProps> = ({
               >
                 {isThisItemSwiped && deleteVisible && (
                   <div className="delete-action-bg">
-                    <Trash2 />
+                    <Trash2 size={22} strokeWidth={2.5} />
                   </div>
                 )}
                 {isThisItemSwiped && editVisible && (
                   <div className="edit-action-bg">
-                    <Edit />
+                    <Edit size={22} strokeWidth={2.5} />
                   </div>
                 )}
               </div>
