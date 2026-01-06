@@ -49,7 +49,6 @@ export default function LastTwoMonthsAverage() {
       onClick={cyclePeriod}
       style={{
         cursor: 'pointer',
-        userSelect: 'none'
       }}
     >
       Average spending for the last {daysPeriod} days:{' '}
