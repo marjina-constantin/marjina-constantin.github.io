@@ -8,7 +8,6 @@ interface SwipeActions {
   editVisible: boolean;
   extraRowStyle: React.CSSProperties;
   isSwiping: boolean | null;
-  swipeProgress: number; // 0-100 percentage of swipe completion
   handleTouchStart: (
     e: React.TouchEvent<HTMLDivElement>,
     id: string,
@@ -35,7 +34,6 @@ const useSwipeActions = (): SwipeActions => {
   const [editVisible, setEditVisible] = useState<boolean>(false);
   const [extraRowStyle, setExtraRowStyle] = useState<React.CSSProperties>({});
   const [isSwiping, setIsSwiping] = useState<boolean | null>(null);
-  const [swipeProgress, setSwipeProgress] = useState<number>(0);
 
   const handleTouchStart = (
     e: React.TouchEvent<HTMLDivElement>,
@@ -80,10 +78,6 @@ const useSwipeActions = (): SwipeActions => {
         const itemWidth = itemElement.getBoundingClientRect().width;
         const absDiff = Math.abs(e.touches[0].clientX - (startX ?? 0));
         const diffPercentage = Math.min((absDiff / itemWidth) * 100, 100);
-        setSwipeProgress(diffPercentage);
-        
-        // Set CSS custom property for animation
-        itemElement.style.setProperty('--swipe-progress', `${diffPercentage}`);
         
         if (diffPercentage > 40) {
           const body = document.querySelector('body');
@@ -144,11 +138,6 @@ const useSwipeActions = (): SwipeActions => {
       setEditVisible(false);
       setExtraRowStyle({});
       setIsSwiping(null);
-      setSwipeProgress(0);
-      
-      if (itemElement) {
-        itemElement.style.removeProperty('--swipe-progress');
-      }
     }
   };
 
@@ -160,7 +149,6 @@ const useSwipeActions = (): SwipeActions => {
     editVisible,
     extraRowStyle,
     isSwiping,
-    swipeProgress,
     handleTouchStart,
     handleTouchMove,
     handleTouchEnd,

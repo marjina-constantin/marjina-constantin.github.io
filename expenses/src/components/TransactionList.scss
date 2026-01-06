@@ -149,34 +149,20 @@
           transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        // Progressive contour animation - "blood through veins" effect
-        // Animated border ring that fills progressively around the circle
+        // Glowing border ring effect when active
         &::before {
           content: '';
           position: absolute;
           inset: -4px;
           border-radius: 50%;
-          background: conic-gradient(
-            from -90deg,
-            var(--action-color, currentColor) 0deg,
-            var(--action-color, currentColor) calc(var(--swipe-progress, 0) * 3.6deg),
-            transparent calc(var(--swipe-progress, 0) * 3.6deg),
-            transparent 360deg
-          );
-          padding: 3px;
-          -webkit-mask: 
-            linear-gradient(#fff 0 0) content-box, 
-            linear-gradient(#fff 0 0);
-          -webkit-mask-composite: xor;
-          mask-composite: exclude;
-          opacity: 1;
+          border: 3px solid var(--action-color, currentColor);
+          opacity: 0;
           z-index: 1;
-          transition: opacity 0.1s linear;
+          transition: opacity 0.2s ease;
           filter: drop-shadow(0 0 4px var(--action-color, currentColor));
-          box-shadow: 0 0 8px var(--action-color, currentColor);
         }
 
-        // Glowing outer halo that intensifies with progress
+        // Glowing outer halo
         &::after {
           content: '';
           position: absolute;
@@ -187,10 +173,10 @@
             var(--action-color, currentColor) 0%,
             transparent 60%
           );
-          opacity: calc((var(--swipe-progress, 0) / 100) * 0.5);
+          opacity: 0;
           z-index: 0;
           filter: blur(10px);
-          transition: opacity 0.1s linear;
+          transition: opacity 0.2s ease;
         }
       }
 
@@ -224,11 +210,11 @@
           }
 
           &::after {
-            opacity: 1;
+            opacity: 0.6;
           }
 
           svg {
-            transform: rotate(5deg) scale(1.1);
+            transform: scale(1.1);
             filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
           }
         }
@@ -264,11 +250,11 @@
           }
 
           &::after {
-            opacity: 1;
+            opacity: 0.6;
           }
 
           svg {
-            transform: rotate(-5deg) scale(1.1);
+            transform: scale(1.1);
             filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
           }
         }
@@ -565,12 +551,4 @@
   }
 }
 
-// Progressive fill animation based on swipe progress
-.transaction-list-item {
-  --swipe-progress: 0;
-  
-  [data-id] {
-    transition: --swipe-progress 0.05s linear;
-  }
-}
 
