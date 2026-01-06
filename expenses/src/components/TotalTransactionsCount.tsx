@@ -5,8 +5,12 @@ import { DataState, TransactionOrIncomeItem } from '../type/types';
 export default function TotalTransactionsCount() {
   const { data } = useData() as DataState;
   
-  // Count only transactions (not incomes)
-  const transactionCount = data.raw
+  // Use filtered data if filters are applied, otherwise use raw data
+  // filtered_raw already contains only transactions, so use length directly
+  // For raw data, we need to filter to exclude incomes
+  const transactionCount = data.filtered_raw
+    ? data.filtered_raw.length
+    : data.raw
     ? data.raw.filter((item: TransactionOrIncomeItem) => item.type === 'transaction').length
     : 0;
 
