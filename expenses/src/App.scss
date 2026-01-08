@@ -976,6 +976,19 @@ button:hover {
   background-color: var(--secondary-color);
 }
 
+.true-cost-table {
+  max-width: 100% !important;
+  
+  td {
+    width: auto !important;
+    padding: 15px 20px !important;
+  }
+  
+  th {
+    padding: 15px 20px !important;
+  }
+}
+
 .user-avatar svg {
   width: 200px;
   height: 200px;
