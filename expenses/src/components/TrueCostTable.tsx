@@ -9,9 +9,9 @@ export default function TrueCostTable() {
   const { currency } = useAuthState() as AuthState;
 
   // Calculate hourly after-tax wage from income data
-  const { hourlyWage, monthlyCosts } = useMemo(() => {
+  const { hourlyWage, monthlyCosts, hoursPerMonth } = useMemo(() => {
     if (!data.raw || data.raw.length === 0) {
-      return { hourlyWage: 0, monthlyCosts: [] };
+      return { hourlyWage: 0, monthlyCosts: [], hoursPerMonth: 0 };
     }
 
     // Calculate total income and time period
@@ -49,10 +49,17 @@ export default function TrueCostTable() {
       hoursOfWork: hourlyWage > 0 ? category.monthlyCost / hourlyWage : 0,
     }));
 
-    return { hourlyWage, monthlyCosts };
+    return { hourlyWage, monthlyCosts, hoursPerMonth };
   }, [data.raw, data.categoryTotals]);
 
   const { sortedItems, requestSort, sortConfig } = useSortableData(monthlyCosts);
+
+  // Calculate totals
+  const totals = useMemo(() => {
+    const totalMonthlyCost = monthlyCosts.reduce((sum, item) => sum + item.monthlyCost, 0);
+    const totalHoursOfWork = monthlyCosts.reduce((sum, item) => sum + item.hoursOfWork, 0);
+    return { totalMonthlyCost, totalHoursOfWork };
+  }, [monthlyCosts]);
 
   if (!data.raw || data.raw.length === 0 || hourlyWage === 0) {
     return null;
@@ -102,6 +109,15 @@ export default function TrueCostTable() {
               </td>
             </tr>
           ))}
+          <tr style={{ borderTop: '2px solid rgba(255, 255, 255, 0.2)' }}>
+            <td>Total</td>
+            <td>
+              {formatNumber(totals.totalMonthlyCost)} {currency}
+            </td>
+            <td>
+              {formatNumber(totals.totalHoursOfWork)} hours (from {formatNumber(hoursPerMonth)} worked/month)
+            </td>
+          </tr>
         </tbody>
       </table>
       <div style={{ 
