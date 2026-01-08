@@ -11,6 +11,7 @@ export default function BurnRateVsRunway() {
   const { currency } = useAuthState() as AuthState;
 
   // Process data chronologically to calculate cumulative values
+  // Always use all-time data (data.raw), not filtered data
   const chartData = useMemo(() => {
     if (!data.raw || data.raw.length === 0) {
       return { burnRateData: [], runwayData: [], categories: [] };
@@ -21,21 +22,33 @@ export default function BurnRateVsRunway() {
       new Date(a.dt).getTime() - new Date(b.dt).getTime()
     );
 
+    if (sortedData.length === 0) {
+      return { burnRateData: [], runwayData: [], categories: [] };
+    }
+
+    // Get first day for days-based calculation
+    const firstDay = new Date(sortedData[0].dt);
+
     // Group by month
-    const monthlyData: Record<string, { income: number; spending: number }> = {};
+    const monthlyData: Record<string, { income: number; spending: number; lastDate: Date }> = {};
     
     sortedData.forEach((item: TransactionOrIncomeItem) => {
       const date = new Date(item.dt);
       const month = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
       
       if (!monthlyData[month]) {
-        monthlyData[month] = { income: 0, spending: 0 };
+        monthlyData[month] = { income: 0, spending: 0, lastDate: date };
       }
       
       if (item.type === 'incomes') {
         monthlyData[month].income += parseFloat(item.sum || '0');
       } else if (item.type === 'transaction') {
         monthlyData[month].spending += parseFloat(item.sum || '0');
+      }
+      
+      // Update last date in month
+      if (date > monthlyData[month].lastDate) {
+        monthlyData[month].lastDate = date;
       }
     });
 
@@ -57,7 +70,6 @@ export default function BurnRateVsRunway() {
     // Calculate cumulative values and metrics for each month
     let cumulativeIncome = 0;
     let cumulativeSpending = 0;
-    let monthsCount = 0;
     const burnRateData: number[] = [];
     const runwayData: number[] = [];
     const categories: string[] = [];
@@ -65,10 +77,14 @@ export default function BurnRateVsRunway() {
     sortedMonths.forEach((month) => {
       cumulativeIncome += monthlyData[month].income;
       cumulativeSpending += monthlyData[month].spending;
-      monthsCount += 1;
 
-      // Calculate monthly burn rate (average spending per month)
-      const monthlyBurnRate = monthsCount > 0 ? cumulativeSpending / monthsCount : 0;
+      // Calculate months passed using days-based calculation (matching MonthlyAverageTrend)
+      const lastDate = monthlyData[month].lastDate;
+      const daysPassed = (lastDate.getTime() - firstDay.getTime()) / 86400000 + 1;
+      const monthsPassed = daysPassed / 30.42;
+
+      // Calculate monthly burn rate (average spending per month) using days-based calculation
+      const monthlyBurnRate = monthsPassed > 0 ? cumulativeSpending / monthsPassed : 0;
       
       // Calculate cumulative savings
       const cumulativeSavings = cumulativeIncome - cumulativeSpending;
