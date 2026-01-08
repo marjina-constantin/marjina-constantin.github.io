@@ -268,6 +268,7 @@ export const incomeSuggestions = [
   'gift',
   'cashback',
   'sale',
+  'loan',
 ];
 
 export const notificationType = {

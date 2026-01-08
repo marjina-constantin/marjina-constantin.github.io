@@ -5,10 +5,12 @@ import { DataState, TransactionOrIncomeItem } from '../type/types';
 export default function TotalIncomeCount() {
   const { data } = useData() as DataState;
   
-  // Count only income items
-  const incomeCount = data.raw
-    ? data.raw.filter((item: TransactionOrIncomeItem) => item.type === 'incomes').length
-    : 0;
+  // Use filtered data if filters are active, otherwise use all income data
+  const incomeCount = data?.filteredIncomeData !== null
+    ? (data?.filteredIncomeData || []).length
+    : (data.raw
+        ? data.raw.filter((item: TransactionOrIncomeItem) => item.type === 'incomes').length
+        : 0);
 
   return (
     <div className="total-income-count" style={{ 

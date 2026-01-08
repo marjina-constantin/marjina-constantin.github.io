@@ -63,6 +63,9 @@ export const initialData = {
   loading: true,
   totalSpent: 0,
   changedItems: {},
+  incomeTextFilter: '',
+  incomeSelectedTags: [],
+  filteredIncomeData: null,
 };
 
 export const AuthReducer = (initialState: AuthState, action: ActionType) => {
@@ -216,6 +219,48 @@ export const DataReducer = (initialState: DataItems, action: ActionType) => {
         category: '',
         textFilter: '',
         filtered_raw: null,
+      };
+
+    case 'FILTER_INCOME_DATA':
+      if (
+        (action.textFilter !== '' || (action.selectedTags && action.selectedTags.length > 0)) &&
+        initialState.incomeData
+      ) {
+        const { incomeData } = initialState;
+        let filtered = [...incomeData];
+
+        // Filter by text
+        if (action.textFilter) {
+          const textFilterLower = action.textFilter.toLowerCase();
+          filtered = filtered.filter((item) =>
+            item.dsc?.toLowerCase()?.includes(textFilterLower)
+          );
+        }
+
+        // Filter by tags
+        if (action.selectedTags && action.selectedTags.length > 0) {
+          filtered = filtered.filter((item) => {
+            if (!item.dsc) return false;
+            // Check if item contains all selected tags
+            return action.selectedTags.every(tag => {
+              const tagRegex = new RegExp(`#${tag}\\b`, 'i');
+              return tagRegex.test(item.dsc);
+            });
+          });
+        }
+
+        return {
+          ...initialState,
+          filteredIncomeData: filtered,
+          incomeTextFilter: action.textFilter || '',
+          incomeSelectedTags: action.selectedTags || [],
+        };
+      }
+      return {
+        ...initialState,
+        filteredIncomeData: null,
+        incomeTextFilter: '',
+        incomeSelectedTags: [],
       };
 
     case 'REMOVE_DATA':

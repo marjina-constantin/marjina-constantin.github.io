@@ -64,6 +64,9 @@ export interface DataItems {
   totalPerYear?: ItemTotal;
   category?: string;
   textFilter?: string;
+  incomeTextFilter?: string;
+  incomeSelectedTags?: string[];
+  filteredIncomeData?: TransactionOrIncomeItem[] | null;
   totalsPerYearAndMonth?: DataStructure;
   totalIncomePerYear?: ItemTotal;
   changedItems: any;
@@ -105,6 +108,7 @@ export interface ActionType {
   totalIncomePerYear?: ItemTotal;
   totalIncomePerYearAndMonth?: DataStructure;
   totalPerYear?: ItemTotal;
+  selectedTags?: string[];
 }
 
 export interface Accumulator {

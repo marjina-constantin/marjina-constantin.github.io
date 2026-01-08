@@ -1,23 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAuthState, useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { formatDataForChart, formatNumber } from '../utils/utils';
 import { monthNames } from '../utils/constants';
-import { AuthState, DataState } from '../type/types';
+import { AuthState, DataState, TransactionOrIncomeItem } from '../type/types';
 
 export default function YearIncomeAverageTrend() {
   const { data } = useData() as DataState;
   const { currency } = useAuthState() as AuthState;
   const [clickedCells, setClickedCells] = useState<Set<string>>(new Set());
 
-  const totalIncomePerYear = data?.totalIncomePerYear || {};
+  // Check if filters are active
+  const hasActiveFilters = data?.filteredIncomeData !== null;
+  
+  // Use filtered data for calculations when filters are active
+  const { totalIncomePerYear, totalIncomePerYearAndMonth } = useMemo(() => {
+    if (hasActiveFilters && data?.filteredIncomeData) {
+      const yearTotals: Record<string, number> = {};
+      const yearMonthTotals: Record<string, Record<string, number>> = {};
+
+      data.filteredIncomeData.forEach((item: TransactionOrIncomeItem) => {
+        const date = new Date(item.dt);
+        const year = date.getFullYear().toString();
+        const month = monthNames[date.getMonth()];
+        const monthKey = `${month} ${year}`;
+        const amount = parseFloat(item.sum || '0');
+
+        // Year totals
+        yearTotals[year] = (yearTotals[year] || 0) + amount;
+
+        // Year-Month totals
+        if (!yearMonthTotals[year]) {
+          yearMonthTotals[year] = {};
+        }
+        yearMonthTotals[year][monthKey] = (yearMonthTotals[year][monthKey] || 0) + amount;
+      });
+
+      return {
+        totalIncomePerYear: yearTotals,
+        totalIncomePerYearAndMonth: yearMonthTotals,
+      };
+    }
+    
+    // Default: use original data
+    return {
+      totalIncomePerYear: data?.totalIncomePerYear || {},
+      totalIncomePerYearAndMonth: data?.totalIncomePerYearAndMonth || {},
+    };
+  }, [hasActiveFilters, data?.filteredIncomeData, data?.totalIncomePerYear, data?.totalIncomePerYearAndMonth]);
+
   const totalPerYear = data?.totalPerYear || {};
   const totalSpent = data?.totalSpent || 0;
 
-  const formattedIncomeData = formatDataForChart(
-    data?.totalIncomePerYearAndMonth || {}
-  );
+  const formattedIncomeData = formatDataForChart(totalIncomePerYearAndMonth);
 
   const yearIncomeAverageOptions = {
     chart: {
@@ -90,29 +126,38 @@ export default function YearIncomeAverageTrend() {
             <tr>
               <th>Year</th>
               <th>Income</th>
-              <th>Spent</th>
-              <th>Savings</th>
+              {!hasActiveFilters && (
+                <>
+                  <th>Spent</th>
+                  <th>Savings</th>
+                </>
+              )}
             </tr>
           </thead>
           <tbody>
             {sortedYears.map((year, key) => {
               const currentIncome = totalIncomePerYear[year] as number;
-              const currentSpent = (totalPerYear[year] as number) || 0;
+              const currentSpent = hasActiveFilters ? 0 : ((totalPerYear[year] as number) || 0);
               const diff: number = currentIncome - currentSpent;
-              const savingsPercent =
-                (currentSpent / currentIncome - 1) * -100;
+              const savingsPercent = hasActiveFilters 
+                ? 0 
+                : (currentSpent / currentIncome - 1) * -100;
               
               // Get previous year's values for percentage calculation
               const prevYearIndex = key - 1;
               const prevYear = prevYearIndex >= 0 ? sortedYears[prevYearIndex] : null;
               const prevIncome = prevYear ? (totalIncomePerYear[prevYear] as number) : null;
-              const prevSpent = prevYear ? ((totalPerYear[prevYear] as number) || 0) : null;
+              const prevSpent = hasActiveFilters 
+                ? null 
+                : (prevYear ? ((totalPerYear[prevYear] as number) || 0) : null);
               
               const incomeChange = prevIncome !== null ? calculatePercentageChange(currentIncome, prevIncome) : null;
-              const spentChange = prevSpent !== null ? calculatePercentageChange(currentSpent, prevSpent) : null;
+              const spentChange = !hasActiveFilters && prevSpent !== null 
+                ? calculatePercentageChange(currentSpent, prevSpent) 
+                : null;
               
               sumDiff += diff;
-              sumIncome += parseFloat(currentIncome as string);
+              sumIncome += currentIncome;
               
               const incomeCellId = `income-${year}`;
               const spentCellId = `spent-${year}`;
@@ -146,23 +191,27 @@ export default function YearIncomeAverageTrend() {
                     </span>
                     {showIncomeChange && formatPercentageChange(incomeChange, false)}
                   </td>
-                  <td>
-                    <span
-                      onClick={() => toggleCell(spentCellId)}
-                      style={{
-                        cursor: 'pointer',
-                        userSelect: 'none',
-                      }}
-                    >
-                      {formatNumber(currentSpent)} {currency}
-                    </span>
-                    {showSpentChange && formatPercentageChange(spentChange, true)}
-                  </td>
-                  <td>
-                    {isFinite(savingsPercent)
-                      ? `${formatNumber(diff)} ${currency} (${formatNumber(savingsPercent)}%)`
-                      : `${formatNumber(diff)} ${currency}`}
-                  </td>
+                  {!hasActiveFilters && (
+                    <>
+                      <td>
+                        <span
+                          onClick={() => toggleCell(spentCellId)}
+                          style={{
+                            cursor: 'pointer',
+                            userSelect: 'none',
+                          }}
+                        >
+                          {formatNumber(currentSpent)} {currency}
+                        </span>
+                        {showSpentChange && formatPercentageChange(spentChange, true)}
+                      </td>
+                      <td>
+                        {isFinite(savingsPercent)
+                          ? `${formatNumber(diff)} ${currency} (${formatNumber(savingsPercent)}%)`
+                          : `${formatNumber(diff)} ${currency}`}
+                      </td>
+                    </>
+                  )}
                 </tr>
               );
             })}
@@ -171,14 +220,18 @@ export default function YearIncomeAverageTrend() {
               <td>
                 {formatNumber(sumIncome)} {currency}
               </td>
-              <td>
-                {formatNumber(totalSpent)} {currency}
-              </td>
-              <td>
-                {formatNumber(sumDiff)} {currency} (
-                {formatNumber((totalSpent / sumIncome - 1) * -100)}
-                %)
-              </td>
+              {!hasActiveFilters && (
+                <>
+                  <td>
+                    {formatNumber(totalSpent)} {currency}
+                  </td>
+                  <td>
+                    {formatNumber(sumDiff)} {currency} (
+                    {formatNumber((totalSpent / sumIncome - 1) * -100)}
+                    %)
+                  </td>
+                </>
+              )}
             </tr>
           </tbody>
         </table>

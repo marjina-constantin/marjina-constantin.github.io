@@ -9,6 +9,7 @@ import {
 } from '../../context';
 import Modal from '../../components/Modal';
 import IncomeList from '../../components/IncomeList';
+import IncomeFilters from '../../components/IncomeFilters';
 import StatCard from '../../components/StatCard';
 import { notificationType } from '../../utils/constants';
 import YearIncomeAverageTrend from '../../components/YearIncomeAverageTrend';
@@ -42,7 +43,7 @@ const Income = () => {
   });
 
   const handleEdit = (id: string) => {
-    const item = data.incomeData.find(
+    const item = (displayIncomeData || data.incomeData || []).find(
       (item: TransactionOrIncomeItem) => item.id === id
     );
     setFocusedItem({
@@ -77,15 +78,20 @@ const Income = () => {
     dataDispatch({ type: 'CLEAR_CHANGED_ITEM', id });
   };
 
-  // Calculate income statistics
+  // Get filtered or unfiltered income data
+  const displayIncomeData = data.filteredIncomeData !== null 
+    ? data.filteredIncomeData 
+    : data.incomeData;
+
+  // Calculate income statistics based on displayed data
   const totalIncome = useMemo(() => {
-    if (!data.incomeData || !data.incomeData.length) return 0;
-    return data.incomeData.reduce(
+    if (!displayIncomeData || !displayIncomeData.length) return 0;
+    return displayIncomeData.reduce(
       (sum: number, item: TransactionOrIncomeItem) =>
         sum + parseFloat(item.sum || '0'),
       0
     );
-  }, [data.incomeData]);
+  }, [displayIncomeData]);
 
   const averageIncome = useMemo(() => {
     if (!data.raw || !data.raw.length || totalIncome === 0) return 0;
@@ -141,12 +147,13 @@ const Income = () => {
       </Modal>
       <h2 style={{ padding: '0 1.5rem', marginBottom: '1rem' }}>Incomes</h2>
       {!noData && <TotalIncomeCount />}
+      {!noData && <IncomeFilters />}
       {noData ? (
         ''
       ) : (
         <div>
           {/* Stats Cards */}
-          {data.incomeData && data.incomeData.length > 0 && (
+          {displayIncomeData && displayIncomeData.length > 0 && (
             <div className="stats-grid">
               <StatCard
                 icon={<ArrowUpCircle />}
@@ -173,9 +180,9 @@ const Income = () => {
             </button>
           </div>
 
-          {data.incomeData && data.incomeData.length ? (
+          {displayIncomeData && displayIncomeData.length ? (
             <IncomeList
-              transactions={data.incomeData.slice(0, nrOfItemsToShow)}
+              transactions={displayIncomeData.slice(0, nrOfItemsToShow)}
               onEdit={handleEdit}
               onDelete={(id) => setShowDeleteModal(id)}
               changedItems={data.changedItems}
@@ -185,7 +192,7 @@ const Income = () => {
             ''
           )}
 
-          {data.incomeData?.length > nrOfItemsToShow && (
+          {displayIncomeData && displayIncomeData.length > nrOfItemsToShow && (
             <div style={{ padding: '0 1.5rem', marginTop: '1.5rem', textAlign: 'center' }}>
               <button
                 onClick={() => setNrOfItemsToShow(nrOfItemsToShow + 10)}
@@ -197,7 +204,7 @@ const Income = () => {
           )}
         </div>
       )}
-      {data.incomeData?.length ? (
+      {displayIncomeData && displayIncomeData.length ? (
         <div className="charts-section">
           <Suspense fallback="">
             <YearIncomeAverageTrend />
