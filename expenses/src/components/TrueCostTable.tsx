@@ -109,15 +109,6 @@ export default function TrueCostTable() {
               </td>
             </tr>
           ))}
-          <tr style={{ borderTop: '2px solid rgba(255, 255, 255, 0.2)' }}>
-            <td>Total</td>
-            <td>
-              {formatNumber(totals.totalMonthlyCost)} {currency}
-            </td>
-            <td>
-              {formatNumber(totals.totalHoursOfWork)} hours (from {formatNumber(hoursPerMonth)} worked/month)
-            </td>
-          </tr>
         </tbody>
       </table>
       <div style={{ 
@@ -127,7 +118,7 @@ export default function TrueCostTable() {
         fontStyle: 'italic',
         marginTop: '0.5rem'
       }}>
-        <p>This table shows you exactly how much of your life you traded for each expense. Use it to identify areas where you might want to reduce spending.</p>
+        <p>This table shows you exactly how much of your life you traded for each expense. Use it to identify areas where you might want to reduce spending. Total hours per month: {formatNumber(totals.totalHoursOfWork)} hours of {formatNumber(hoursPerMonth)} worked per month.</p>
       </div>
     </>
   );
