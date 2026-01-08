@@ -186,11 +186,11 @@ const Charts = () => {
               </Suspense>
             </div>
 
-            <div className="charts-section">
-              <Suspense fallback="">
-                <WealthVelocity/>
-              </Suspense>
-            </div>
+            {/*<div className="charts-section">*/}
+            {/*  <Suspense fallback="">*/}
+            {/*    <WealthVelocity/>*/}
+            {/*  </Suspense>*/}
+            {/*</div>*/}
 
             <div className="charts-section">
               <Suspense fallback="">
