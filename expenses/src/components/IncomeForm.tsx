@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   useAuthDispatch,
   useAuthState,
   useData,
   useNotification,
 } from '../context';
-import { notificationType } from '../utils/constants';
+import { notificationType, incomeSuggestions } from '../utils/constants';
 import { AuthState, DataState, TransactionOrIncomeItem } from '../type/types';
 import { addItemOffline, updateItemOffline } from '../utils/offlineAPI';
 import { getItemFromDB } from '../utils/indexedDB';
-import { fetchData } from '../utils/utils';
+import { fetchData, extractHashtags, addTagToText, removeTagFromText, hasTag } from '../utils/utils';
 
 interface IncomeFormProps {
   formType: string;
@@ -39,6 +39,17 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
     formType === 'add' ? initialState : values
   );
   const { token } = useAuthState() as AuthState;
+  
+  // Track selected tags for highlighting
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  
+  // Initialize selected tags when editing
+  useEffect(() => {
+    if (formType === 'edit' && formState.field_description) {
+      const existingTags = extractHashtags(formState.field_description);
+      setSelectedTags(existingTags);
+    }
+  }, [formType, formState.field_description]);
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -70,6 +81,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
             showNotification('Success!', notificationType.SUCCESS);
             setIsSubmitting(false);
             setFormState(initialState);
+            setSelectedTags([]);
             // Refresh data to show new item
             setTimeout(() => {
               fetchData(token, dataDispatch, dispatch);
@@ -102,6 +114,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
             showNotification('Success!', notificationType.SUCCESS);
             setIsSubmitting(false);
             setFormState(initialState);
+            setSelectedTags([]);
             // Refresh data to show updated item
             setTimeout(() => {
               fetchData(token, dataDispatch, dispatch);
@@ -120,6 +133,26 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
       );
       setIsSubmitting(false);
     }
+  };
+
+  const handleTagClick = (tag: string) => {
+    const hasTagInText = hasTag(formState.field_description, tag);
+    let newDescription: string;
+    
+    if (hasTagInText) {
+      // Remove tag if it exists
+      newDescription = removeTagFromText(formState.field_description, tag);
+      setSelectedTags(selectedTags.filter(t => t !== tag));
+    } else {
+      // Add tag if it doesn't exist
+      newDescription = addTagToText(formState.field_description, tag);
+      setSelectedTags([...selectedTags, tag]);
+    }
+    
+    setFormState({
+      ...formState,
+      field_description: newDescription,
+    });
   };
 
   const today: Date = new Date();
@@ -156,6 +189,20 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
           value={formState.field_description}
           onChange={handleChange}
         />
+        <ul className="suggestions">
+          {incomeSuggestions.map((tag) => {
+            const isSelected = selectedTags.includes(tag) || hasTag(formState.field_description, tag);
+            return (
+              <li
+                key={tag}
+                onClick={() => handleTagClick(tag)}
+                className={isSelected ? 'selected-suggestion' : ''}
+              >
+                #{tag}
+              </li>
+            );
+          })}
+        </ul>
         <button type="submit" disabled={isSubmitting} className="button w-100">
           {isSubmitting ? (
             <div className="loader">

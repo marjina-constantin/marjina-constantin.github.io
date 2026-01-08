@@ -10,6 +10,26 @@ import useSwipeActions from '../hooks/useSwipeActions';
 import ItemSyncIndicator from './ItemSyncIndicator';
 import './TransactionList.scss';
 
+// Render description with hashtags styled
+const renderDescriptionWithHashtags = (description: string) => {
+  if (!description) return null;
+  
+  // Split by hashtags - match # followed by word chars, spaces, and common special chars like /
+  // This handles multi-word tags like "#happy hour" or "#car service"
+  const parts = description.split(/(#[a-zA-Z0-9\/]+(?:\s+[a-zA-Z0-9\/]+)*)/g);
+  
+  return parts.map((part, index) => {
+    if (part.startsWith('#')) {
+      return (
+        <span key={index} className="hashtag">
+          {part}
+        </span>
+      );
+    }
+    return <span key={index}>{part}</span>;
+  });
+};
+
 interface TransactionListProps {
   transactions: TransactionOrIncomeItem[];
   categoryLabels: Array<{ value: string; label: string }>;
@@ -205,7 +225,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
                 {/* Content */}
                 <div className="transaction-content">
                   <div className="transaction-name">
-                    {transaction.dsc}
+                    {renderDescriptionWithHashtags(transaction.dsc || '')}
                     <ItemSyncIndicator itemId={transaction.id} failed={transaction.failed} />
                   </div>
                 </div>

@@ -259,6 +259,17 @@ export const suggestions = {
   14: ['vin', 'bere', 'whiskey', 'cognac', 'gin', 'cocktails'],
 };
 
+export const incomeSuggestions = [
+  'salary',
+  'bonus',
+  'freelance',
+  'overtime',
+  'interest',
+  'gift',
+  'cashback',
+  'sale',
+];
+
 export const notificationType = {
   SUCCESS: 'success',
   ERROR: 'error',

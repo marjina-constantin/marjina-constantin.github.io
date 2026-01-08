@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   useAuthDispatch,
   useAuthState,
@@ -10,7 +10,7 @@ import { notificationType } from '../utils/constants';
 import { AuthState, DataState, TransactionOrIncomeItem } from '../type/types';
 import { addItemOffline, updateItemOffline } from '../utils/offlineAPI';
 import { getItemFromDB } from '../utils/indexedDB';
-import { fetchData } from '../utils/utils';
+import { fetchData, extractHashtags, addTagToText, removeTagFromText, hasTag } from '../utils/utils';
 
 interface TransactionFormProps {
   formType: 'add' | 'edit';
@@ -49,6 +49,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     if (event.target.name === 'field_category') {
       // @ts-expect-error TBC
       setSuggestionData(suggestions[value]);
+      // Reset selected tags when category changes
+      setSelectedTags([]);
     }
   };
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -75,7 +77,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             setIsSubmitting(false);
             setFormState(initialState);
             setSuggestionData([]);
-            setSelectedIndices([]);
+            setSelectedTags([]);
             // Refresh data to show new item
             setTimeout(() => {
               fetchData(
@@ -115,7 +117,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             setIsSubmitting(false);
             setFormState(initialState);
             setSuggestionData([]);
-            setSelectedIndices([]);
+            setSelectedTags([]);
             // Refresh data to show updated item
             setTimeout(() => {
               fetchData(
@@ -152,20 +154,40 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     // @ts-expect-error TBC
     suggestions[formState.field_category]
   );
-  const [selectedIndices, setSelectedIndices] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  
+  // Initialize selected tags when editing based on existing hashtags
+  useEffect(() => {
+    if (formType === 'edit' && formState.field_description) {
+      const existingTags = extractHashtags(formState.field_description);
+      // Filter to only include tags that are in the current category's suggestions
+      const validTags = existingTags.filter(tag => 
+        suggestionData.some(suggestion => suggestion.toLowerCase() === tag.toLowerCase())
+      );
+      setSelectedTags(validTags);
+    } else if (formType === 'add') {
+      setSelectedTags([]);
+    }
+  }, [formType, formState.field_category, suggestionData]);
 
-  const handleSuggestionClick = (suggestion: string, index: string) => {
+  const handleSuggestionClick = (suggestion: string) => {
+    const hasTagInText = hasTag(formState.field_description, suggestion);
+    let newDescription: string;
+    
+    if (hasTagInText) {
+      // Remove tag if it exists
+      newDescription = removeTagFromText(formState.field_description, suggestion);
+      setSelectedTags(selectedTags.filter(t => t !== suggestion));
+    } else {
+      // Add tag if it doesn't exist (to the end)
+      newDescription = addTagToText(formState.field_description, suggestion);
+      setSelectedTags([...selectedTags, suggestion]);
+    }
+    
     setFormState({
       ...formState,
-      field_description: formState?.field_description
-        ? formState.field_description + ` ${suggestion}`
-        : suggestion,
+      field_description: newDescription,
     });
-    const isSelected = selectedIndices.includes(index);
-    if (isSelected) {
-      return;
-    }
-    setSelectedIndices([...selectedIndices, index]);
   };
   return (
     <div>
@@ -209,21 +231,18 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         />
         {suggestionData.length ? (
           <ul className="suggestions">
-            {suggestionData.map((suggestion, index) => (
-              <li
-                key={`${index}-${suggestion}`}
-                onClick={() => {
-                  handleSuggestionClick(suggestion, `${index}-${suggestion}`);
-                }}
-                className={
-                  selectedIndices.includes(`${index}-${suggestion}`)
-                    ? 'selected-suggestion'
-                    : ''
-                }
-              >
-                {suggestion}
-              </li>
-            ))}
+            {suggestionData.map((suggestion) => {
+              const isSelected = selectedTags.includes(suggestion) || hasTag(formState.field_description, suggestion);
+              return (
+                <li
+                  key={suggestion}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className={isSelected ? 'selected-suggestion' : ''}
+                >
+                  #{suggestion}
+                </li>
+              );
+            })}
           </ul>
         ) : null}
         <button type="submit" disabled={isSubmitting} className="button w-100">

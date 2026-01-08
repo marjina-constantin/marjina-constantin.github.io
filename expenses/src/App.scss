@@ -986,6 +986,10 @@ ul.suggestions li:hover {
   cursor: pointer;
   background: #323440;
 }
+ul.suggestions li.selected-suggestion {
+  border: 1px solid var(--accent-color);
+  background: var(--secondary-color);
+}
 @keyframes bubble-up {
   0% {
     transform: scale(0);
@@ -993,6 +997,18 @@ ul.suggestions li:hover {
   100% {
     transform: scale(1);
   }
+}
+
+// Hashtag styling in description fields and lists
+.hashtag {
+  color: #ccc;
+  font-weight: 400;
+  font-style: italic;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 3px 8px;
+  border-radius: 8px;
+  display: inline-block;
+  margin: 0 2px;
 }
 .notification {
   position: fixed;

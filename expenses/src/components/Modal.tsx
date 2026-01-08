@@ -22,6 +22,22 @@ export default function Modal({ show, onClose, children }: ModalProps) {
     };
   }, [show, onClose]);
 
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (show && e.key === 'Escape') {
+        // Create a synthetic event for onClose
+        const syntheticEvent = {
+          preventDefault: () => {},
+        } as React.MouseEvent<HTMLAnchorElement, MouseEvent>;
+        onClose(syntheticEvent);
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [show, onClose]);
+
   return (
     <>
       {show ? (

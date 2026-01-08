@@ -196,3 +196,40 @@ export const getCategory: { [key: string]: string } = categories.reduce(
   },
   {}
 );
+
+// Extract hashtags from text (format: #tag, supports multi-word tags)
+export const extractHashtags = (text: string): string[] => {
+  if (!text) return [];
+  // Match # followed by word chars, spaces, and common special chars like /
+  // This handles multi-word tags like "#happy hour" or "#car service"
+  const hashtagRegex = /#([a-zA-Z0-9\/]+(?:\s+[a-zA-Z0-9\/]+)*)/g;
+  const matches = text.match(hashtagRegex);
+  return matches ? matches.map(tag => tag.substring(1)) : [];
+};
+
+// Check if a tag already exists in text (supports multi-word tags)
+export const hasTag = (text: string, tag: string): boolean => {
+  if (!text || !tag) return false;
+  // Escape special regex characters in tag and match as whole word
+  const escapedTag = tag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const tagRegex = new RegExp(`#${escapedTag}\\b`, 'i');
+  return tagRegex.test(text);
+};
+
+// Add tag to the end of text (avoiding duplicates)
+export const addTagToText = (text: string, tag: string): string => {
+  if (!tag) return text;
+  const trimmedText = text?.trim() || '';
+  if (hasTag(trimmedText, tag)) {
+    return trimmedText;
+  }
+  const tagWithHash = `#${tag}`;
+  return trimmedText ? `${trimmedText} ${tagWithHash}` : tagWithHash;
+};
+
+// Remove tag from text
+export const removeTagFromText = (text: string, tag: string): string => {
+  if (!text || !tag) return text;
+  const tagRegex = new RegExp(`\\s*#${tag}\\b`, 'gi');
+  return text.replace(tagRegex, '').trim();
+};
