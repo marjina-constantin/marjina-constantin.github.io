@@ -158,6 +158,8 @@ export const dispatchProcessedData = (
   category: string = '',
   textFilter: string = ''
 ) => {
+  // SET_DATA now automatically re-applies both transaction and income filters
+  // No need to dispatch FILTER_DATA separately
   dataDispatch({
     type: 'SET_DATA',
     raw: data,
@@ -173,15 +175,6 @@ export const dispatchProcessedData = (
     totalPerYear: processed.totalPerYear,
     totalSpent: processed.totalSpent,
   });
-
-  // Keep transaction filtering logic explicit (and isolated) to avoid corrupting base aggregates.
-  if (category || textFilter) {
-    dataDispatch({
-      type: 'FILTER_DATA',
-      category,
-      textFilter,
-    });
-  }
 };
 
 
