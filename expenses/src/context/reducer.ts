@@ -113,13 +113,134 @@ export const DataReducer = (initialState: DataItems, action: ActionType) => {
   switch (action.type) {
     case 'SET_DATA':
       const changedItems = compareData(initialState.raw, action.raw);
-      return {
+      
+      // Preserve filter state
+      const preservedCategory = initialState.category || '';
+      const preservedTextFilter = initialState.textFilter || '';
+      const preservedIncomeTextFilter = initialState.incomeTextFilter || '';
+      const preservedIncomeSelectedTags = initialState.incomeSelectedTags || [];
+      
+      const baseState = {
         ...initialState,
         ...action,
+        // Preserve filter state
+        category: preservedCategory,
+        textFilter: preservedTextFilter,
+        incomeTextFilter: preservedIncomeTextFilter,
+        incomeSelectedTags: preservedIncomeSelectedTags,
         changedItems: {
           ...initialState.changedItems,
           ...changedItems
         },
+      };
+      
+      // Re-apply transaction filters if they were active
+      let filteredState: any = null;
+      let filtered_raw: TransactionOrIncomeItem[] | null = null;
+      
+      if ((preservedCategory || preservedTextFilter) && baseState.raw) {
+        let filtered = baseState.raw.filter(
+          (item: TransactionOrIncomeItem) => item.type === 'transaction'
+        ) || [];
+
+        if (preservedCategory) {
+          filtered = filtered.filter((item) => item.cat === preservedCategory);
+        }
+
+        if (preservedTextFilter) {
+          const textFilterLower = preservedTextFilter.toLowerCase();
+          filtered = filtered.filter((item) =>
+            item.dsc?.toLowerCase()?.includes(textFilterLower)
+          );
+        }
+        
+        filtered_raw = filtered;
+        
+        // Calculate filtered state (groupedData, totals, etc.)
+        filteredState = filtered.reduce(
+          (accumulator: Accumulator, item: TransactionOrIncomeItem) => {
+            const date = new Date(item.dt);
+            const year = date.getFullYear();
+            const month = `${monthNames[date.getMonth()]} ${year}`;
+            accumulator.groupedData[month] = accumulator.groupedData[month] || [];
+            accumulator.groupedData[month].push(item);
+
+            accumulator.totals[month] = (accumulator.totals[month] || 0) + parseFloat(item.sum);
+            accumulator.totalSpent = accumulator.totalSpent + parseFloat(item.sum);
+
+            accumulator.totalsPerYearAndMonth[year] = accumulator.totalsPerYearAndMonth[year] || {};
+            accumulator.totalsPerYearAndMonth[year][month] = 
+              (accumulator.totalsPerYearAndMonth[year][month] || 0) + parseFloat(item.sum);
+
+            accumulator.totalPerYear[year] = 
+              ((accumulator.totalPerYear[year] as number) || 0) + parseFloat(item.sum);
+
+            const cat = item.cat;
+            if (cat !== undefined) {
+              if (!accumulator.categoryTotals[cat]) {
+                accumulator.categoryTotals[cat] = {
+                  name: '',
+                  y: 0,
+                };
+              }
+              accumulator.categoryTotals[cat].name =
+                // @ts-expect-error YBC
+                categories[cat]?.label || '';
+              accumulator.categoryTotals[cat].y += parseFloat(item.sum) || 0;
+            }
+
+            return accumulator;
+          },
+          {
+            groupedData: {},
+            totals: {},
+            totalsPerYearAndMonth: {},
+            totalPerYear: {},
+            totalSpent: 0,
+            categoryTotals: {},
+          }
+        );
+      } else {
+        // No active transaction filters - clear filtered state
+        filteredState = null;
+        filtered_raw = null;
+      }
+      
+      // Re-apply income filters if they were active
+      let filteredIncomeData: TransactionOrIncomeItem[] | null = null;
+      if ((preservedIncomeTextFilter || preservedIncomeSelectedTags.length > 0) && baseState.incomeData) {
+        let incomeFiltered = [...baseState.incomeData];
+        
+        // Filter by text
+        if (preservedIncomeTextFilter) {
+          const textFilterLower = preservedIncomeTextFilter.toLowerCase();
+          incomeFiltered = incomeFiltered.filter((item) =>
+            item.dsc?.toLowerCase()?.includes(textFilterLower)
+          );
+        }
+        
+        // Filter by tags
+        if (preservedIncomeSelectedTags.length > 0) {
+          incomeFiltered = incomeFiltered.filter((item) => {
+            if (!item.dsc) return false;
+            // Check if item contains all selected tags
+            return preservedIncomeSelectedTags.every(tag => {
+              const tagRegex = new RegExp(`#${tag}\\b`, 'i');
+              return tagRegex.test(item.dsc);
+            });
+          });
+        }
+        
+        filteredIncomeData = incomeFiltered;
+      }
+      
+      return {
+        ...baseState,
+        // Transaction filter results
+        filtered: filteredState,
+        filtered_raw: filtered_raw,
+        // Income filter results
+        filteredIncomeData,
       };
 
     case 'CLEAR_CHANGED_ITEM':
