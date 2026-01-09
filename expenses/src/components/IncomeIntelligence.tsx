@@ -120,17 +120,32 @@ export default function IncomeIntelligence() {
     });
 
     // Prepare line chart series data
+    // Only Salary and Interest should be visible by default
+    const visibleByDefault = ['Salary', 'Interest'];
+    
     const lineSeries = incomeSuggestions
       .map(tag => {
         const label = incomeSourceLabels[tag] || tag;
+        const seriesData = sortedMonths.map(month => 
+          parseFloat((monthlyData[month]?.[label] || 0).toFixed(2))
+        );
+        
+        // Only include series that have data
+        if (!seriesData.some(val => val > 0)) {
+          return null;
+        }
+        
         return {
           name: label,
-          data: sortedMonths.map(month => 
-            parseFloat((monthlyData[month]?.[label] || 0).toFixed(2))
-          ),
+          data: seriesData,
+          visible: visibleByDefault.includes(label),
         };
       })
-      .filter(series => series.data.some(val => val > 0));
+      .filter(series => series !== null) as Array<{
+        name: string;
+        data: number[];
+        visible: boolean;
+      }>;
 
     // Add untagged series if there's any
     const untaggedSeriesData = sortedMonths.map(month => 
@@ -140,6 +155,7 @@ export default function IncomeIntelligence() {
       lineSeries.push({
         name: 'Untagged',
         data: untaggedSeriesData,
+        visible: false, // Hide untagged by default
       });
     }
 
