@@ -17,6 +17,10 @@ import TotalIncomeCount from '../../components/TotalIncomeCount';
 import { AuthState, TransactionOrIncomeItem } from '../../type/types';
 import { ArrowUpCircle, TrendingUp } from 'lucide-react';
 
+const IncomeIntelligence = React.lazy(
+  () => import('../../components/IncomeIntelligence')
+);
+
 const Income = () => {
   const showNotification = useNotification();
   const { token } = useAuthState() as AuthState;
@@ -203,6 +207,15 @@ const Income = () => {
             </div>
           )}
         </div>
+      )}
+      {displayIncomeData && displayIncomeData.length ? (
+        <div className="charts-section">
+          <Suspense fallback="">
+            <IncomeIntelligence />
+          </Suspense>
+        </div>
+      ) : (
+        ''
       )}
       {displayIncomeData && displayIncomeData.length ? (
         <div className="charts-section">
