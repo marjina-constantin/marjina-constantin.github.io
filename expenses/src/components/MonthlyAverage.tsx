@@ -66,12 +66,25 @@ export default function MonthlyAverage() {
   return (
     <>
       <span className="heading">Monthly average per category</span>
+      <div className="true-cost-toggle-wrapper">
+        <label className="true-cost-toggle" htmlFor="true-cost-toggle">
+          <input
+            type="checkbox"
+            id="true-cost-toggle"
+            checked={showTrueCost}
+            onChange={(e) => setShowTrueCost(e.target.checked)}
+          />
+          <span className="toggle-slider"></span>
+          <span className="toggle-label">Show True Cost (Hours of Life Worked)</span>
+        </label>
+      </div>
       {showTrueCost && (
         <div style={{ 
           padding: '0.5rem 1rem', 
           fontSize: '0.85rem', 
           color: '#a0a0a0',
-          marginBottom: '1rem'
+          marginBottom: '1rem',
+          marginTop: '0.5rem'
         }}>
           <p>See how much of your life you trade for each expense category</p>
           <p style={{ fontStyle: 'italic', marginTop: '0.25rem' }}>
@@ -79,25 +92,6 @@ export default function MonthlyAverage() {
           </p>
         </div>
       )}
-      <div style={{ marginBottom: '0.5rem' }}>
-        <label style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '0.5rem',
-          cursor: 'pointer',
-          padding: '0.5rem 1rem',
-          fontSize: '0.9rem',
-          color: '#a0a0a0'
-        }}>
-          <input
-            type="checkbox"
-            checked={showTrueCost}
-            onChange={(e) => setShowTrueCost(e.target.checked)}
-            style={{ cursor: 'pointer' }}
-          />
-          <span>Show True Cost (Hours of Life Worked)</span>
-        </label>
-      </div>
       <table className={`daily-average ${showTrueCost ? 'true-cost-table' : ''}`}>
         <thead>
           <tr>
