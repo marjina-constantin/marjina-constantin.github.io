@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react';
+import React, { useLayoutEffect, useRef, useState, useCallback } from 'react';
 import { categories } from '../utils/constants';
 import { useData } from '../context';
 import { Search, X } from 'lucide-react';
@@ -7,60 +7,55 @@ import { DataState } from '../type/types';
 function Filters() {
   const { data, dataDispatch } = useData() as DataState;
 
-  // Keep filter inputs as local state for responsiveness (especially under fast typing / ctrl+a)
-  // and dispatch FILTER_DATA from an effect using the latest values (avoids stale closures).
-  const [category, setCategory] = useState(data.category ?? '');
-  const [textFilter, setTextFilter] = useState(data.textFilter ?? '');
+  const [state, setState] = useState({
+    category: data.category ?? '',
+    textFilter: data.textFilter ?? '',
+  });
   const [showTextFilter, setShowTextFilter] = useState(false);
   const textInputRef = useRef<HTMLInputElement | null>(null);
-
-  // Keep UI consistent: if text filter is active, keep the input visible.
-  useEffect(() => {
-    if (textFilter && !showTextFilter) {
-      setShowTextFilter(true);
-    }
-  }, [textFilter, showTextFilter]);
-
-  // Sync local state if something external changes filter state (e.g. rehydration / refresh).
-  // Only update when values diverge, to avoid cursor-jumps while typing.
-  useEffect(() => {
-    const nextCategory = data.category ?? '';
-    const nextText = data.textFilter ?? '';
-    if (nextCategory !== category) setCategory(nextCategory);
-    if (nextText !== textFilter) setTextFilter(nextText);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.category, data.textFilter]);
-
-  // Debounced dispatch to avoid hammering the reducer on every keypress.
-  useEffect(() => {
-    if (data.loading || !data.raw) return;
-    const handle = window.setTimeout(() => {
-      dataDispatch({
-        type: 'FILTER_DATA',
-        category,
-        textFilter,
-      });
-    }, 80);
-    return () => window.clearTimeout(handle);
-  }, [category, textFilter, dataDispatch, data.loading, data.raw]);
 
   const handleCategoryChange = useCallback((
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    setCategory(event.target.value);
-  }, []);
+    const category = event.target.value;
+    setState((prevState) => ({
+      ...prevState,
+      category,
+    }));
+    dataDispatch({
+      type: 'FILTER_DATA',
+      category,
+      textFilter: state.textFilter,
+    });
+  }, [dataDispatch, state.textFilter]);
 
   const handleTextFilterChange = useCallback((
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setTextFilter(event.target.value);
-  }, []);
+    const textFilter = event.target.value;
+    setState((prevState) => ({
+      ...prevState,
+      textFilter,
+    }));
+    dataDispatch({
+      type: 'FILTER_DATA',
+      category: state.category,
+      textFilter,
+    });
+  }, [dataDispatch, state.category]);
 
   const handleClearFilters = useCallback(() => {
-    setCategory('');
-    setTextFilter('');
+    setState({
+      category: '',
+      textFilter: '',
+    });
     setShowTextFilter(false);
-  }, []);
+    dataDispatch({
+      type: 'FILTER_DATA',
+      category: '',
+      textFilter: '',
+    });
+  }, [dataDispatch]);
 
   useLayoutEffect(() => {
     if (showTextFilter && textInputRef.current) {
@@ -85,7 +80,7 @@ function Filters() {
             <input
               ref={textInputRef}
               type="text"
-              value={textFilter}
+              value={state.textFilter}
               name="textFilter"
               onChange={handleTextFilterChange}
               placeholder="Filter by text"
@@ -95,7 +90,12 @@ function Filters() {
               className="filters__close-button"
               onClick={() => {
                 setShowTextFilter(false);
-                setTextFilter('');
+                setState((prev) => ({ ...prev, textFilter: '' }));
+                dataDispatch({
+                  type: 'FILTER_DATA',
+                  category: state.category,
+                  textFilter: '',
+                });
               }}
               aria-label="Close search"
             >
@@ -105,7 +105,7 @@ function Filters() {
         )}
       </div>
       <select
-        value={category}
+        value={state.category}
         name="category"
         onChange={handleCategoryChange}
         className="filters__select"
@@ -116,7 +116,7 @@ function Filters() {
           </option>
         ))}
       </select>
-      {(textFilter || category) && (
+      {(state.textFilter || state.category) && (
         <button onClick={handleClearFilters} className="filters__clear-button">
           Clear Filters
         </button>
