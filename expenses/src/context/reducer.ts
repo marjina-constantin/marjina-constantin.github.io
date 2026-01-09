@@ -134,78 +134,6 @@ export const DataReducer = (initialState: DataItems, action: ActionType) => {
         },
       };
       
-      // Re-apply transaction filters if they were active
-      let filteredState: any = null;
-      let filtered_raw: TransactionOrIncomeItem[] | null = null;
-      
-      if ((preservedCategory || preservedTextFilter) && baseState.raw) {
-        let filtered = baseState.raw.filter(
-          (item: TransactionOrIncomeItem) => item.type === 'transaction'
-        ) || [];
-
-        if (preservedCategory) {
-          filtered = filtered.filter((item) => item.cat === preservedCategory);
-        }
-
-        if (preservedTextFilter) {
-          const textFilterLower = preservedTextFilter.toLowerCase();
-          filtered = filtered.filter((item) =>
-            item.dsc?.toLowerCase()?.includes(textFilterLower)
-          );
-        }
-        
-        filtered_raw = filtered;
-        
-        // Calculate filtered state (groupedData, totals, etc.)
-        filteredState = filtered.reduce(
-          (accumulator: Accumulator, item: TransactionOrIncomeItem) => {
-            const date = new Date(item.dt);
-            const year = date.getFullYear();
-            const month = `${monthNames[date.getMonth()]} ${year}`;
-            accumulator.groupedData[month] = accumulator.groupedData[month] || [];
-            accumulator.groupedData[month].push(item);
-
-            accumulator.totals[month] = (accumulator.totals[month] || 0) + parseFloat(item.sum);
-            accumulator.totalSpent = accumulator.totalSpent + parseFloat(item.sum);
-
-            accumulator.totalsPerYearAndMonth[year] = accumulator.totalsPerYearAndMonth[year] || {};
-            accumulator.totalsPerYearAndMonth[year][month] = 
-              (accumulator.totalsPerYearAndMonth[year][month] || 0) + parseFloat(item.sum);
-
-            accumulator.totalPerYear[year] = 
-              ((accumulator.totalPerYear[year] as number) || 0) + parseFloat(item.sum);
-
-            const cat = item.cat;
-            if (cat !== undefined) {
-              if (!accumulator.categoryTotals[cat]) {
-                accumulator.categoryTotals[cat] = {
-                  name: '',
-                  y: 0,
-                };
-              }
-              accumulator.categoryTotals[cat].name =
-                // @ts-expect-error YBC
-                categories[cat]?.label || '';
-              accumulator.categoryTotals[cat].y += parseFloat(item.sum) || 0;
-            }
-
-            return accumulator;
-          },
-          {
-            groupedData: {},
-            totals: {},
-            totalsPerYearAndMonth: {},
-            totalPerYear: {},
-            totalSpent: 0,
-            categoryTotals: {},
-          }
-        );
-      } else {
-        // No active transaction filters - clear filtered state
-        filteredState = null;
-        filtered_raw = null;
-      }
-      
       // Re-apply income filters if they were active
       let filteredIncomeData: TransactionOrIncomeItem[] | null = null;
       if ((preservedIncomeTextFilter || preservedIncomeSelectedTags.length > 0) && baseState.incomeData) {
@@ -236,9 +164,6 @@ export const DataReducer = (initialState: DataItems, action: ActionType) => {
       
       return {
         ...baseState,
-        // Transaction filter results
-        filtered: filteredState,
-        filtered_raw: filtered_raw,
         // Income filter results
         filteredIncomeData,
       };
