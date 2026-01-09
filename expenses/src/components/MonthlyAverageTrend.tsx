@@ -105,6 +105,7 @@ export default function MonthlyAverageTrend() {
       name: 'Months Remaining',
       data: monthsRemainingData,
       yAxis: 1,
+      visible: false,
     });
   }
 
