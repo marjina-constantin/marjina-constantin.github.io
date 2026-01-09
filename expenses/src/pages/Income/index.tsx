@@ -17,8 +17,8 @@ import TotalIncomeCount from '../../components/TotalIncomeCount';
 import { AuthState, TransactionOrIncomeItem } from '../../type/types';
 import { ArrowUpCircle, TrendingUp } from 'lucide-react';
 
-const IncomeIntelligence = React.lazy(
-  () => import('../../components/IncomeIntelligence')
+const IncomeSources = React.lazy(
+  () => import('../../components/IncomeSources')
 );
 
 const Income = () => {
@@ -211,7 +211,7 @@ const Income = () => {
       {displayIncomeData && displayIncomeData.length ? (
         <div className="charts-section">
           <Suspense fallback="">
-            <IncomeIntelligence />
+            <IncomeSources />
           </Suspense>
         </div>
       ) : (

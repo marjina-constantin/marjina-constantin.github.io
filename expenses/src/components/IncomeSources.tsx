@@ -19,7 +19,7 @@ const incomeSourceLabels: Record<string, string> = {
   'loan': 'Loans',
 };
 
-export default function IncomeIntelligence() {
+export default function IncomeSources() {
   const { data } = useData() as DataState;
   const { currency } = useAuthState() as AuthState;
   
@@ -235,7 +235,7 @@ export default function IncomeIntelligence() {
   if (chartData.pieData.length === 0) {
     return (
       <div>
-        <h3>Income Intelligence</h3>
+        <h3>Income Sources</h3>
         <p>No income data available. Add income entries with tags like #salary, #freelance, #bonus, #interest, or #refund.</p>
       </div>
     );
