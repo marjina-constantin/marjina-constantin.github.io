@@ -30,7 +30,7 @@
   &--offline {
     background: rgba(239, 68, 68, 0.15);
     border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #fca5a5;
+    color: #fecaca;  // A11y: brighter red
   }
 
   &--syncing {
@@ -46,7 +46,7 @@
   &--pending {
     background: rgba(251, 191, 36, 0.15);
     border: 1px solid rgba(251, 191, 36, 0.3);
-    color: #fcd34d;
+    color: #fde68a;  // A11y: brighter yellow
   }
 
   &--success {

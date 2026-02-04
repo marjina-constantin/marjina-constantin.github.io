@@ -278,11 +278,11 @@
     margin-bottom: 0.75rem;
 
     .sort-button {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.07);  // A11y: improved from 0.05
       border: none;
       border-radius: 8px;
       padding: 0.5rem 1rem;
-      color: rgba(255, 255, 255, 0.6);
+      color: rgba(255, 255, 255, 0.75);  // A11y: improved from 0.6
       font-size: 0.875rem;
       cursor: pointer;
       display: flex;
@@ -309,7 +309,7 @@
   }
 
   .transaction-list-item {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.07);  // A11y: improved from 0.05
     border-radius: 16px;
     padding: 1rem;
     padding-right: 1.5rem;
@@ -351,7 +351,7 @@
       .date-month {
         font-size: 0.7rem;
         font-weight: 600;
-        color: rgba(255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 0.7);  // A11y: improved from 0.5
         margin-top: 0.25rem;
         letter-spacing: 0.5px;
       }
@@ -359,7 +359,7 @@
       .date-year {
         font-size: 0.65rem;
         font-weight: 500;
-        color: rgba(255, 255, 255, 0.4);
+        color: rgba(255, 255, 255, 0.65);  // A11y: improved from 0.4
         margin-top: 0.125rem;
       }
     }
@@ -378,7 +378,7 @@
       .category-name {
         font-size: 0.8rem;
         font-weight: 500;
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.8);  // A11y: improved from 0.7
         text-align: center;
         white-space: nowrap;
         overflow: hidden;
@@ -426,10 +426,10 @@
       justify-content: center;
       width: 36px;
       height: 36px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);  // A11y: improved
+      background: rgba(255, 255, 255, 0.07);  // A11y: improved from 0.05
       border-radius: 8px;
-      color: rgba(255, 255, 255, 0.7);
+      color: rgba(255, 255, 255, 0.8);  // A11y: improved from 0.7
       cursor: pointer;
       transition: all 0.2s ease;
       padding: 0;
