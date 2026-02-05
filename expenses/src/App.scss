@@ -114,8 +114,8 @@ $color-map: (
     background: $bg-color;
     background-image: radial-gradient(
       circle at top right,
-      rgba($accent-r, $accent-g, $accent-b, 0.09) 0%,
-      rgba($accent-r, $accent-g, $accent-b, 0.06) 35%,
+      rgba($accent-r, $accent-g, $accent-b, 0.05) 0%,
+      rgba($accent-r, $accent-g, $accent-b, 0.03) 35%,
       transparent 65%
     );
     background-attachment: fixed;
@@ -295,7 +295,7 @@ textarea {
 .add-transaction input,
 .add-transaction textarea,
 .add-transaction select {
-  background: var(--bg-color);
+  background: transparent;
   border: none;
   min-height: 40px;
   width: 100%;
