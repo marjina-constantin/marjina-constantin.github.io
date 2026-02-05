@@ -106,7 +106,19 @@ $color-map: (
     --accent-gradient-color: #{map-get($colors, accent-gradient-color)};
   }
   body:has(.#{$class}) {
-    background: #{map-get($colors, bg-color)};
+    $bg-color: map-get($colors, bg-color);
+    $accent-color: map-get($colors, accent-color);
+    $accent-r: red($accent-color);
+    $accent-g: green($accent-color);
+    $accent-b: blue($accent-color);
+    background: $bg-color;
+    background-image: radial-gradient(
+      circle at top right,
+      rgba($accent-r, $accent-g, $accent-b, 0.09) 0%,
+      rgba($accent-r, $accent-g, $accent-b, 0.06) 35%,
+      transparent 65%
+    );
+    background-attachment: fixed;
   }
 }
 
