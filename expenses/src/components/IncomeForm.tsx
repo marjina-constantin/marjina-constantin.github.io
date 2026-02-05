@@ -189,20 +189,22 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
           value={formState.field_description}
           onChange={handleChange}
         />
-        <ul className="suggestions">
+        <div className="filters__tags">
           {incomeSuggestions.map((tag) => {
             const isSelected = selectedTags.includes(tag) || hasTag(formState.field_description, tag);
             return (
-              <li
+              <button
                 key={tag}
+                type="button"
                 onClick={() => handleTagClick(tag)}
-                className={isSelected ? 'selected-suggestion' : ''}
+                onMouseDown={(e) => e.preventDefault()}
+                className={`filters__tag ${isSelected ? 'filters__tag--selected' : ''}`}
               >
                 #{tag}
-              </li>
+              </button>
             );
           })}
-        </ul>
+        </div>
         <button type="submit" disabled={isSubmitting} className="button w-100">
           {isSubmitting ? (
             <div className="loader">

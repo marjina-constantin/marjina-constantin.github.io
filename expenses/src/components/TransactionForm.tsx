@@ -230,20 +230,22 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           onChange={handleChange}
         />
         {suggestionData.length ? (
-          <ul className="suggestions">
+          <div className="filters__tags">
             {suggestionData.map((suggestion) => {
               const isSelected = selectedTags.includes(suggestion) || hasTag(formState.field_description, suggestion);
               return (
-                <li
+                <button
                   key={suggestion}
+                  type="button"
                   onClick={() => handleSuggestionClick(suggestion)}
-                  className={isSelected ? 'selected-suggestion' : ''}
+                  onMouseDown={(e) => e.preventDefault()}
+                  className={`filters__tag ${isSelected ? 'filters__tag--selected' : ''}`}
                 >
                   #{suggestion}
-                </li>
+                </button>
               );
             })}
-          </ul>
+          </div>
         ) : null}
         <button type="submit" disabled={isSubmitting} className="button w-100">
           {isSubmitting ? (
