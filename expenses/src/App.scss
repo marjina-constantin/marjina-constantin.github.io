@@ -167,6 +167,7 @@ body {
   justify-content: center;
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;  // Remove mobile tap highlight
   
   &::after {
     content: '';
@@ -765,6 +766,7 @@ button:hover {
     white-space: nowrap;
     animation: bubble-up 0.3s;
     transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;  // Remove mobile tap highlight
 
     &:hover {
       background: rgba(255, 255, 255, 0.15);
