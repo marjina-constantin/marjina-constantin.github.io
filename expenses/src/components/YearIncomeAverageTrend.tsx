@@ -150,10 +150,16 @@ export default function YearIncomeAverageTrend() {
               const prevSpent = hasActiveFilters 
                 ? null 
                 : (prevYear ? ((totalPerYear[prevYear] as number) || 0) : null);
+              const prevDiff = !hasActiveFilters && prevYear && prevIncome !== null && prevSpent !== null
+                ? prevIncome - prevSpent
+                : null;
               
               const incomeChange = prevIncome !== null ? calculatePercentageChange(currentIncome, prevIncome) : null;
               const spentChange = !hasActiveFilters && prevSpent !== null 
                 ? calculatePercentageChange(currentSpent, prevSpent) 
+                : null;
+              const savingsChange = !hasActiveFilters && prevDiff !== null 
+                ? calculatePercentageChange(diff, prevDiff) 
                 : null;
               
               sumDiff += diff;
@@ -161,8 +167,10 @@ export default function YearIncomeAverageTrend() {
               
               const incomeCellId = `income-${year}`;
               const spentCellId = `spent-${year}`;
+              const savingsCellId = `savings-${year}`;
               const showIncomeChange = clickedCells.has(incomeCellId);
               const showSpentChange = clickedCells.has(spentCellId);
+              const showSavingsChange = clickedCells.has(savingsCellId);
               
               const toggleCell = (cellId: string) => {
                 setClickedCells(prev => {
@@ -206,9 +214,18 @@ export default function YearIncomeAverageTrend() {
                         {showSpentChange && formatPercentageChange(spentChange, true)}
                       </td>
                       <td>
-                        {isFinite(savingsPercent)
-                          ? `${formatNumber(diff)} ${currency} (${formatNumber(savingsPercent)}%)`
-                          : `${formatNumber(diff)} ${currency}`}
+                        <span
+                          onClick={() => toggleCell(savingsCellId)}
+                          style={{
+                            cursor: 'pointer',
+                            userSelect: 'none',
+                          }}
+                        >
+                          {isFinite(savingsPercent)
+                            ? `${formatNumber(diff)} ${currency} (${formatNumber(savingsPercent)}%)`
+                            : `${formatNumber(diff)} ${currency}`}
+                        </span>
+                        {showSavingsChange && formatPercentageChange(savingsChange, false)}
                       </td>
                     </>
                   )}
