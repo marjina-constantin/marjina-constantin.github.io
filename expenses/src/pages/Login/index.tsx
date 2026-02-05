@@ -53,12 +53,25 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h4>Please login using Google in order to access app functionality.</h4>
-      {errorMessage ? <p>We have some errors: {errorMessage}</p> : null}
-      <button onClick={handleLogin} className="button wide" disabled={loading || isRedirecting}>
-        {isRedirecting ? 'Redirecting…' : 'Log in'}
-      </button>
+    <div className="login-page">
+      <div className="login-content">
+        <h2>Welcome</h2>
+        <p className="login-description">
+          Please login using Google to access app functionality.
+        </p>
+        {errorMessage && (
+          <div className="login-error">
+            <p>{errorMessage}</p>
+          </div>
+        )}
+        <button 
+          onClick={handleLogin} 
+          className="button button-primary login-button" 
+          disabled={loading || isRedirecting}
+        >
+          {isRedirecting ? 'Redirecting…' : 'Log in with Google'}
+        </button>
+      </div>
     </div>
   );
 };
