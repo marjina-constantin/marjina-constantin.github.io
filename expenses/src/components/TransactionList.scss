@@ -1,3 +1,9 @@
+// Border radius variables
+$border-radius-xs: 4px;
+$border-radius-sm: 8px;
+$border-radius-md: 12px;
+$border-radius-lg: 16px;
+
 // Stats Grid
 .stats-grid {
   display: grid;
@@ -71,7 +77,7 @@
         right: 0;
         bottom: 0;
         border: 2px solid var(--accent-color);
-        border-radius: 16px;
+        border-radius: $border-radius-lg;
         opacity: 0;
         animation: borderPulse 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         pointer-events: none;
@@ -117,7 +123,7 @@
       bottom: 0;
       display: flex;
       align-items: center;
-      border-radius: 16px;
+      border-radius: $border-radius-lg;
       z-index: 0;
       opacity: 0;
       transition: opacity 0.2s ease;
@@ -280,7 +286,7 @@
     .sort-button {
       background: rgba(255, 255, 255, 0.07);  // A11y: improved from 0.05
       border: none;
-      border-radius: 8px;
+      border-radius: $border-radius-sm;
       padding: 0.5rem 1rem;
       color: rgba(255, 255, 255, 0.75);  // A11y: improved from 0.6
       font-size: 0.875rem;
@@ -310,7 +316,7 @@
 
   .transaction-list-item {
     background: rgba(255, 255, 255, 0.07);  // A11y: improved from 0.05
-    border-radius: 16px;
+    border-radius: $border-radius-lg;
     padding: 1rem;
     padding-right: 1.5rem;
     display: flex;
@@ -371,7 +377,7 @@
       min-width: 80px;
       max-width: 100px;
       background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
+      border-radius: $border-radius-md;
       padding: 0.5rem 0.75rem;
       flex-shrink: 0;
 
@@ -428,7 +434,7 @@
       height: 36px;
       border: 1px solid rgba(255, 255, 255, 0.12);  // A11y: improved
       background: rgba(255, 255, 255, 0.07);  // A11y: improved from 0.05
-      border-radius: 8px;
+      border-radius: $border-radius-sm;
       color: rgba(255, 255, 255, 0.8);  // A11y: improved from 0.7
       cursor: pointer;
       transition: all 0.2s ease;

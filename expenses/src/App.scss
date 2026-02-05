@@ -2,6 +2,16 @@ $white: #fff;
 $dark: #000;
 
 // =============================================================================
+// BORDER RADIUS SYSTEM
+// Consistent border radius values across the application
+// Only variables for values actually used in the app
+// =============================================================================
+$border-radius-xs: 4px;   // Very small elements
+$border-radius-sm: 8px;   // Small elements (tags, small buttons)
+$border-radius-md: 12px;  // Medium elements (buttons, inputs, modals) - most common
+$border-radius-lg: 16px;  // Large elements (cards, containers)
+
+// =============================================================================
 // ACCESSIBILITY COLOR SYSTEM - WCAG 2.1 AA Compliant
 // All accent colors tested for 4.5:1+ contrast ratio on their backgrounds
 // Secondary colors adjusted for ~1.3:1+ contrast with backgrounds (UI boundaries)
@@ -343,7 +353,7 @@ textarea {
   opacity: 1;
 }
 input[type='submit'] {
-  border-radius: 12px;
+  border-radius: $border-radius-md;
 }
 .add-transaction input[type='submit'] {
   border: none;
@@ -414,7 +424,7 @@ input[type="date"] {
   border: none;
   min-height: 40px;
   background: var(--accent-color);
-  border-radius: 12px;
+  border-radius: $border-radius-md;
   color: #282a36;
   body:has(.has-gradient-accent) & {
     background: var(--accent-gradient-color);
@@ -432,7 +442,7 @@ input[type="date"] {
   border: none;
   min-height: 40px;
   background: var(--accent-color);
-  border-radius: 12px;
+  border-radius: $border-radius-md;
   color: #282a36;
   width: 80%;
   body:has(.has-gradient-accent) & {
@@ -447,7 +457,7 @@ input[type="date"] {
   border: 1px solid rgba(255, 255, 255, 0.15);  // A11y: slightly more visible
   min-height: 40px;
   background: rgba(255, 255, 255, 0.07);  // A11y: improved from 0.05 for card distinction
-  border-radius: 12px;
+  border-radius: $border-radius-md;
   color: rgba(255, 255, 255, 0.85);  // A11y: improved from 0.7
   padding: 0.625rem 1.25rem;
   font-size: 0.875rem;
@@ -528,7 +538,7 @@ input[type="date"] {
 .btn-outline {
   background: none;
   border: 1px solid var(--accent-color);
-  border-radius: 12px;
+  border-radius: $border-radius-md;
   color: #fff;
   font-weight: bold;
   padding: 10px 25px;
@@ -556,7 +566,7 @@ button:hover {
   transform: translate(-50%, -50%);
   padding: 2em;
   background: var(--bg-color);
-  border-radius: 12px;
+  border-radius: $border-radius-md;
 }
 
 .modal-close {
@@ -583,18 +593,18 @@ button:hover {
     align-items: center;
   }
 
-  &__search-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.07);  // A11y: improved from 0.05
-    border: 1px solid rgba(255, 255, 255, 0.12);  // A11y: improved from 0.1
-    border-radius: 12px;
-    color: var(--accent-color);
-    cursor: pointer;
-    transition: all 0.2s ease;
+    &__search-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.07);  // A11y: improved from 0.05
+      border: 1px solid rgba(255, 255, 255, 0.12);  // A11y: improved from 0.1
+      border-radius: $border-radius-md;
+      color: var(--accent-color);
+      cursor: pointer;
+      transition: all 0.2s ease;
 
     &:hover {
       background: rgba(255, 255, 255, 0.08);
@@ -609,7 +619,7 @@ button:hover {
     gap: 0.5rem;
     background: rgba(255, 255, 255, 0.07);  // A11y: improved from 0.05
     border: 1px solid rgba(255, 255, 255, 0.12);  // A11y: improved from 0.1
-    border-radius: 12px;
+    border-radius: $border-radius-md;
     padding: 0 0.75rem;
     height: 40px;
     min-width: 200px;
@@ -660,7 +670,7 @@ button:hover {
   &__select {
     background: rgba(255, 255, 255, 0.07);  // A11y: improved from 0.05
     border: 1px solid rgba(255, 255, 255, 0.12);  // A11y: improved from 0.1
-    border-radius: 12px;
+    border-radius: $border-radius-md;
     padding: 0 2.5rem 0 0.75rem;
     height: 40px;
     color: #fff;
@@ -697,7 +707,7 @@ button:hover {
   &__clear-button {
     background: rgba(255, 255, 255, 0.07);  // A11y: improved from 0.05
     border: 1px solid rgba(255, 255, 255, 0.12);  // A11y: improved from 0.1
-    border-radius: 12px;
+    border-radius: $border-radius-md;
     padding: 0 1rem;
     height: 40px;
     color: rgba(255, 255, 255, 0.85);  // A11y: improved from 0.7
@@ -756,7 +766,7 @@ button:hover {
   &__tag {
     background: rgba(255, 255, 255, 0.12);  // A11y: improved visibility for better contrast
     border: 1px solid rgba(255, 255, 255, 0.18);  // A11y: improved visibility
-    border-radius: 8px;
+    border-radius: $border-radius-sm;
     padding: 0.4rem 0.75rem;
     color: rgba(255, 255, 255, 0.95);  // A11y: improved contrast - nearly white for better readability
     font-size: 0.875rem;
@@ -859,7 +869,7 @@ button:hover {
   > select {
     background: rgba(255, 255, 255, 0.07);  // A11y: improved from 0.05
     border: 1px solid rgba(255, 255, 255, 0.12);  // A11y: improved from 0.1
-    border-radius: 12px;
+    border-radius: $border-radius-md;
     padding: 0 2.5rem 0 0.75rem;
     height: 40px;
     color: #fff;
@@ -1115,7 +1125,7 @@ button:hover {
     height: 24px;
     background-color: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
+    border-radius: $border-radius-md;
     transition: all 0.3s ease;
     flex-shrink: 0;
     
@@ -1214,7 +1224,7 @@ button:hover {
   font-style: italic;
   background: rgba(255, 255, 255, 0.08);  // A11y: slightly more visible
   padding: 3px 8px;
-  border-radius: 8px;
+  border-radius: $border-radius-sm;
   display: inline-block;
   margin: 0 2px;
 }
@@ -1225,7 +1235,7 @@ button:hover {
   transform: translateX(-50%);
   color: white;
   padding: 10px;
-  border-radius: 15px;
+  border-radius: $border-radius-md;
   z-index: 9999;
 }
 .notification.success {
@@ -1405,7 +1415,7 @@ button:hover {
     right: 0;
     bottom: 0;
     border: 2px solid var(--accent-color);
-    border-radius: 4px;
+    border-radius: $border-radius-xs;
     opacity: 0;
     animation: borderPulse 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     pointer-events: none;
@@ -1534,7 +1544,7 @@ button:hover {
   gap: 16px;
   padding: 16px;
   background: var(--secondary-color);
-  border-radius: 12px;
+  border-radius: $border-radius-md;
   border: 1px solid rgba(255, 255, 255, 0.12);  // A11y: improved from 0.1
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -1554,7 +1564,7 @@ button:hover {
     min-width: 50px;
     padding: 8px;
     background: var(--bg-color);
-    border-radius: 8px;
+    border-radius: $border-radius-sm;
     border: 1px solid rgba(255, 255, 255, 0.12);  // A11y: improved from 0.1
   }
 
@@ -1626,7 +1636,7 @@ button:hover {
     height: 36px;
     border: 1px solid rgba(255, 255, 255, 0.25);  // A11y: slightly more visible
     background: transparent;
-    border-radius: 8px;
+    border-radius: $border-radius-sm;
     color: rgba(255, 255, 255, 0.8);  // A11y: improved from 0.7
     cursor: pointer;
     transition: all 0.2s ease;
@@ -1658,7 +1668,7 @@ button:hover {
       right: 0;
       bottom: 0;
       border: 2px solid var(--accent-color);
-      border-radius: 12px;
+      border-radius: $border-radius-md;
       opacity: 0;
       animation: borderPulse 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
       pointer-events: none;

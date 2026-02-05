@@ -1,6 +1,9 @@
+// Border radius variables
+$border-radius-lg: 16px;
+
 .stat-card {
   background: rgba(255, 255, 255, 0.07);  // A11y: improved from 0.05
-  border-radius: 16px;
+  border-radius: $border-radius-lg;
   padding: 1rem 0.75rem;
   display: flex;
   flex-direction: column;
