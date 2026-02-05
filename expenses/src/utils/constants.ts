@@ -230,7 +230,7 @@ export const suggestions = {
     'local',
     'linela',
   ],
-  4: ['flori'],
+  4: ['flori', 'birthday'],
   5: [
     'hartie igienica',
     'sapun',
@@ -242,7 +242,7 @@ export const suggestions = {
   ],
   6: ['apartment rent'],
   7: ['farmacie', 'stomatolog', 'pediatru'],
-  8: ['haircut', 'nails'],
+  8: ['haircut', 'cursor subscription', 'spotify subscription'],
   9: [
     'benzina',
     'motorina',
@@ -254,7 +254,7 @@ export const suggestions = {
   ],
   10: ['gaz', 'lumina', 'starnet', 'infocom', 'orange', 'infobon'],
   11: [],
-  12: ['Nelea', 'Leo'],
+  12: [],
   13: ['nunta', 'cumatrie'],
   14: ['vin', 'bere', 'whiskey', 'cognac', 'gin', 'cocktails'],
 };
