@@ -862,9 +862,9 @@ button:hover {
   flex-direction: column;
   gap: 1rem;
   width: 100%;
-  max-width: 265px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
 
   > select {
     background: rgba(255, 255, 255, 0.07);  // A11y: improved from 0.05
@@ -1164,12 +1164,27 @@ button:hover {
   }
 }
 
-.user-avatar svg {
-  width: 200px;
-  height: 200px;
-  stroke: #bdbdbd;
-  stroke-width: 10px;
-  fill: var(--bg-color);
+.user-avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0 auto;
+
+  svg {
+    width: 200px;
+    height: 200px;
+    stroke: #bdbdbd;
+    stroke-width: 10px;
+    fill: var(--bg-color);
+  }
+
+  @media (max-width: 640px) {
+    svg {
+      width: 150px;
+      height: 150px;
+    }
+  }
 }
 .user-avatar.saved svg {
   animation: avatar-blink 2s ease 1;
@@ -1186,8 +1201,25 @@ button:hover {
   }
 }
 .user-page {
-  max-width: 265px;
+  width: 100%;
+  max-width: 500px;
   margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+
+  h3 {
+    margin: 1.5rem 0;
+    text-align: center;
+    width: 100%;
+  }
+
+  @media (max-width: 640px) {
+    max-width: 100%;
+    padding: 1.5rem 1rem;
+  }
 }
 .loader {
   display: flex;
