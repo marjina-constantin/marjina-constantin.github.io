@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircle2, Clock3, RefreshCw, WifiOff, AlertTriangle } from 'lucide-react';
-import './ItemSyncIndicator.scss';
+
 import { useSyncStatus } from '../context';
 
 interface ItemSyncIndicatorProps {

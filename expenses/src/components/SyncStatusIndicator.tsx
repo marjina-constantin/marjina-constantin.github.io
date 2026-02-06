@@ -3,7 +3,7 @@ import { WifiOff, RefreshCw, CheckCircle2, Clock3, AlertTriangle } from 'lucide-
 import { useSyncStatus } from '../context/syncStatus';
 import { useData } from '../context';
 import { DataState } from '../type/types';
-import './SyncStatusIndicator.scss';
+
 
 const SyncStatusIndicator: React.FC = () => {
   const { isOnline, isSyncing, syncSuccess, pendingCount } = useSyncStatus();

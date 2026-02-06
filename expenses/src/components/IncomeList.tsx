@@ -5,7 +5,7 @@ import { TransactionOrIncomeItem } from '../type/types';
 import { monthNames } from '../utils/constants';
 import useSwipeActions from '../hooks/useSwipeActions';
 import ItemSyncIndicator from './ItemSyncIndicator';
-import './TransactionList.scss';
+
 
 // Render description with hashtags styled
 const renderDescriptionWithHashtags = (description: string) => {

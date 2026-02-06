@@ -1,6 +1,6 @@
 import React, { ReactNode, memo } from 'react';
 import NumberDisplay from './NumberDisplay';
-import './StatCard.scss';
+
 
 interface StatCardProps {
   icon: ReactNode;
