@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { formatNumber } from '../utils/utils';
+import { formatNumber } from '../../utils/utils';
 
 const BASE_DURATION = 300;
 const MAX_DURATION = 300;

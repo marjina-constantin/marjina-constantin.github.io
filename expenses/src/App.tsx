@@ -1,11 +1,11 @@
 import './App.scss';
 import { AuthProvider, NotificationProvider, SyncStatusProvider, useAuthState, useData, useAuthDispatch } from './context';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import AppRoute from './components/AppRoute';
+import AppRoute from './components/layout/AppRoute';
 import React, { useEffect, useRef } from 'react';
 import routes from './config/routes';
-import Navbar from './components/Navbar';
-import SyncStatusIndicator from './components/SyncStatusIndicator';
+import Navbar from './components/layout/Navbar';
+import SyncStatusIndicator from './components/sync/SyncStatusIndicator';
 import { setupNetworkListener } from './utils/syncService';
 import { AuthState } from './types/types';
 import { initializeAuthErrorHandler } from './utils/authErrorHandler';

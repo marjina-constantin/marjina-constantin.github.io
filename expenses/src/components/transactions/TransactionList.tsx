@@ -1,14 +1,17 @@
-import React, { useRef, useState, useMemo, useEffect } from 'react';
-import { Edit, Trash2, ArrowUpDown, ChevronUp, ChevronDown, Wallet, ArrowUpCircle, TrendingUp, TrendingDown } from 'lucide-react';
-import { formatNumber, getCategory } from '../utils/utils';
-import { TransactionOrIncomeItem } from '../types/types';
-import StatCard from './StatCard';
-import { useAuthState, useData } from '../context';
-import { AuthState, DataState } from '../types/types';
-import { monthNames } from '../utils/constants';
-import useSwipeActions from '../hooks/useSwipeActions';
-import ItemSyncIndicator from './ItemSyncIndicator';
-import HashtagText from './HashtagText';
+import React, { useRef, useMemo } from 'react';
+import { Edit, Trash2, Wallet, ArrowUpCircle, TrendingUp, TrendingDown } from 'lucide-react';
+import { formatNumber, getCategory } from '../../utils/utils';
+import { TransactionOrIncomeItem } from '../../types/types';
+import StatCard from '../ui/StatCard';
+import SortControls from '../ui/SortControls';
+import { useData } from '../../context';
+import { DataState } from '../../types/types';
+import { monthNames } from '../../utils/constants';
+import useSwipeActions from '../../hooks/useSwipeActions';
+import { useListSort } from '../../hooks/useListSort';
+import { useListItems } from '../../hooks/useListItems';
+import ItemSyncIndicator from '../sync/ItemSyncIndicator';
+import HashtagText from '../ui/HashtagText';
 
 interface TransactionListProps {
   transactions: TransactionOrIncomeItem[];
@@ -22,9 +25,6 @@ interface TransactionListProps {
   incomeTotals?: { [month: string]: number };
 }
 
-type SortField = 'date' | 'amount' | null;
-type SortDirection = 'asc' | 'desc';
-
 const TransactionList: React.FC<TransactionListProps> = ({
   transactions,
   categoryLabels,
@@ -37,74 +37,17 @@ const TransactionList: React.FC<TransactionListProps> = ({
   incomeTotals,
 }) => {
   const listRef = useRef<HTMLDivElement>(null);
-  const [sortField, setSortField] = useState<SortField>(null);
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const { data } = useData() as DataState;
 
   const { handleTouchStart, handleTouchMove, handleTouchEnd, deleteVisible, editVisible, swipedItemId } = useSwipeActions();
 
-  useEffect(() => {
-    if (handleClearChangedItem) {
-      Object.keys(changedItems).forEach((id) => {
-        const timer = setTimeout(() => {
-          handleClearChangedItem(id);
-        }, 2000);
-        return () => clearTimeout(timer);
-      });
-    }
-  }, [changedItems, handleClearChangedItem]);
-
-  const allItems = useMemo(() => {
-    return [
-      ...transactions,
-      ...Object.values(changedItems)
-        .filter((item: any) => item.type === 'removed' && item.data.type === 'transaction')
-        .map((item: any) => item.data),
-    ].sort((a, b) => {
-      const dateComparison = new Date(b.dt).getTime() - new Date(a.dt).getTime();
-      if (dateComparison !== 0) {
-        return dateComparison;
-      }
-      return (b.cr || 0) - (a.cr || 0);
-    });
-  }, [transactions, changedItems]);
+  const allItems = useListItems(transactions, changedItems, handleClearChangedItem, 'transaction');
+  const { sortField, sortDirection, handleSort, sortedItems } = useListSort(allItems);
 
   const getCategoryLabel = (catValue: string | undefined) => {
     if (!catValue) return '';
     const category = categoryLabels.find((cat) => cat.value === catValue);
     return category?.label || getCategory[catValue] || '';
-  };
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('desc');
-    }
-  };
-
-  const sortedTransactions = useMemo(() => {
-    if (!sortField) return allItems;
-    
-    return [...allItems].sort((a, b) => {
-      if (sortField === 'date') {
-        const dateA = new Date(a.dt).getTime();
-        const dateB = new Date(b.dt).getTime();
-        return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
-      }
-      if (sortField === 'amount') {
-        const amountA = typeof a.sum === 'string' ? parseFloat(a.sum) : parseFloat(String(a.sum));
-        const amountB = typeof b.sum === 'string' ? parseFloat(b.sum) : parseFloat(String(b.sum));
-        return sortDirection === 'asc' ? amountA - amountB : amountB - amountA;
-      }
-      return 0;
-    });
-  }, [allItems, sortField, sortDirection]);
-
-  const getSortIcon = (field: SortField) => {
-    if (sortField !== field) return <ArrowUpDown size={14} />;
-    return sortDirection === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />;
   };
 
   const income = useMemo(
@@ -143,33 +86,23 @@ const TransactionList: React.FC<TransactionListProps> = ({
 
       {/* Transaction List */}
       <div className="transaction-list-component" ref={listRef}>
-        {/* Sort Controls */}
-        <div className="sort-controls">
-          <button
-            className={`sort-button ${sortField === 'date' ? 'active' : ''}`}
-            onClick={() => handleSort('date')}
-          >
-            Date {getSortIcon('date')}
-          </button>
-          <button
-            className={`sort-button ${sortField === 'amount' ? 'active' : ''}`}
-            onClick={() => handleSort('amount')}
-          >
-            Amount {getSortIcon('amount')}
-          </button>
-        </div>
+        <SortControls
+          sortField={sortField}
+          sortDirection={sortDirection}
+          onSort={handleSort}
+        />
 
-        {sortedTransactions.map((transaction) => {
+        {sortedItems.map((transaction) => {
           const changeType = changedItems[transaction.id]?.type;
           const categoryLabel = getCategoryLabel(transaction.cat);
           const date = new Date(transaction.dt);
           const day = date.getDate();
-          const month = monthNames[date.getMonth()].substring(0, 3).toUpperCase();
+          const monthAbbr = monthNames[date.getMonth()].substring(0, 3).toUpperCase();
           const isThisItemSwiped = swipedItemId === transaction.id;
 
           return (
             <div key={transaction.id} className={`transaction-item-wrapper ${changeType || ''}`}>
-              {/* Swipe Actions - only show for the swiped item */}
+              {/* Swipe Actions */}
               <div
                 className={`swipe-actions-background ${
                   isThisItemSwiped && (deleteVisible || editVisible) ? 'visible' : ''
@@ -196,7 +129,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
                 {/* Date */}
                 <div className="transaction-date-box">
                   <div className="date-day">{day}</div>
-                  <div className="date-month">{month}</div>
+                  <div className="date-month">{monthAbbr}</div>
                 </div>
                 {/* Category Name */}
                 <div className="transaction-category-box">

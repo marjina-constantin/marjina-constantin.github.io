@@ -1,8 +1,8 @@
 import React from 'react';
-import { useData } from '../context';
+import { useData } from '../../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { TransactionOrIncomeItem, DataState } from '../types/types';
+import { TransactionOrIncomeItem, DataState } from '../../types/types';
 
 export default function MonthlyAverageTrend() {
   const { data } = useData() as DataState;

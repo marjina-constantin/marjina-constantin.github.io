@@ -1,8 +1,8 @@
 import React, { useLayoutEffect, useRef, useState, useCallback, useEffect } from 'react';
-import { categories } from '../utils/constants';
-import { useData } from '../context';
+import { categories } from '../../utils/constants';
+import { useData } from '../../context';
 import { Search, X } from 'lucide-react';
-import { DataState } from '../types/types';
+import { DataState } from '../../types/types';
 
 function Filters() {
   const { data, dataDispatch } = useData() as DataState;

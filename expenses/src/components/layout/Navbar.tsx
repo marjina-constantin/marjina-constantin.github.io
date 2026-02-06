@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { useAuthState } from '../context';
+import { useAuthState } from '../../context';
 import {
   List,
   PieChart,
@@ -8,7 +8,7 @@ import {
   User,
 } from 'lucide-react';
 import React from 'react';
-import { AuthState } from '../types/types';
+import { AuthState } from '../../types/types';
 
 export default function Navbar() {
   const { userIsLoggedIn } = useAuthState() as AuthState;

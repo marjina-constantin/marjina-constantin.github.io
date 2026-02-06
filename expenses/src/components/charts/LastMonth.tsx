@@ -1,9 +1,9 @@
 import React from 'react';
-import { useAuthState, useData } from '../context';
+import { useAuthState, useData } from '../../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { categories } from '../utils/constants';
-import { AuthState } from '../types/types';
+import { categories } from '../../utils/constants';
+import { AuthState } from '../../types/types';
 
 export default function LastMonth() {
   // Last month section

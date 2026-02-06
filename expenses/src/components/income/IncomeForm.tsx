@@ -4,13 +4,13 @@ import {
   useAuthState,
   useData,
   useNotification,
-} from '../context';
-import { notificationType, incomeSuggestions } from '../utils/constants';
-import { AuthState, DataState, TransactionOrIncomeItem } from '../types/types';
-import { ButtonSpinner } from './LoadingSpinner';
-import { addItemOffline, updateItemOffline } from '../utils/offlineAPI';
-import { getItemFromDB } from '../utils/indexedDB';
-import { fetchData, extractHashtags, addTagToText, removeTagFromText, hasTag } from '../utils/utils';
+} from '../../context';
+import { notificationType, incomeSuggestions } from '../../utils/constants';
+import { AuthState, DataState, TransactionOrIncomeItem } from '../../types/types';
+import { ButtonSpinner } from '../ui/LoadingSpinner';
+import { addItemOffline, updateItemOffline } from '../../utils/offlineAPI';
+import { getItemFromDB } from '../../utils/indexedDB';
+import { fetchData, extractHashtags, addTagToText, removeTagFromText, hasTag } from '../../utils/utils';
 
 interface IncomeFormProps {
   formType: string;

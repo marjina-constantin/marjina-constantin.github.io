@@ -1,8 +1,8 @@
 import React from 'react';
-import { useAuthState, useData } from '../context';
-import { formatNumber } from '../utils/utils';
-import { getClassNamesFor, useSortableData } from '../hooks/useSortableData';
-import { AuthState, DataState } from '../types/types';
+import { useAuthState, useData } from '../../context';
+import { formatNumber } from '../../utils/utils';
+import { getClassNamesFor, useSortableData } from '../../hooks/useSortableData';
+import { AuthState, DataState } from '../../types/types';
 
 export default function DailyAverage() {
   const { data } = useData() as DataState;

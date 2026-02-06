@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useNotification } from '../../context';
 import { deleteNode, fetchData } from '../../utils/utils';
-import Modal from '../../components/Modal';
-import TransactionForm from '../../components/TransactionForm';
-import TransactionList from '../../components/TransactionList';
-import Filters from '../../components/Filters';
+import Modal from '../../components/ui/Modal';
+import ConfirmDeleteModal from '../../components/ui/ConfirmDeleteModal';
+import TransactionForm from '../../components/transactions/TransactionForm';
+import TransactionList from '../../components/transactions/TransactionList';
+import Filters from '../../components/transactions/Filters';
 import { notificationType, categories } from '../../utils/constants';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { TransactionOrIncomeItem } from '../../types/types';
-import { ButtonSpinner, PageLoader } from '../../components/LoadingSpinner';
+import { PageLoader } from '../../components/ui/LoadingSpinner';
 import { useDataFetcher } from '../../hooks/useDataFetcher';
 
 const Home = () => {
@@ -19,6 +20,7 @@ const Home = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const items = data.filtered || data;
+  const hasGroupedData = items.groupedData && Object.keys(items.groupedData).length > 0;
 
   const [focusedItem, setFocusedItem] = useState({});
 
@@ -92,21 +94,13 @@ const Home = () => {
 
   return (
     <div style={{ overflowX: 'hidden', width: '100%' }}>
-      <Modal
+      <ConfirmDeleteModal
         show={showDeleteModal}
-        onClose={(e) => {
-          e.preventDefault();
-          setShowDeleteModal(false);
-        }}
-      >
-        <h3>Are you sure you want to delete the transaction?</h3>
-        <button
-          onClick={() => confirmDelete(showDeleteModal)}
-          className="button-primary"
-        >
-          {isSubmitting ? <ButtonSpinner /> : 'Yes, remove the transaction'}
-        </button>
-      </Modal>
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => confirmDelete(showDeleteModal)}
+        isSubmitting={isSubmitting}
+        itemLabel="transaction"
+      />
       <Modal
         show={showEditModal}
         onClose={(e) => {
@@ -134,45 +128,37 @@ const Home = () => {
       </Modal>
       <h2 style={{ padding: '0 1.5rem', marginBottom: '1rem' }}>{currentMonth || 'Expenses'}</h2>
       <Filters />
-      {loading ? (
-        <PageLoader />
-      ) : noData ? (
-        ''
-      ) : (
-        <div>
-          {Object.keys(items.groupedData).length ? (
-            <>
-              <TransactionList
-                transactions={items.groupedData[currentMonth]}
-                categoryLabels={categories}
-                onEdit={handleEdit}
-                onDelete={(id) => setShowDeleteModal(id)}
-                changedItems={data.changedItems}
-                handleClearChangedItem={handleClearChangedItem}
-                month={currentMonth}
-                total={items.totals[currentMonth]}
-                incomeTotals={items.incomeTotals}
-              />
-              <div className="pager-navigation">
-                <button
-                  disabled={!months[currentMonthIndex + 1]}
-                  onClick={() => setCurrentMonthIndex(currentMonthIndex + 1)}
-                >
-                  <ChevronLeft />
-                </button>
 
-                <button
-                  disabled={!months[currentMonthIndex - 1]}
-                  onClick={() => setCurrentMonthIndex(currentMonthIndex - 1)}
-                >
-                  <ChevronRight />
-                </button>
-              </div>
-            </>
-          ) : (
-            ''
-          )}
-        </div>
+      {loading && <PageLoader />}
+
+      {!loading && !noData && hasGroupedData && (
+        <>
+          <TransactionList
+            transactions={items.groupedData[currentMonth]}
+            categoryLabels={categories}
+            onEdit={handleEdit}
+            onDelete={(id) => setShowDeleteModal(id)}
+            changedItems={data.changedItems}
+            handleClearChangedItem={handleClearChangedItem}
+            month={currentMonth}
+            total={items.totals[currentMonth]}
+            incomeTotals={items.incomeTotals}
+          />
+          <div className="pager-navigation">
+            <button
+              disabled={!months[currentMonthIndex + 1]}
+              onClick={() => setCurrentMonthIndex(currentMonthIndex + 1)}
+            >
+              <ChevronLeft />
+            </button>
+            <button
+              disabled={!months[currentMonthIndex - 1]}
+              onClick={() => setCurrentMonthIndex(currentMonthIndex - 1)}
+            >
+              <ChevronRight />
+            </button>
+          </div>
+        </>
       )}
     </div>
   );

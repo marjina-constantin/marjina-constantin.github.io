@@ -1,8 +1,8 @@
 import React from 'react';
-import { useAuthState, useData } from '../context';
+import { useAuthState, useData } from '../../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { AuthState, DataState } from '../types/types';
+import { AuthState, DataState } from '../../types/types';
 
 export default function AllTimeSpendings() {
   // All time section

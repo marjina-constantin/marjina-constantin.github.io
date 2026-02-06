@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import Notification from '../components/Notification';
+import Notification from '../components/ui/Notification';
 import { notificationType, themeList } from '../utils/constants';
 import { useAuthState } from './context';
 import { AuthState } from '../types/types';

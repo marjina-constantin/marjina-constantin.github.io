@@ -1,21 +1,21 @@
 import React, { Suspense, useState, useMemo } from 'react';
-import IncomeForm from '../../components/IncomeForm';
+import IncomeForm from '../../components/income/IncomeForm';
 import { deleteNode, fetchData } from '../../utils/utils';
 import { useNotification } from '../../context';
-import Modal from '../../components/Modal';
-import IncomeList from '../../components/IncomeList';
-import IncomeFilters from '../../components/IncomeFilters';
-import StatCard from '../../components/StatCard';
+import Modal from '../../components/ui/Modal';
+import ConfirmDeleteModal from '../../components/ui/ConfirmDeleteModal';
+import IncomeList from '../../components/income/IncomeList';
+import IncomeFilters from '../../components/income/IncomeFilters';
+import StatCard from '../../components/ui/StatCard';
 import { notificationType } from '../../utils/constants';
-import YearIncomeAverageTrend from '../../components/YearIncomeAverageTrend';
-import TotalIncomeCount from '../../components/TotalIncomeCount';
+import YearIncomeAverageTrend from '../../components/charts/YearIncomeAverageTrend';
+import TotalIncomeCount from '../../components/income/TotalIncomeCount';
 import { TransactionOrIncomeItem } from '../../types/types';
-import { ButtonSpinner } from '../../components/LoadingSpinner';
 import { ArrowUpCircle, TrendingUp } from 'lucide-react';
 import { useDataFetcher } from '../../hooks/useDataFetcher';
 
 const IncomeSources = React.lazy(
-  () => import('../../components/IncomeSources')
+  () => import('../../components/charts/IncomeSources')
 );
 
 const Income = () => {
@@ -74,6 +74,7 @@ const Income = () => {
   const displayIncomeData = data.filteredIncomeData !== null 
     ? data.filteredIncomeData 
     : data.incomeData;
+  const hasIncomeData = displayIncomeData && displayIncomeData.length > 0;
 
   // Calculate income statistics based on displayed data
   const totalIncome = useMemo(() => {
@@ -96,21 +97,13 @@ const Income = () => {
 
   return (
     <div className="incomes-page">
-      <Modal
+      <ConfirmDeleteModal
         show={showDeleteModal}
-        onClose={(e) => {
-          e.preventDefault();
-          setShowDeleteModal(false);
-        }}
-      >
-        <h3>Are you sure you want to delete the income?</h3>
-        <button
-          onClick={() => handleDelete(showDeleteModal, token)}
-          className="button-primary"
-        >
-          {isSubmitting ? <ButtonSpinner /> : 'Yes, remove the income'}
-        </button>
-      </Modal>
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => handleDelete(showDeleteModal, token)}
+        isSubmitting={isSubmitting}
+        itemLabel="income"
+      />
       <Modal
         show={showEditModal}
         onClose={(e) => {
@@ -130,53 +123,39 @@ const Income = () => {
         />
       </Modal>
       <h2 style={{ padding: '0 1.5rem', marginBottom: '1rem' }}>Incomes</h2>
+
       {!noData && <TotalIncomeCount />}
       {!noData && <IncomeFilters />}
-      {noData ? (
-        ''
-      ) : (
+
+      {!noData && (
         <div>
-          {/* Stats Cards */}
-          {displayIncomeData && displayIncomeData.length > 0 && (
+          {hasIncomeData && (
             <div className="stats-grid">
-              <StatCard
-                icon={<ArrowUpCircle />}
-                value={totalIncome}
-                label="Total Income"
-              />
-              <StatCard
-                icon={<TrendingUp />}
-                value={averageIncome}
-                label="Average Income"
-              />
+              <StatCard icon={<ArrowUpCircle />} value={totalIncome} label="Total Income" />
+              <StatCard icon={<TrendingUp />} value={averageIncome} label="Average Income" />
             </div>
           )}
 
           <div className="income-button-container">
             <button
-              onClick={() => {
-                setShowEditModal(true);
-                setIsNewModal(true);
-              }}
+              onClick={() => { setShowEditModal(true); setIsNewModal(true); }}
               className="button-primary income-add-button"
             >
               Add new income
             </button>
           </div>
 
-          {displayIncomeData && displayIncomeData.length ? (
+          {hasIncomeData && (
             <IncomeList
-              transactions={displayIncomeData.slice(0, nrOfItemsToShow)}
+              transactions={displayIncomeData!.slice(0, nrOfItemsToShow)}
               onEdit={handleEdit}
               onDelete={(id) => setShowDeleteModal(id)}
               changedItems={data.changedItems}
               handleClearChangedItem={handleClearChangedItem}
             />
-          ) : (
-            ''
           )}
 
-          {displayIncomeData && displayIncomeData.length > nrOfItemsToShow && (
+          {hasIncomeData && displayIncomeData!.length > nrOfItemsToShow && (
             <div style={{ padding: '0 1.5rem', marginTop: '1.5rem', textAlign: 'center' }}>
               <button
                 onClick={() => setNrOfItemsToShow(nrOfItemsToShow + 10)}
@@ -188,23 +167,16 @@ const Income = () => {
           )}
         </div>
       )}
-      {displayIncomeData && displayIncomeData.length ? (
-        <div className="charts-section">
-          <Suspense fallback="">
-            <IncomeSources />
-          </Suspense>
-        </div>
-      ) : (
-        ''
-      )}
-      {displayIncomeData && displayIncomeData.length ? (
-        <div className="charts-section">
-          <Suspense fallback="">
-            <YearIncomeAverageTrend />
-          </Suspense>
-        </div>
-      ) : (
-        ''
+
+      {hasIncomeData && (
+        <>
+          <div className="charts-section">
+            <Suspense fallback=""><IncomeSources /></Suspense>
+          </div>
+          <div className="charts-section">
+            <Suspense fallback=""><YearIncomeAverageTrend /></Suspense>
+          </div>
+        </>
       )}
     </div>
   );
