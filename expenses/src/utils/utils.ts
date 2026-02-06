@@ -4,7 +4,7 @@ import {
   DataStructure,
   ItemTotal,
   TransactionOrIncomeItem,
-} from '../type/types';
+} from '../types/types';
 import {
   getExpensesFromDB,
   saveExpensesToDB,

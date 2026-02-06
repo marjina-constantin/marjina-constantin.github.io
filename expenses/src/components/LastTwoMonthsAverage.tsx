@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useAuthState, useData } from '../context';
 import { formatNumber } from '../utils/utils';
-import { AuthState, DataState, TransactionOrIncomeItem } from '../type/types';
+import { AuthState, DataState, TransactionOrIncomeItem } from '../types/types';
 
 export default function LastTwoMonthsAverage() {
   const { data } = useData() as DataState;
   const { currency } = useAuthState() as AuthState;
   const [daysPeriod, setDaysPeriod] = useState<number>(60);
-
-  useEffect(() => {}, [data.raw]);
 
   const cyclePeriod = () => {
     setDaysPeriod(prev => {

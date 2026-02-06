@@ -2,7 +2,7 @@ import React from 'react';
 import TransactionForm from '../../components/TransactionForm';
 import { fetchData } from '../../utils/utils';
 import { useAuthDispatch, useAuthState, useData } from '../../context';
-import { AuthState, DataState } from '../../type/types';
+import { AuthState, DataState } from '../../types/types';
 
 const AddTransaction = () => {
   const { token } = useAuthState() as AuthState;

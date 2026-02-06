@@ -4,7 +4,7 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { formatDataForChart, formatNumber } from '../utils/utils';
 import { monthNames } from '../utils/constants';
-import { AuthState, DataState, TransactionOrIncomeItem } from '../type/types';
+import { AuthState, DataState, TransactionOrIncomeItem } from '../types/types';
 
 export default function YearIncomeAverageTrend() {
   const { data } = useData() as DataState;

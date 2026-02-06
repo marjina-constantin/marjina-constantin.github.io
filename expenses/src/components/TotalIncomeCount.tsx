@@ -1,6 +1,6 @@
 import React from 'react';
 import { useData } from '../context';
-import { DataState, TransactionOrIncomeItem } from '../type/types';
+import { DataState, TransactionOrIncomeItem } from '../types/types';
 
 export default function TotalIncomeCount() {
   const { data } = useData() as DataState;

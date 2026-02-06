@@ -1,15 +1,13 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { TransactionOrIncomeItem, DataState } from '../type/types';
+import { TransactionOrIncomeItem, DataState } from '../types/types';
 
 export default function MonthlyAverageTrend() {
   const { data } = useData() as DataState;
-  const items = data.filtered_raw || data.raw;
-  const hasFilters = !!data.filtered_raw;
-
-  useEffect(() => {}, [data.raw, data.filtered_raw]);
+  const items = data.filteredRaw || data.raw;
+  const hasFilters = !!data.filteredRaw;
 
   // Helper function to format month as "January 2024".
   const formatMonth = (date: Date) => {

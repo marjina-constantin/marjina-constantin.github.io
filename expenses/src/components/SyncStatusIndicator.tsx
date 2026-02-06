@@ -2,7 +2,7 @@ import React from 'react';
 import { WifiOff, RefreshCw, CheckCircle2, Clock3, AlertTriangle } from 'lucide-react';
 import { useSyncStatus } from '../context/syncStatus';
 import { useData } from '../context';
-import { DataState } from '../type/types';
+import { DataState } from '../types/types';
 
 
 const SyncStatusIndicator: React.FC = () => {

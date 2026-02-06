@@ -3,7 +3,7 @@ import {
   TransactionOrIncomeItem,
   DataStructure,
   ItemTotal,
-} from '../type/types';
+} from '../types/types';
 import type { ProcessedData } from './dataProcessor.worker';
 
 // Process data using Web Worker (if available) or fallback to main thread

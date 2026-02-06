@@ -7,7 +7,7 @@ import routes from './config/routes';
 import Navbar from './components/Navbar';
 import SyncStatusIndicator from './components/SyncStatusIndicator';
 import { setupNetworkListener } from './utils/syncService';
-import { AuthState } from './type/types';
+import { AuthState } from './types/types';
 import { initializeAuthErrorHandler } from './utils/authErrorHandler';
 
 // Component to setup sync when user is logged in

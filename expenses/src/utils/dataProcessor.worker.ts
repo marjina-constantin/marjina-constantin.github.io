@@ -1,5 +1,5 @@
 // Web Worker for processing expense data (runs off main thread)
-import { TransactionOrIncomeItem, DataStructure, ItemTotal } from '../type/types';
+import { TransactionOrIncomeItem, DataStructure, ItemTotal } from '../types/types';
 import { categories, monthNames } from './constants';
 
 export interface ProcessedData {

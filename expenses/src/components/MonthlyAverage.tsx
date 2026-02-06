@@ -1,15 +1,12 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAuthState, useData } from '../context';
 import { formatNumber } from '../utils/utils';
-import { getClassNamesFor, useSortableData } from '../utils/useSortableData';
-import { AuthState, DataState } from '../type/types';
+import { getClassNamesFor, useSortableData } from '../hooks/useSortableData';
+import { AuthState, DataState } from '../types/types';
 export default function MonthlyAverage() {
   const { data } = useData() as DataState;
   const { currency } = useAuthState() as AuthState;
   const [showTrueCost, setShowTrueCost] = useState(false);
-
-  // Re-render the component only when dependencies are changed.
-  useEffect(() => {}, [data.raw, data.categoryTotals]);
 
   const firstDay = data.raw[data.raw.length - 1]?.dt;
   const daysPassed: number =

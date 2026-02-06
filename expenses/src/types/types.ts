@@ -51,7 +51,7 @@ export interface AuthState {
 
 export interface DataItems {
   raw: TransactionOrIncomeItem[];
-  filtered_raw?: TransactionOrIncomeItem[];
+  filteredRaw?: TransactionOrIncomeItem[];
   groupedData?: Record<string, TransactionOrIncomeItem[]> | null;
   totals?: Record<string, number> | null;
   filtered?: any;

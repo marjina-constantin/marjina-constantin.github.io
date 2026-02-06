@@ -1,15 +1,14 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense } from 'react';
 import Highcharts from 'highcharts';
 import DarkUnica from 'highcharts/themes/dark-unica';
-import { useAuthDispatch, useAuthState, useData } from '../../context';
-import { fetchData } from '../../utils/utils';
 import Filters from '../../components/Filters';
 import MonthlyTotals from '../../components/MonthlyTotals';
 import YearAverageTrend from '../../components/YearAverageTrend';
 import TotalTransactionsCount from '../../components/TotalTransactionsCount';
 import Boost from 'highcharts/modules/boost';
 import NoData from 'highcharts/modules/no-data-to-display';
-import { AuthState } from '../../type/types';
+import { PageLoader } from '../../components/LoadingSpinner';
+import { useDataFetcher } from '../../hooks/useDataFetcher';
 
 Boost(Highcharts);
 DarkUnica(Highcharts);
@@ -93,23 +92,8 @@ const Charts = () => {
   const LastTwoMonthsAverage = React.lazy(
     () => import('../../components/LastTwoMonthsAverage')
   );
-  const WealthVelocity = React.lazy(
-    () => import('../../components/WealthVelocity')
-  );
-
-  const { data, dataDispatch } = useData();
-  const noData = data.groupedData === null;
+  const { data, noData, loading } = useDataFetcher();
   const noEntries = Object.keys(data.raw).length === 0;
-  const { token } = useAuthState() as AuthState;
-  const loading = data.loading;
-  const dispatch = useAuthDispatch();
-
-  useEffect(() => {
-    if (noData && token) {
-      fetchData(token, dataDispatch, dispatch);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [noData, token]); // Removed data, dataDispatch, dispatch from deps to avoid unnecessary re-fetches
 
   return (
     <div>
@@ -117,10 +101,7 @@ const Charts = () => {
       {!loading && !noEntries && <TotalTransactionsCount />}
       <Filters />
       {loading ? (
-        <div className="lds-ripple">
-          <div></div>
-          <div></div>
-        </div>
+        <PageLoader />
       ) : (
         !noEntries && (
           <div className="charts-page">
@@ -167,12 +148,6 @@ const Charts = () => {
                 <DailyAverageTrend/>
               </Suspense>
             </div>
-
-            {/*<div className="charts-section">*/}
-            {/*  <Suspense fallback="">*/}
-            {/*    <WealthVelocity/>*/}
-            {/*  </Suspense>*/}
-            {/*</div>*/}
 
             <div className="charts-section">
               <Suspense fallback="">

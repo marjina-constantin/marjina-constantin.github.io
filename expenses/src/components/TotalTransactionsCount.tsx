@@ -1,15 +1,15 @@
 import React from 'react';
 import { useData } from '../context';
-import { DataState, TransactionOrIncomeItem } from '../type/types';
+import { DataState, TransactionOrIncomeItem } from '../types/types';
 
 export default function TotalTransactionsCount() {
   const { data } = useData() as DataState;
   
   // Use filtered data if filters are applied, otherwise use raw data
-  // filtered_raw already contains only transactions, so use length directly
+  // filteredRaw already contains only transactions, so use length directly
   // For raw data, we need to filter to exclude incomes
-  const transactionCount = data.filtered_raw
-    ? data.filtered_raw.length
+  const transactionCount = data.filteredRaw
+    ? data.filteredRaw.length
     : data.raw
     ? data.raw.filter((item: TransactionOrIncomeItem) => item.type === 'transaction').length
     : 0;

@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAuthState, useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { formatDataForChart, formatNumber } from '../utils/utils';
 import { monthNames } from '../utils/constants';
-import { AuthState, DataState } from '../type/types';
+import { AuthState, DataState } from '../types/types';
 
 export default function YearAverageTrend() {
   const { data } = useData() as DataState;
@@ -12,14 +12,6 @@ export default function YearAverageTrend() {
   const items =
     data?.filtered?.totalsPerYearAndMonth || data?.totalsPerYearAndMonth;
   const totalPerYear = data?.filtered?.totalPerYear || data?.totalPerYear;
-
-  // Re-render the component only when dependencies are changed.
-  useEffect(() => {}, [
-    data?.totalsPerYearAndMonth,
-    data?.filtered?.totalsPerYearAndMonth,
-    data?.totalPerYear,
-    data?.filtered?.totalPerYear,
-  ]);
 
   const formattedData = formatDataForChart(items);
 

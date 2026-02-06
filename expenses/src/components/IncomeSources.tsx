@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useAuthState, useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { AuthState, DataState, TransactionOrIncomeItem } from '../type/types';
+import { AuthState, DataState, TransactionOrIncomeItem } from '../types/types';
 import { monthNames, incomeSuggestions } from '../utils/constants';
 import { hasTag } from '../utils/utils';
 

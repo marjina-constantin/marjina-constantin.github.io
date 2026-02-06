@@ -1,10 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import {
-  useAuthDispatch,
-  useAuthState,
-  useData,
-  useNotification,
-} from '../../context';
+import { useNotification } from '../../context';
 import { deleteNode, fetchData } from '../../utils/utils';
 import Modal from '../../components/Modal';
 import TransactionForm from '../../components/TransactionForm';
@@ -12,25 +7,16 @@ import TransactionList from '../../components/TransactionList';
 import Filters from '../../components/Filters';
 import { notificationType, categories } from '../../utils/constants';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { AuthState, TransactionOrIncomeItem } from '../../type/types';
+import { TransactionOrIncomeItem } from '../../types/types';
+import { ButtonSpinner, PageLoader } from '../../components/LoadingSpinner';
+import { useDataFetcher } from '../../hooks/useDataFetcher';
 
 const Home = () => {
   const showNotification = useNotification();
-  const { token } = useAuthState() as AuthState;
+  const { data, dataDispatch, token, dispatch, noData, loading } = useDataFetcher();
   const [showDeleteModal, setShowDeleteModal] = useState<string | false>(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const { data, dataDispatch } = useData();
-  const noData = data.groupedData === null;
-  const loading = data.loading;
-  const dispatch = useAuthDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (noData && token) {
-      fetchData(token, dataDispatch, dispatch);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [noData, token]); // Removed data, dataDispatch, dispatch from deps to avoid unnecessary re-fetches
 
   const items = data.filtered || data;
 
@@ -118,15 +104,7 @@ const Home = () => {
           onClick={() => confirmDelete(showDeleteModal)}
           className="button-primary"
         >
-          {isSubmitting ? (
-            <div className="loader">
-              <span className="loader__element"></span>
-              <span className="loader__element"></span>
-              <span className="loader__element"></span>
-            </div>
-          ) : (
-            'Yes, remove the transaction'
-          )}
+          {isSubmitting ? <ButtonSpinner /> : 'Yes, remove the transaction'}
         </button>
       </Modal>
       <Modal
@@ -157,10 +135,7 @@ const Home = () => {
       <h2 style={{ padding: '0 1.5rem', marginBottom: '1rem' }}>{currentMonth || 'Expenses'}</h2>
       <Filters />
       {loading ? (
-        <div className="lds-ripple">
-          <div></div>
-          <div></div>
-        </div>
+        <PageLoader />
       ) : noData ? (
         ''
       ) : (

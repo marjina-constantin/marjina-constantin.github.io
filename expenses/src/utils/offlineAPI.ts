@@ -8,10 +8,9 @@ import {
   removeQueueOperationsByItemId,
   updateQueueOperation,
 } from './indexedDB';
-import { TransactionOrIncomeItem } from '../type/types';
+import { TransactionOrIncomeItem } from '../types/types';
 import { isOnline, generateTempId, scheduleBackgroundSync } from './syncService';
-
-const ROOT_URL = 'https://dev-expenses-api.pantheonsite.io';
+import { ROOT_URL } from './constants';
 
 // Convert form data to TransactionOrIncomeItem format
 function convertFormDataToItem(

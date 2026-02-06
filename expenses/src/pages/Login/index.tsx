@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { loginUser, useAuthDispatch, useAuthState } from '../../context';
 import { useNavigate } from 'react-router-dom';
-import { AuthState } from '../../type/types';
+import { AuthState } from '../../types/types';
 
 const Login = () => {
   const dispatch = useAuthDispatch();

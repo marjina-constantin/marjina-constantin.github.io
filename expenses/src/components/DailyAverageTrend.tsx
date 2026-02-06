@@ -2,24 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { TransactionOrIncomeItem, Daily, DataState } from '../type/types';
+import { TransactionOrIncomeItem, Daily, DataState } from '../types/types';
 
 export default function DailyAverageTrend() {
   const { data } = useData() as DataState;
 
   const [items, setItems] = useState<TransactionOrIncomeItem[]>([]);
-  const isFiltered = !!data.filtered_raw;
+  const isFiltered = !!data.filteredRaw;
 
   // Re-render the component only when dependencies are changed.
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setItems(data.filtered_raw || data.raw);
+      setItems(data.filteredRaw || data.raw);
     }, 200);
 
     return () => {
       clearTimeout(timeout);
     };
-  }, [data.raw, data.filtered_raw]);
+  }, [data.raw, data.filteredRaw]);
 
   const firstDay = new Date(data.raw[data.raw.length - 1]?.dt);
   const getNrOfDaysFromStart = (endDate: Date) => {

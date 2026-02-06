@@ -1,3 +1,5 @@
+export const ROOT_URL = 'https://dev-expenses-api.pantheonsite.io';
+
 export const categories = [
   { value: '', label: 'Category' },
   { value: '1', label: 'Clothing' },

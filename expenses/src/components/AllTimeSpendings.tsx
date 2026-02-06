@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAuthState, useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { AuthState, DataState } from '../type/types';
+import { AuthState, DataState } from '../types/types';
 
 export default function AllTimeSpendings() {
   // All time section
@@ -10,9 +10,6 @@ export default function AllTimeSpendings() {
   const { currency } = useAuthState() as AuthState;
 
   const items = data.filtered || data;
-
-  // Re-render the component only when dependencies are changed.
-  useEffect(() => {}, [data, currency]);
 
   const firstDay = data.raw[data.raw.length - 1]?.dt;
   const daysPassed = parseInt(

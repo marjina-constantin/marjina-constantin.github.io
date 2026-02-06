@@ -1,34 +1,14 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { Edit, Trash2, ArrowUpDown, ChevronUp, ChevronDown, Wallet, ArrowUpCircle, TrendingUp, TrendingDown } from 'lucide-react';
 import { formatNumber, getCategory } from '../utils/utils';
-import { TransactionOrIncomeItem } from '../type/types';
+import { TransactionOrIncomeItem } from '../types/types';
 import StatCard from './StatCard';
 import { useAuthState, useData } from '../context';
-import { AuthState, DataState } from '../type/types';
+import { AuthState, DataState } from '../types/types';
 import { monthNames } from '../utils/constants';
 import useSwipeActions from '../hooks/useSwipeActions';
 import ItemSyncIndicator from './ItemSyncIndicator';
-
-
-// Render description with hashtags styled
-const renderDescriptionWithHashtags = (description: string) => {
-  if (!description) return null;
-  
-  // Split by hashtags - match # followed by word chars, spaces, and common special chars like /
-  // This handles multi-word tags like "#happy hour" or "#car service"
-  const parts = description.split(/(#[a-zA-Z0-9\/]+(?:\s+[a-zA-Z0-9\/]+)*)/g);
-  
-  return parts.map((part, index) => {
-    if (part.startsWith('#')) {
-      return (
-        <span key={index} className="hashtag">
-          {part}
-        </span>
-      );
-    }
-    return <span key={index}>{part}</span>;
-  });
-};
+import HashtagText from './HashtagText';
 
 interface TransactionListProps {
   transactions: TransactionOrIncomeItem[];
@@ -225,7 +205,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
                 {/* Content */}
                 <div className="transaction-content">
                   <div className="transaction-name">
-                    {renderDescriptionWithHashtags(transaction.dsc || '')}
+                    <HashtagText text={transaction.dsc || ''} />
                     <ItemSyncIndicator itemId={transaction.id} failed={transaction.failed} />
                   </div>
                 </div>

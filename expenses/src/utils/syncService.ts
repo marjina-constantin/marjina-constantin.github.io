@@ -14,10 +14,11 @@ import {
   PendingOperation,
   setItemFailed,
 } from './indexedDB';
-import { TransactionOrIncomeItem } from '../type/types';
+import { TransactionOrIncomeItem } from '../types/types';
 import { processData, dispatchProcessedData } from './dataProcessing';
 import { notifyItemSynced, notifySyncFinish, notifySyncStart } from './syncCallbacks';
 import { checkAndHandleAuthError } from './authErrorHandler';
+import { ROOT_URL } from './constants';
 
 // Custom error class for authentication failures
 export class AuthenticationError extends Error {
@@ -26,8 +27,6 @@ export class AuthenticationError extends Error {
     this.name = 'AuthenticationError';
   }
 }
-
-const ROOT_URL = 'https://dev-expenses-api.pantheonsite.io';
 const SYNC_YIELD_BATCH = 5;
 
 let syncQueue: Promise<void> = Promise.resolve();

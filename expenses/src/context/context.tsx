@@ -1,6 +1,6 @@
 import React, { useReducer } from 'react';
 import { AuthReducer, DataReducer, initialData, initialState } from './reducer';
-import { AuthState, DataItems, DataState } from '../type/types';
+import { AuthState, DataItems, DataState } from '../types/types';
 
 const AuthStateContext = React.createContext<AuthState | null>(null);
 const AuthDispatchContext = React.createContext<React.Dispatch<any> | null>(

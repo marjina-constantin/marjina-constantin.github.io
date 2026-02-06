@@ -1,17 +1,14 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAuthState, useData } from '../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { categories } from '../utils/constants';
-import { AuthState } from '../type/types';
+import { AuthState } from '../types/types';
 
 export default function LastMonth() {
   // Last month section
   const { data } = useData();
   const { currency } = useAuthState() as AuthState;
-
-  // Re-render the component only when dependencies are changed.
-  useEffect(() => {}, [data.raw, currency]);
 
   const oneMonthAgo = new Date().setDate(new Date().getDate() - 30);
   const lastMonthTotals = {};

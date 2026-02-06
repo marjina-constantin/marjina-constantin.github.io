@@ -1,5 +1,5 @@
 // IndexedDB utility for caching expense data
-import { TransactionOrIncomeItem } from '../type/types';
+import { TransactionOrIncomeItem } from '../types/types';
 import { notifyQueueUpdated } from './syncCallbacks';
 
 // Sort function to match TransactionsTable sorting (by date desc, then created desc)

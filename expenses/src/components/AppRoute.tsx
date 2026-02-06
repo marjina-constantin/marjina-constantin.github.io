@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuthState } from '../context';
-import { AuthState } from '../type/types';
+import { AuthState } from '../types/types';
 
 interface AppRouteProps {
   component: React.ComponentType<any>;

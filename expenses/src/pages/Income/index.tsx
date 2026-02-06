@@ -1,12 +1,7 @@
-import React, { Suspense, useEffect, useState, useMemo } from 'react';
+import React, { Suspense, useState, useMemo } from 'react';
 import IncomeForm from '../../components/IncomeForm';
 import { deleteNode, fetchData } from '../../utils/utils';
-import {
-  useAuthDispatch,
-  useAuthState,
-  useData,
-  useNotification,
-} from '../../context';
+import { useNotification } from '../../context';
 import Modal from '../../components/Modal';
 import IncomeList from '../../components/IncomeList';
 import IncomeFilters from '../../components/IncomeFilters';
@@ -14,8 +9,10 @@ import StatCard from '../../components/StatCard';
 import { notificationType } from '../../utils/constants';
 import YearIncomeAverageTrend from '../../components/YearIncomeAverageTrend';
 import TotalIncomeCount from '../../components/TotalIncomeCount';
-import { AuthState, TransactionOrIncomeItem } from '../../type/types';
+import { TransactionOrIncomeItem } from '../../types/types';
+import { ButtonSpinner } from '../../components/LoadingSpinner';
 import { ArrowUpCircle, TrendingUp } from 'lucide-react';
+import { useDataFetcher } from '../../hooks/useDataFetcher';
 
 const IncomeSources = React.lazy(
   () => import('../../components/IncomeSources')
@@ -23,21 +20,12 @@ const IncomeSources = React.lazy(
 
 const Income = () => {
   const showNotification = useNotification();
-  const { token } = useAuthState() as AuthState;
+  const { data, dataDispatch, token, dispatch, noData } = useDataFetcher();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [isNewModal, setIsNewModal] = useState(false);
-  const { data, dataDispatch } = useData();
-  const noData = data.groupedData === null;
-  const dispatch = useAuthDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [nrOfItemsToShow, setNrOfItemsToShow] = useState(20);
-
-  useEffect(() => {
-    if (noData) {
-      fetchData(token, dataDispatch, dispatch);
-    }
-  }, [data, dataDispatch, noData, token, dispatch]);
 
   const [focusedItem, setFocusedItem] = useState({
     nid: '',
@@ -120,15 +108,7 @@ const Income = () => {
           onClick={() => handleDelete(showDeleteModal, token)}
           className="button-primary"
         >
-          {isSubmitting ? (
-            <div className="loader">
-              <span className="loader__element"></span>
-              <span className="loader__element"></span>
-              <span className="loader__element"></span>
-            </div>
-          ) : (
-            'Yes, remove the income'
-          )}
+          {isSubmitting ? <ButtonSpinner /> : 'Yes, remove the income'}
         </button>
       </Modal>
       <Modal

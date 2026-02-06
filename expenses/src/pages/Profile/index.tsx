@@ -11,7 +11,7 @@ import { currencies } from '../../utils/constants';
 import { FaUserCircle } from 'react-icons/fa';
 import { fetchRequest } from '../../utils/utils';
 import { notificationType, themeList } from '../../utils/constants';
-import { AuthState } from '../../type/types';
+import { AuthState } from '../../types/types';
 
 const Profile = () => {
   const showNotification = useNotification();

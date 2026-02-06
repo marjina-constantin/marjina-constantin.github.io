@@ -7,7 +7,8 @@ import {
 } from '../context';
 import { categories, suggestions } from '../utils/constants';
 import { notificationType } from '../utils/constants';
-import { AuthState, DataState, TransactionOrIncomeItem } from '../type/types';
+import { AuthState, DataState, TransactionOrIncomeItem } from '../types/types';
+import { ButtonSpinner } from './LoadingSpinner';
 import { addItemOffline, updateItemOffline } from '../utils/offlineAPI';
 import { getItemFromDB } from '../utils/indexedDB';
 import { fetchData, extractHashtags, addTagToText, removeTagFromText, hasTag } from '../utils/utils';
@@ -249,11 +250,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         ) : null}
         <button type="submit" disabled={isSubmitting} className="button w-100">
           {isSubmitting ? (
-            <div className="loader">
-              <span className="loader__element"></span>
-              <span className="loader__element"></span>
-              <span className="loader__element"></span>
-            </div>
+            <ButtonSpinner />
           ) : formType === 'add' ? (
             'Add transaction'
           ) : (

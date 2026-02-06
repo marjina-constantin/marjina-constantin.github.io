@@ -1,7 +1,6 @@
-import { LoginPayload, UserData } from '../type/types';
+import { LoginPayload, UserData } from '../types/types';
 import { clearExpensesDB } from '../utils/indexedDB';
-
-const ROOT_URL = 'https://dev-expenses-api.pantheonsite.io';
+import { ROOT_URL } from '../utils/constants';
 
 export async function loginUser(dispatch: any, loginPayload: LoginPayload) {
   const requestOptions = {

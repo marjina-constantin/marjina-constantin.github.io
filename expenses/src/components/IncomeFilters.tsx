@@ -2,7 +2,7 @@ import React, { useRef, useState, useCallback } from 'react';
 import { incomeSuggestions } from '../utils/constants';
 import { useData } from '../context';
 import { Search, X } from 'lucide-react';
-import { DataState } from '../type/types';
+import { DataState } from '../types/types';
 
 function IncomeFilters() {
   const { data, dataDispatch } = useData() as DataState;
