@@ -19,7 +19,6 @@ export const NotificationProvider = ({
 }: NotificationContextProps) => {
   const [notification, setNotification] = useState({ message: '', type: '' });
   let { theme } = useAuthState() as AuthState;
-  // @ts-expect-error TBC
   theme = themeList[theme] ? theme : 'blue-pink-gradient';
   const gradientClass =
     theme === 'blue-pink-gradient' ? 'has-gradient-accent' : '';

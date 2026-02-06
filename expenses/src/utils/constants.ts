@@ -278,15 +278,15 @@ export const notificationType = {
   ERROR: 'error',
 };
 
-export const themeList = {
-  'bondi-blue': 'Bondi blue',
-  'maximum-green-yellow': 'Maximum green yellow',
-  'carrot-orange': 'Carrot orange',
-  saffron: 'Saffron',
-  cadetblue: 'Cadet blue',
-  'blue-pink-gradient': 'Blue pink gradient',
-  'pearl-aqua': 'Pearl aqua',
-  'cambridge-blue': 'Cambridge blue',
-  'malachite-green': 'Malachite green',
-  'deep-space-indigo': 'Deep space indigo',
+export const themeList: Record<string, { label: string; accent: string; bg: string }> = {
+  'bondi-blue':           { label: 'Bondi blue',           accent: '#00c4c9', bg: '#282a36' },
+  'maximum-green-yellow': { label: 'Maximum green yellow', accent: '#cdf05d', bg: '#282a36' },
+  'carrot-orange':        { label: 'Carrot orange',        accent: '#f5a742', bg: '#102433' },
+  saffron:                { label: 'Saffron',              accent: '#f0cc4a', bg: '#282a36' },
+  cadetblue:              { label: 'Cadet blue',           accent: '#7ec8ca', bg: '#282a36' },
+  'blue-pink-gradient':   { label: 'Blue pink gradient',   accent: '#9d8dd6', bg: '#13122d' },
+  'pearl-aqua':           { label: 'Pearl aqua',           accent: '#8fe0d9', bg: '#13122d' },
+  'cambridge-blue':       { label: 'Cambridge blue',       accent: '#b8d4b9', bg: '#111827' },
+  'malachite-green':      { label: 'Malachite green',      accent: '#00DFA2', bg: '#1E252D' },
+  'deep-space-indigo':    { label: 'Deep space indigo',    accent: '#8b91e0', bg: '#111D29' },
 };

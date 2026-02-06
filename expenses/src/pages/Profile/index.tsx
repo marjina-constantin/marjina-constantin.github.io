@@ -20,7 +20,6 @@ const Profile = () => {
   const { userDetails, token, currency } =
     useAuthState() as AuthState;
   let { theme } = useAuthState() as AuthState;
-  // @ts-expect-error
   theme = themeList[theme] ? theme : 'blue-pink-gradient';
   const navigate = useNavigate();
   const handleLogout = (
@@ -62,12 +61,12 @@ const Profile = () => {
     });
   };
 
-  const handleThemeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    localStorage.setItem('theme', JSON.stringify(event.target.value));
+  const handleThemeSelect = (themeId: string) => {
+    localStorage.setItem('theme', JSON.stringify(themeId));
     dispatch &&
       dispatch({
         type: 'UPDATE_USER',
-        payload: { theme: event.target.value },
+        payload: { theme: themeId },
       });
   };
 
@@ -104,18 +103,22 @@ const Profile = () => {
             </option>
           ))}
         </select>
-        <select
-          value={theme}
-          className="theme"
-          name="theme"
-          onChange={handleThemeChange}
-        >
-          {Object.entries(themeList).map(([id, name]) => (
-            <option key={id} value={id}>
-              {name}
-            </option>
+        <div className="theme-picker">
+          {Object.entries(themeList).map(([id, { label, accent }]) => (
+            <button
+              key={id}
+              type="button"
+              className={`theme-swatch${theme === id ? ' active' : ''}`}
+              onClick={() => handleThemeSelect(id)}
+            >
+              <div
+                className="theme-swatch__preview"
+                style={{ background: accent }}
+              />
+              <span className="theme-swatch__label">{label}</span>
+            </button>
           ))}
-        </select>
+        </div>
         <button className="button logout" onClick={handleLogout}>
           Logout
         </button>
