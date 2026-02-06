@@ -70,30 +70,6 @@ Highcharts.setOptions({
   },
 });
 
-// Lazy-loaded chart components — defined at module level to avoid
-// re-creating on every render (React.lazy returns a stable component reference).
-const AllTimeSpendings = React.lazy(
-  () => import('../../components/charts/AllTimeSpendings')
-);
-const MonthlyAverage = React.lazy(
-  () => import('../../components/charts/MonthlyAverage')
-);
-const SavingsHistory = React.lazy(
-  () => import('../../components/charts/SavingsHistory')
-);
-const DailyAverage = React.lazy(
-  () => import('../../components/charts/DailyAverage')
-);
-const DailyAverageTrend = React.lazy(
-  () => import('../../components/charts/DailyAverageTrend')
-);
-const MonthlyAverageTrend = React.lazy(
-  () => import('../../components/charts/MonthlyAverageTrend')
-);
-const LastTwoMonthsAverage = React.lazy(
-  () => import('../../components/charts/LastTwoMonthsAverage')
-);
-
 /** Wraps a lazy-loaded chart in a Suspense boundary + section div. */
 const ChartSection: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="charts-section">
@@ -102,6 +78,32 @@ const ChartSection: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 );
 
 const Charts = () => {
+  // React.lazy() inside the component is intentional here — on each mount,
+  // new lazy wrappers suspend briefly (even for cached modules), giving React
+  // a chance to paint the page structure first, then fill in the 7 heavy
+  // Highcharts components progressively instead of blocking in one render pass.
+  const AllTimeSpendings = React.lazy(
+    () => import('../../components/charts/AllTimeSpendings')
+  );
+  const MonthlyAverage = React.lazy(
+    () => import('../../components/charts/MonthlyAverage')
+  );
+  const SavingsHistory = React.lazy(
+    () => import('../../components/charts/SavingsHistory')
+  );
+  const DailyAverage = React.lazy(
+    () => import('../../components/charts/DailyAverage')
+  );
+  const DailyAverageTrend = React.lazy(
+    () => import('../../components/charts/DailyAverageTrend')
+  );
+  const MonthlyAverageTrend = React.lazy(
+    () => import('../../components/charts/MonthlyAverageTrend')
+  );
+  const LastTwoMonthsAverage = React.lazy(
+    () => import('../../components/charts/LastTwoMonthsAverage')
+  );
+
   const { data, noData, loading } = useDataFetcher();
   const noEntries = Object.keys(data.raw).length === 0;
 
