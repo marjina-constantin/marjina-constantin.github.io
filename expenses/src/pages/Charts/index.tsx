@@ -9,6 +9,7 @@ import Boost from 'highcharts/modules/boost';
 import NoData from 'highcharts/modules/no-data-to-display';
 import { PageLoader } from '../../components/ui/LoadingSpinner';
 import { useDataFetcher } from '../../hooks/useDataFetcher';
+import { useIsVisible } from '../../hooks/useIsVisible';
 
 Boost(Highcharts);
 DarkUnica(Highcharts);
@@ -70,12 +71,23 @@ Highcharts.setOptions({
   },
 });
 
-/** Wraps a lazy-loaded chart in a Suspense boundary + section div. */
-const ChartSection: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="charts-section">
-    <Suspense fallback="">{children}</Suspense>
-  </div>
-);
+/**
+ * Wraps a lazy-loaded chart in a Suspense boundary + section div.
+ * Defers rendering until the section is near the viewport (300px margin),
+ * so off-screen charts don't compute data or initialize Highcharts on mount.
+ */
+const ChartSection: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { ref, isVisible } = useIsVisible('300px');
+  return (
+    <div className="charts-section" ref={ref}>
+      {isVisible ? (
+        <Suspense fallback="">{children}</Suspense>
+      ) : (
+        <div style={{ minHeight: '250px' }} />
+      )}
+    </div>
+  );
+};
 
 const Charts = () => {
   // React.lazy() inside the component is intentional here — on each mount,

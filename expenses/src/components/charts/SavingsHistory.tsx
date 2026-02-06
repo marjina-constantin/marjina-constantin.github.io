@@ -1,32 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useData } from '../../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { DataState, TransactionOrIncomeItem } from '../../types/types';
 
-interface SavingsData {
-  [key: string]: [number, number];
-}
-
 export default function SavingsHistory() {
   const { data } = useData() as DataState;
-  const [items, setItems] = useState<TransactionOrIncomeItem[]>([]);
 
-  // Re-render the component only when dependencies are changed.
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setItems(data.raw);
-    }, 200);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [data.raw]);
-
-  const savings: SavingsData = {};
+  const savings: Record<string, [number, number]> = {};
   let totalExpensesAtDate = 0;
   let totalIncomesAtDate = 0;
-  const dataInChronologicalOrder = items.slice().reverse();
+  const dataInChronologicalOrder = data.raw.slice().reverse();
 
   for (const item of dataInChronologicalOrder) {
     const itemDate = new Date((item as TransactionOrIncomeItem).dt);
