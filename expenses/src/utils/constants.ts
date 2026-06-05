@@ -271,7 +271,7 @@ export const incomeSuggestions = [
   'cashback',
   'sale',
   'loan',
-  'partner-apartment-contribution',
+  'partner apartment contribution',
 ];
 
 export const notificationType = {
