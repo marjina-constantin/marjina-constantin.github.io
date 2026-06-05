@@ -17,6 +17,7 @@ const incomeSourceLabels: Record<string, string> = {
   'cashback': 'Cashback',
   'sale': 'Sales',
   'loan': 'Loans',
+  'partner-apartment-contribution': 'Partner apartment contribution',
 };
 
 export default function IncomeSources() {
