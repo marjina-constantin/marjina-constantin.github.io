@@ -242,7 +242,7 @@ export const suggestions = {
     'sampon',
     'servetele',
   ],
-  6: ['apartment rent'],
+  6: ['apartment rent', 'mortgage rate'],
   7: ['farmacie', 'stomatolog', 'pediatru'],
   8: ['haircut', 'cursor subscription', 'spotify subscription', 'chatgpt subscription', 'youtube premium subscription', 'ufc subscription', 'google drive storage'],
   9: [
