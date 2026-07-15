@@ -1808,10 +1808,9 @@ input[type="date"] {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 2.75rem;
-      height: 2.75rem;
-      min-width: 2.75rem;
-      margin: -0.15rem 0;
+      width: 2.5rem;
+      height: 2.5rem;
+      min-width: 2.5rem;
       background: var(--category-tint, rgba(255, 255, 255, 0.1));
       border: 1px solid transparent;
       border-radius: $border-radius-md;
@@ -1946,9 +1945,9 @@ input[type="date"] {
       }
 
       .transaction-category-box {
-        width: 2.5rem;
-        height: 2.5rem;
-        min-width: 2.5rem;
+        width: 2.25rem;
+        height: 2.25rem;
+        min-width: 2.25rem;
 
         .category-icon {
           width: 16px;
