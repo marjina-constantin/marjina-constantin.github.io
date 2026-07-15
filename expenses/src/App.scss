@@ -1804,22 +1804,55 @@ input[type="date"] {
     }
 
     .transaction-category-box {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 2.5rem;
-      height: 2.5rem;
-      min-width: 2.5rem;
-      background: rgba(255, 255, 255, 0.1);
+      width: 2.75rem;
+      height: 2.75rem;
+      min-width: 2.75rem;
+      margin: -0.15rem 0;
+      background: var(--category-tint, rgba(255, 255, 255, 0.1));
+      border: 1px solid transparent;
       border-radius: $border-radius-md;
       padding: 0;
       flex-shrink: 0;
-      color: rgba(255, 255, 255, 0.85);
+      color: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      font: inherit;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.2s ease, transform 0.15s ease;
+
+      &:hover,
+      &:focus-visible {
+        border-color: rgba(255, 255, 255, 0.25);
+        outline: none;
+      }
 
       .category-icon {
         display: block;
         flex-shrink: 0;
+        pointer-events: none;
       }
+    }
+
+    .transaction-category-tip {
+      position: absolute;
+      left: calc(100% + 0.4rem);
+      top: 50%;
+      transform: translateY(-50%);
+      white-space: nowrap;
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.3rem 0.55rem;
+      border-radius: $border-radius-sm;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      z-index: 5;
+      pointer-events: none;
+      animation: category-tip-in 0.15s ease;
     }
 
     .transaction-content {
@@ -1913,9 +1946,9 @@ input[type="date"] {
       }
 
       .transaction-category-box {
-        width: 2.25rem;
-        height: 2.25rem;
-        min-width: 2.25rem;
+        width: 2.5rem;
+        height: 2.5rem;
+        min-width: 2.5rem;
 
         .category-icon {
           width: 16px;
@@ -2397,6 +2430,17 @@ input[type="date"] {
   }
   100% {
     transform: scale(1);
+  }
+}
+
+@keyframes category-tip-in {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
   }
 }
 

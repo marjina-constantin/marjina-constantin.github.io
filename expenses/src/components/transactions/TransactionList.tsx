@@ -1,12 +1,10 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useState, useCallback, useEffect } from 'react';
 import { Edit, Trash2, Wallet, ArrowUpCircle, TrendingUp, TrendingDown } from 'lucide-react';
 import { formatNumber, getCategory } from '../../utils/utils';
-import { getCategoryIcon } from '../../utils/categoryIcons';
+import { getCategoryIcon, getCategoryTint } from '../../utils/categoryIcons';
 import { TransactionOrIncomeItem } from '../../types/types';
 import StatCard from '../ui/StatCard';
 import SortControls from '../ui/SortControls';
-import { useData } from '../../context';
-import { DataState } from '../../types/types';
 import { monthNames } from '../../utils/constants';
 import useSwipeActions from '../../hooks/useSwipeActions';
 import { useListSort } from '../../hooks/useListSort';
@@ -38,18 +36,31 @@ const TransactionList: React.FC<TransactionListProps> = ({
   incomeTotals,
 }) => {
   const listRef = useRef<HTMLDivElement>(null);
-  const { data } = useData() as DataState;
+  const [categoryTipId, setCategoryTipId] = useState<string | null>(null);
+  const tipTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { handleTouchStart, handleTouchMove, handleTouchEnd, deleteVisible, editVisible, swipedItemId } = useSwipeActions();
 
   const allItems = useListItems(transactions, changedItems, handleClearChangedItem, 'transaction');
   const { sortField, sortDirection, handleSort, sortedItems } = useListSort(allItems);
 
+  useEffect(() => {
+    return () => {
+      if (tipTimeoutRef.current) clearTimeout(tipTimeoutRef.current);
+    };
+  }, []);
+
   const getCategoryLabel = (catValue: string | undefined) => {
     if (!catValue) return '';
     const category = categoryLabels.find((cat) => cat.value === catValue);
     return category?.label || getCategory[catValue] || '';
   };
+
+  const showCategoryTip = useCallback((id: string) => {
+    if (tipTimeoutRef.current) clearTimeout(tipTimeoutRef.current);
+    setCategoryTipId(id);
+    tipTimeoutRef.current = setTimeout(() => setCategoryTipId(null), 1400);
+  }, []);
 
   const income = useMemo(
     () => (incomeTotals && month ? incomeTotals[month] : -1),
@@ -97,10 +108,12 @@ const TransactionList: React.FC<TransactionListProps> = ({
           const changeType = changedItems[transaction.id]?.type;
           const categoryLabel = getCategoryLabel(transaction.cat);
           const CategoryIcon = getCategoryIcon(transaction.cat);
+          const categoryTint = getCategoryTint(transaction.cat);
           const date = new Date(transaction.dt);
           const day = date.getDate();
           const monthAbbr = monthNames[date.getMonth()].substring(0, 3).toUpperCase();
           const isThisItemSwiped = swipedItemId === transaction.id;
+          const tipVisible = categoryTipId === transaction.id;
 
           return (
             <div key={transaction.id} className={`transaction-item-wrapper ${changeType || ''}`}>
@@ -134,13 +147,25 @@ const TransactionList: React.FC<TransactionListProps> = ({
                   <div className="date-month">{monthAbbr}</div>
                 </div>
                 {/* Category Icon */}
-                <div
+                <button
+                  type="button"
                   className="transaction-category-box"
+                  style={{ '--category-tint': categoryTint } as React.CSSProperties}
                   title={categoryLabel}
                   aria-label={categoryLabel || 'Category'}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (categoryLabel) showCategoryTip(transaction.id);
+                  }}
                 >
                   <CategoryIcon className="category-icon" size={18} strokeWidth={1.75} aria-hidden />
-                </div>
+                  {tipVisible && (
+                    <span className="transaction-category-tip" role="status">
+                      {categoryLabel}
+                    </span>
+                  )}
+                </button>
                 {/* Content */}
                 <div className="transaction-content">
                   <div className="transaction-name">
