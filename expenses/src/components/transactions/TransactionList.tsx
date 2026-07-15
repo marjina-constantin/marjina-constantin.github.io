@@ -1,6 +1,7 @@
 import React, { useRef, useMemo } from 'react';
 import { Edit, Trash2, Wallet, ArrowUpCircle, TrendingUp, TrendingDown } from 'lucide-react';
 import { formatNumber, getCategory } from '../../utils/utils';
+import { getCategoryIcon } from '../../utils/categoryIcons';
 import { TransactionOrIncomeItem } from '../../types/types';
 import StatCard from '../ui/StatCard';
 import SortControls from '../ui/SortControls';
@@ -95,6 +96,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
         {sortedItems.map((transaction) => {
           const changeType = changedItems[transaction.id]?.type;
           const categoryLabel = getCategoryLabel(transaction.cat);
+          const CategoryIcon = getCategoryIcon(transaction.cat);
           const date = new Date(transaction.dt);
           const day = date.getDate();
           const monthAbbr = monthNames[date.getMonth()].substring(0, 3).toUpperCase();
@@ -131,9 +133,13 @@ const TransactionList: React.FC<TransactionListProps> = ({
                   <div className="date-day">{day}</div>
                   <div className="date-month">{monthAbbr}</div>
                 </div>
-                {/* Category Name */}
-                <div className="transaction-category-box">
-                  <div className="category-name">{categoryLabel}</div>
+                {/* Category Icon */}
+                <div
+                  className="transaction-category-box"
+                  title={categoryLabel}
+                  aria-label={categoryLabel || 'Category'}
+                >
+                  <CategoryIcon className="category-icon" size={18} strokeWidth={1.75} aria-hidden />
                 </div>
                 {/* Content */}
                 <div className="transaction-content">
