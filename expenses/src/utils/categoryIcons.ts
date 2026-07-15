@@ -35,19 +35,19 @@ export const categoryIcons: Record<string, LucideIcon> = {
 
 /** Soft chip background tints — icon stroke stays monochrome. */
 export const categoryTints: Record<string, string> = {
-  '1': 'rgba(232, 180, 184, 0.22)', // Clothing
-  '2': 'rgba(252, 211, 77, 0.2)', // Entertainment
-  '3': 'rgba(134, 239, 172, 0.2)', // Food
-  '4': 'rgba(249, 168, 212, 0.22)', // Gifts
-  '5': 'rgba(253, 186, 116, 0.22)', // Household
-  '6': 'rgba(147, 197, 253, 0.22)', // Housing
-  '7': 'rgba(252, 165, 165, 0.22)', // Medical
-  '8': 'rgba(165, 180, 252, 0.22)', // Personal
-  '9': 'rgba(103, 232, 249, 0.2)', // Transportation
-  '10': 'rgba(253, 224, 71, 0.2)', // Utilities
-  '11': 'rgba(125, 211, 252, 0.22)', // Travel
-  '12': 'rgba(253, 164, 175, 0.22)', // Family
-  '13': 'rgba(110, 231, 183, 0.2)', // Investment
+  '1': 'rgba(232, 180, 184, 0.22)', // Clothing — dusty rose
+  '2': 'rgba(167, 139, 250, 0.24)', // Entertainment — soft violet
+  '3': 'rgba(134, 239, 172, 0.2)', // Food — mint green
+  '4': 'rgba(249, 168, 212, 0.22)', // Gifts — pink
+  '5': 'rgba(214, 176, 140, 0.26)', // Household — warm linen
+  '6': 'rgba(147, 197, 253, 0.22)', // Housing — sky blue
+  '7': 'rgba(252, 165, 165, 0.22)', // Medical — soft red
+  '8': 'rgba(216, 180, 254, 0.24)', // Personal — orchid (distinct from housing)
+  '9': 'rgba(103, 232, 249, 0.2)', // Transportation — cyan
+  '10': 'rgba(129, 140, 248, 0.28)', // Utilities — soft indigo
+  '11': 'rgba(45, 212, 191, 0.22)', // Travel — turquoise
+  '12': 'rgba(251, 146, 120, 0.24)', // Family — warm coral
+  '13': 'rgba(52, 211, 153, 0.26)', // Investment — emerald
 };
 
 export function getCategoryIcon(catValue: string | undefined): LucideIcon {
