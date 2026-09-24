@@ -2122,26 +2122,45 @@ input[type="date"] {
   display: flex;
   align-items: center;
   gap: 0.65rem;
+  width: max-content;
   max-width: calc(100% - 2rem);
-  padding: 0.8rem 1rem;
+  padding: 0.55rem 0.75rem 0.55rem 0.55rem;
   border-radius: $border-radius-md;
   background: #f3f1ec;
   color: #16181d;
-  font-size: 0.95rem;
-  font-weight: 600;
-  line-height: 1.35;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
 
-  svg {
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
     flex-shrink: 0;
-    color: #16181d;
+    border-radius: $border-radius-sm;
+    background: #c5d9cc;
+
+    svg {
+      color: #1f3a2e;
+    }
+  }
+
+  &__message {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.35;
   }
 
   &.error {
     background: #f6e4e1;
     color: #3f2422;
 
-    svg {
-      color: #8c4d47;
+    .notification__icon {
+      background: #e4b2ab;
+
+      svg {
+        color: #8c4d47;
+      }
     }
   }
 }

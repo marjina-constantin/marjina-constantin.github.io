@@ -16,8 +16,10 @@ const Notification: React.FC<NotificationProps> = ({ message, type }) => {
       className={`notification ${type}`}
       role={type === 'error' ? 'alert' : 'status'}
     >
-      <Icon size={18} strokeWidth={1.75} aria-hidden />
-      <span>{message}</span>
+      <span className="notification__icon">
+        <Icon size={16} strokeWidth={1.75} aria-hidden />
+      </span>
+      <span className="notification__message">{message}</span>
     </div>
   );
 };
