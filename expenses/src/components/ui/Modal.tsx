@@ -31,8 +31,6 @@ export default function Modal({ show, onClose, children }: ModalProps) {
 
     const panel = ref.current;
     const previouslyFocused = document.activeElement as HTMLElement | null;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
 
     const getFocusable = () =>
       Array.from(
@@ -68,7 +66,6 @@ export default function Modal({ show, onClose, children }: ModalProps) {
     document.addEventListener('keydown', onKeyDown);
     return () => {
       document.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = previousOverflow;
       previouslyFocused?.focus?.();
     };
   }, [show, onClose]);
