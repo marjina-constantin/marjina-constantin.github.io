@@ -645,14 +645,110 @@ input[type="date"] {
   }
 
   &-close {
-    color: #ccc;
-    line-height: 50px;
-    font-size: 80%;
     position: absolute;
-    right: 0;
-    top: 0;
-    width: 70px;
-    text-decoration: none;
+    top: 0.85rem;
+    right: 0.85rem;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    border-radius: $border-radius-sm;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.55);
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+  }
+}
+
+.confirm-delete {
+  h3 {
+    margin: 0 2rem 1rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  &__entry {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1.25rem;
+    padding: 0.9rem 1rem;
+    border-radius: $border-radius-md;
+    background: rgba(255, 255, 255, 0.07);
+  }
+
+  &__date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    flex-shrink: 0;
+  }
+
+  &__day {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1;
+  }
+
+  &__month {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 0.25rem;
+    letter-spacing: 0.5px;
+  }
+
+  &__year {
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65);
+    margin-top: 0.125rem;
+  }
+
+  &__description {
+    min-width: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: #fff;
+    overflow-wrap: anywhere;
+  }
+
+  &__amount {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  &__confirm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 42px;
+    border: none;
+    border-radius: $border-radius-md;
+    background: #8c4d47;
+    color: #f6ecea;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.7;
+    }
   }
 }
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, ReactNode } from 'react';
+import { X } from 'lucide-react';
 
 interface ModalProps {
   show: boolean;
@@ -43,9 +44,17 @@ export default function Modal({ show, onClose, children }: ModalProps) {
       {show ? (
         <div className="modal-window">
           <div ref={ref}>
-            <a href="/" onClick={onClose} title="Close" className="modal-close">
-              Close
-            </a>
+            <button
+              type="button"
+              title="Close"
+              aria-label="Close"
+              className="modal-close"
+              onClick={(e) =>
+                onClose(e as unknown as React.MouseEvent<HTMLAnchorElement, MouseEvent>)
+              }
+            >
+              <X size={18} strokeWidth={1.75} />
+            </button>
             {children}
           </div>
         </div>

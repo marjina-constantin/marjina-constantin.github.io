@@ -100,6 +100,14 @@ const Home = () => {
         onConfirm={() => confirmDelete(showDeleteModal)}
         isSubmitting={isSubmitting}
         itemLabel="transaction"
+        preview={(() => {
+          if (!showDeleteModal || !items.groupedData?.[currentMonth]) return undefined;
+          const item = items.groupedData[currentMonth].find(
+            (entry: TransactionOrIncomeItem) => entry.id === showDeleteModal
+          );
+          if (!item) return undefined;
+          return { date: item.dt, description: item.dsc, amount: item.sum };
+        })()}
       />
       <Modal
         show={showEditModal}

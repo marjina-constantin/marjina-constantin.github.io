@@ -21,7 +21,7 @@ const IncomeSources = React.lazy(
 const Income = () => {
   const showNotification = useNotification();
   const { data, dataDispatch, token, dispatch, noData } = useDataFetcher();
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<string | false>(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [isNewModal, setIsNewModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,10 +47,10 @@ const Income = () => {
     setShowEditModal(true);
   };
 
-  const handleDelete = (showDeleteModal: boolean, token: string) => {
+  const handleDelete = (id: string | false, token: string) => {
+    if (!id) return;
     setIsSubmitting(true);
-    // @ts-expect-error
-    deleteNode(showDeleteModal, token, (response) => {
+    deleteNode(id, token, (response) => {
       if (response.ok) {
         showNotification(
           'Income was successfully deleted.',
@@ -103,6 +103,14 @@ const Income = () => {
         onConfirm={() => handleDelete(showDeleteModal, token)}
         isSubmitting={isSubmitting}
         itemLabel="income"
+        preview={(() => {
+          if (!showDeleteModal) return undefined;
+          const item = (displayIncomeData || []).find(
+            (entry: TransactionOrIncomeItem) => entry.id === showDeleteModal
+          );
+          if (!item) return undefined;
+          return { date: item.dt, description: item.dsc, amount: item.sum };
+        })()}
       />
       <Modal
         show={showEditModal}
