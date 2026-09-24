@@ -2126,9 +2126,9 @@ input[type="date"] {
   max-width: calc(100% - 2rem);
   padding: 0.55rem 0.75rem 0.55rem 0.55rem;
   border-radius: $border-radius-md;
-  background: #f3f1ec;
-  color: #16181d;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  background: #2a3444;
+  color: #f4f6f8;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
 
   &__icon {
     display: flex;
@@ -2138,10 +2138,10 @@ input[type="date"] {
     height: 2rem;
     flex-shrink: 0;
     border-radius: $border-radius-sm;
-    background: #c5d9cc;
+    background: #2f6a4f;
 
     svg {
-      color: #1f3a2e;
+      color: #f3f7f4;
     }
   }
 
@@ -2152,14 +2152,11 @@ input[type="date"] {
   }
 
   &.error {
-    background: #f6e4e1;
-    color: #3f2422;
-
     .notification__icon {
-      background: #e4b2ab;
+      background: #8c4d47;
 
       svg {
-        color: #8c4d47;
+        color: #f6ecea;
       }
     }
   }
