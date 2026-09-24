@@ -1505,6 +1505,14 @@ input[type="date"] {
   .transaction-item-wrapper {
     position: relative;
     width: 100%;
+    // Sort controls is sibling 1, so the first card is index 2.
+    // Cap the delay so a long list does not wait on the last rows.
+    animation: list-card-enter 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: min(calc((sibling-index() - 2) * 42ms), 0.5s);
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
 
     &.new {
       animation: fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -2311,6 +2319,17 @@ input[type="date"] {
 // =============================================================================
 // KEYFRAME ANIMATIONS
 // =============================================================================
+
+@keyframes list-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
 
 @keyframes fadeInScale {
   0% {
