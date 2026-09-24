@@ -13,6 +13,10 @@ import { AuthState } from '../../types/types';
 export default function Navbar() {
   const { userIsLoggedIn } = useAuthState() as AuthState;
 
+  if (!userIsLoggedIn) {
+    return null;
+  }
+
   return (
     <div className="navbar">
       <ul>

@@ -1,6 +1,5 @@
 import React, { Suspense } from 'react';
 import Highcharts from 'highcharts';
-import DarkUnica from 'highcharts/themes/dark-unica';
 import Filters from '../../components/transactions/Filters';
 import MonthlyTotals from '../../components/charts/MonthlyTotals';
 import YearAverageTrend from '../../components/charts/YearAverageTrend';
@@ -12,64 +11,7 @@ import { useDataFetcher } from '../../hooks/useDataFetcher';
 import { useIsVisible } from '../../hooks/useIsVisible';
 
 Boost(Highcharts);
-DarkUnica(Highcharts);
 NoData(Highcharts);
-
-const bgColors: Record<string, string> = {
-  'carrot-orange': '#102433',
-  inchworm: '#201f1e',
-};
-const theme = localStorage.getItem('theme') || 'blue-pink-gradient';
-
-Highcharts.theme = {
-  chart: {
-    backgroundColor: theme ? bgColors[theme] : '#282a36',
-  },
-  tooltip: {
-    style: {
-      fontSize: '15px',
-    },
-  },
-};
-
-Highcharts.setOptions(Highcharts.theme);
-// Radialize the colors
-Highcharts.setOptions({
-  colors:
-    (Highcharts.getOptions().colors || []).map(
-      (
-        color:
-          | string
-          | Highcharts.GradientColorObject
-          | Highcharts.PatternObject
-      ) => {
-        return {
-          radialGradient: {
-            cx: 0.5,
-            cy: 0.3,
-            r: 0.7,
-          },
-          stops: [
-            [0, color],
-            [
-              1,
-              Highcharts.color(color as string)
-                .brighten(-0.25)
-                .get('rgb'),
-            ], // darken
-          ] as Highcharts.GradientColorObject['stops'],
-        };
-      }
-    ) ?? [],
-});
-Highcharts.setOptions({
-  plotOptions: {
-    series: {
-      animation: false,
-      boostThreshold: 4000,
-    },
-  },
-});
 
 /**
  * Wraps a lazy-loaded chart in a Suspense boundary + section div.

@@ -1,4 +1,7 @@
 import './App.scss';
+import { applyChartTheme } from './utils/chartTheme';
+
+applyChartTheme();
 import { AuthProvider, NotificationProvider, SyncStatusProvider, useAuthState, useData, useAuthDispatch } from './context';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import AppRoute from './components/layout/AppRoute';

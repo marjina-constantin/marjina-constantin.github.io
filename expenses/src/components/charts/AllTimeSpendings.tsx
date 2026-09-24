@@ -4,6 +4,22 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { AuthState, DataState } from '../../types/types';
 
+const spendingPieColors: Record<string, string> = {
+  '1': '#5b8def',
+  '2': '#e06c9f',
+  '3': '#e3a008',
+  '4': '#8d6adf',
+  '5': '#2f9d8f',
+  '6': '#e07a3d',
+  '7': '#d4656a',
+  '8': '#7dae4a',
+  '9': '#3d9ec4',
+  '10': '#c9a227',
+  '11': '#6e7fd6',
+  '12': '#d47b6a',
+  '13': '#3fafa8',
+};
+
 export default function AllTimeSpendings() {
   // All time section
   const { data } = useData() as DataState;
@@ -45,8 +61,11 @@ export default function AllTimeSpendings() {
     series: [
       {
         name: currency,
-        colorByPoint: true,
-        data: Object.values(items.categoryTotals),
+        data: Object.entries(items.categoryTotals || {}).map(([id, point]) => ({
+          name: point.name,
+          y: point.y,
+          color: spendingPieColors[id] || '#8d99ae',
+        })),
       },
     ],
     credits: {

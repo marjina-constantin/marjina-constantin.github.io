@@ -1,13 +1,18 @@
 import React from 'react';
 import { WifiOff, RefreshCw, CheckCircle2, Clock3, AlertTriangle } from 'lucide-react';
 import { useSyncStatus } from '../../context/syncStatus';
-import { useData } from '../../context';
-import { DataState } from '../../types/types';
+import { useAuthState, useData } from '../../context';
+import { AuthState, DataState } from '../../types/types';
 
 
 const SyncStatusIndicator: React.FC = () => {
   const { isOnline, isSyncing, syncSuccess, pendingCount } = useSyncStatus();
+  const { userIsLoggedIn } = useAuthState() as AuthState;
   const { data } = useData() as DataState;
+
+  if (!userIsLoggedIn) {
+    return null;
+  }
   const failedCount =
     data?.raw?.filter((item) => item.failed).length || 0;
 
