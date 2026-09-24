@@ -2108,9 +2108,9 @@ input[type="date"] {
   background: linear-gradient(180deg, transparent 0%, rgba(26, 29, 46, 0.6) 50%);
 
   button {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: $border-radius-md;
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 0;
     margin: 0 12px;
