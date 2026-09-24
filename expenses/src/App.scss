@@ -1505,14 +1505,6 @@ input[type="date"] {
   .transaction-item-wrapper {
     position: relative;
     width: 100%;
-    // Sort controls is sibling 1, so the first card is index 2.
-    // Cap the delay so a long list does not wait on the last rows.
-    animation: list-card-enter 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
-    animation-delay: min(calc((sibling-index() - 2) * 42ms), 0.5s);
-
-    @media (prefers-reduced-motion: reduce) {
-      animation: none;
-    }
 
     &.new {
       animation: fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -1587,133 +1579,38 @@ input[type="date"] {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        overflow: hidden;
+        width: 2.5rem;
+        height: 2.5rem;
+        border: none;
+        border-radius: $border-radius-md;
+        color: rgba(255, 255, 255, 0.9);
+        transition: background 0.2s ease, color 0.2s ease;
         z-index: 2;
 
         svg {
-          font-size: 1.4rem;
-          color: #ffffff;
+          color: currentColor;
           position: relative;
           z-index: 3;
-          transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        &::before {
-          content: '';
-          position: absolute;
-          inset: -4px;
-          border-radius: 50%;
-          border: 3px solid var(--action-color, currentColor);
-          opacity: 0;
-          z-index: 1;
-          transition: opacity 0.2s ease;
-          filter: drop-shadow(0 0 4px var(--action-color, currentColor));
-        }
-
-        &::after {
-          content: '';
-          position: absolute;
-          inset: -8px;
-          border-radius: 50%;
-          background: radial-gradient(
-            circle,
-            var(--action-color, currentColor) 0%,
-            transparent 60%
-          );
-          opacity: 0;
-          z-index: 0;
-          filter: blur(10px);
-          transition: opacity 0.2s ease;
         }
       }
 
       .delete-action-bg {
-        left: 20px;
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4),
-                    0 0 0 0 rgba(239, 68, 68, 0.5);
-        --action-color: #f87171;
-        --action-color-rgb: 248, 113, 113;
-
-        &::before {
-          --action-color: #f87171;
-          --action-color-rgb: 248, 113, 113;
-        }
-
-        &::after {
-          --action-color: #f87171;
-          --action-color-rgb: 248, 113, 113;
-        }
+        left: 18px;
+        background: rgba(252, 165, 165, 0.22);
 
         body.action-active & {
-          animation: pulse-red 1.5s ease-in-out infinite;
-          box-shadow: 0 4px 20px rgba(239, 68, 68, 0.6),
-                      0 0 30px rgba(239, 68, 68, 0.4);
-
-          &::before {
-            opacity: 1;
-            animation: borderRotate 2s linear infinite;
-          }
-
-          &::after {
-            opacity: 0.6;
-          }
-
-          svg {
-            transform: scale(1.1);
-            filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
-          }
+          color: #f6ecea;
+          background: #8c4d47;
         }
       }
 
       .edit-action-bg {
-        right: 20px;
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4),
-                    0 0 0 0 rgba(59, 130, 246, 0.5);
-        --action-color: #60a5fa;
-        --action-color-rgb: 96, 165, 250;
-
-        &::before {
-          --action-color: #60a5fa;
-          --action-color-rgb: 96, 165, 250;
-        }
-
-        &::after {
-          --action-color: #60a5fa;
-          --action-color-rgb: 96, 165, 250;
-        }
+        right: 18px;
+        background: rgba(226, 232, 240, 0.22);
 
         body.action-active & {
-          animation: pulse-blue 1.5s ease-in-out infinite;
-          box-shadow: 0 4px 20px rgba(59, 130, 246, 0.6),
-                      0 0 30px rgba(59, 130, 246, 0.4);
-
-          &::before {
-            opacity: 1;
-            animation: borderRotate 2s linear infinite;
-          }
-
-          &::after {
-            opacity: 0.6;
-          }
-
-          svg {
-            transform: scale(1.1);
-            filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
-          }
-        }
-      }
-
-      body.action-active & {
-        .delete-action-bg,
-        .edit-action-bg {
-          transform: scale(1.15);
-          transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+          color: #16181d;
+          background: #f3f1ec;
         }
       }
     }
@@ -1900,33 +1797,31 @@ input[type="date"] {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      background: rgba(255, 255, 255, 0.07);
-      border-radius: $border-radius-sm;
-      color: rgba(255, 255, 255, 0.8);
+      width: 2.5rem;
+      height: 2.5rem;
+      border: none;
+      border-radius: $border-radius-md;
+      color: rgba(255, 255, 255, 0.9);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: background 0.2s ease, color 0.2s ease;
       padding: 0;
 
-      &:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: var(--accent-color);
-        color: var(--accent-color);
-        transform: scale(1.05);
+      &--edit {
+        background: rgba(226, 232, 240, 0.22);
+
+        &:hover {
+          color: #16181d;
+          background: #f3f1ec;
+        }
       }
 
-      &--edit:hover {
-        border-color: #3b82f6;
-        color: #3b82f6;
-        background: rgba(59, 130, 246, 0.1);
-      }
+      &--delete {
+        background: rgba(252, 165, 165, 0.22);
 
-      &--delete:hover {
-        border-color: #ef4444;
-        color: #ef4444;
-        background: rgba(239, 68, 68, 0.1);
+        &:hover {
+          color: #f6ecea;
+          background: #8c4d47;
+        }
       }
     }
   }
@@ -2320,17 +2215,6 @@ input[type="date"] {
 // KEYFRAME ANIMATIONS
 // =============================================================================
 
-@keyframes list-card-enter {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 @keyframes fadeInScale {
   0% {
     opacity: 0;
@@ -2407,40 +2291,6 @@ input[type="date"] {
   }
 }
 
-@keyframes pulse-red {
-  0%, 100% {
-    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.6),
-                0 0 30px rgba(239, 68, 68, 0.4),
-                0 0 0 0 rgba(239, 68, 68, 0.7);
-  }
-  50% {
-    box-shadow: 0 4px 25px rgba(239, 68, 68, 0.8),
-                0 0 40px rgba(239, 68, 68, 0.6),
-                0 0 0 8px rgba(239, 68, 68, 0);
-  }
-}
-
-@keyframes pulse-blue {
-  0%, 100% {
-    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.6),
-                0 0 30px rgba(59, 130, 246, 0.4),
-                0 0 0 0 rgba(59, 130, 246, 0.7);
-  }
-  50% {
-    box-shadow: 0 4px 25px rgba(59, 130, 246, 0.8),
-                0 0 40px rgba(59, 130, 246, 0.6),
-                0 0 0 8px rgba(59, 130, 246, 0);
-  }
-}
-
-@keyframes borderRotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
 
 @keyframes bubble-up {
   0% {
