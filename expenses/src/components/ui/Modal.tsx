@@ -41,9 +41,7 @@ export default function Modal({ show, onClose, children }: ModalProps) {
         )
       ).filter((el) => !el.hasAttribute('disabled'));
 
-    const amount = panel.querySelector<HTMLElement>('input[name="field_amount"]');
-    const initial = amount ?? getFocusable()[0] ?? panel;
-    initial.focus();
+    panel.focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
