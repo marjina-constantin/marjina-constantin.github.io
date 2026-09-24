@@ -22,7 +22,7 @@ export default function TotalTransactionsCount() {
       color: '#a0a0a0',
       fontWeight: '400'
     }}>
-      {transactionCount.toLocaleString()} transactions
+      {transactionCount.toLocaleString()} {transactionCount === 1 ? 'expense' : 'expenses'}
     </div>
   );
 }

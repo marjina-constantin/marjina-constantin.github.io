@@ -74,7 +74,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           token,
           async (_item: TransactionOrIncomeItem) => {
             onSuccess();
-            showNotification('Success!', notificationType.SUCCESS);
+            showNotification('Expense added.', notificationType.SUCCESS);
             setIsSubmitting(false);
             setFormState(initialState);
             setSuggestionData([]);
@@ -100,7 +100,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         const existingItem = await getItemFromDB(values.nid);
         if (!existingItem) {
           showNotification(
-            'Item not found in local cache',
+            'Couldn\'t find this expense. Try again.',
             notificationType.ERROR
           );
           setIsSubmitting(false);
@@ -114,7 +114,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           existingItem,
           async (_item: TransactionOrIncomeItem) => {
             onSuccess();
-            showNotification('Success!', notificationType.SUCCESS);
+            showNotification('Expense updated.', notificationType.SUCCESS);
             setIsSubmitting(false);
             setFormState(initialState);
             setSuggestionData([]);
@@ -138,7 +138,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       }
     } catch (error) {
       showNotification(
-        'Something went wrong, please contact Constantin :)',
+        'Couldn\'t save this expense. Try again.',
         notificationType.ERROR
       );
       setIsSubmitting(false);
@@ -192,7 +192,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   };
   return (
     <div>
-      <h2>{formType === 'add' ? 'Add transaction' : 'Edit transaction'}</h2>
+      <h2>{formType === 'add' ? 'Add expense' : 'Edit expense'}</h2>
       <form className="add-transaction" onSubmit={handleSubmit}>
         <input
           required
@@ -252,9 +252,9 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           {isSubmitting ? (
             <ButtonSpinner />
           ) : formType === 'add' ? (
-            'Add transaction'
+            'Add expense'
           ) : (
-            'Edit transaction'
+            'Edit expense'
           )}
         </button>
       </form>

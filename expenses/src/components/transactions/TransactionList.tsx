@@ -180,14 +180,14 @@ const TransactionList: React.FC<TransactionListProps> = ({
                   <button
                     className="transaction-action-btn transaction-action-btn--edit"
                     onClick={() => onEdit(transaction.id)}
-                    aria-label="Edit transaction"
+                    aria-label="Edit expense"
                   >
                     <Edit size={18} />
                   </button>
                   <button
                     className="transaction-action-btn transaction-action-btn--delete"
                     onClick={() => onDelete(transaction.id)}
-                    aria-label="Delete transaction"
+                    aria-label="Delete expense"
                   >
                     <Trash2 size={18} />
                   </button>

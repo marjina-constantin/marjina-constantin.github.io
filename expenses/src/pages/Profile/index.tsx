@@ -54,7 +54,7 @@ const Profile = () => {
         setTimeout(() => setBlink(false), 2000);
       } else {
         showNotification(
-          'Something went wrong, please contact Constantin :)',
+          'Couldn\'t update your currency. Try again.',
           notificationType.ERROR
         );
       }

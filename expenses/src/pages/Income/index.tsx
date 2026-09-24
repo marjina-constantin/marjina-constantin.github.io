@@ -53,12 +53,12 @@ const Income = () => {
     deleteNode(id, token, (response) => {
       if (response.ok) {
         showNotification(
-          'Income was successfully deleted.',
+          'Income deleted.',
           notificationType.SUCCESS
         );
         setIsSubmitting(false);
       } else {
-        showNotification('Something went wrong.', notificationType.ERROR);
+        showNotification('Couldn\'t delete this income. Try again.', notificationType.ERROR);
         setIsSubmitting(false);
       }
       setShowDeleteModal(false);

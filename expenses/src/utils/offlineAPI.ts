@@ -87,7 +87,7 @@ export async function addItemOffline(
     onSuccess(item);
   } catch (error) {
     console.error('Error adding item offline:', error);
-    onError('Failed to add item. Please try again.');
+    onError('Couldn\'t add this item. Try again.');
   }
 }
 
@@ -151,7 +151,7 @@ export async function updateItemOffline(
     onSuccess(updatedItem);
   } catch (error) {
     console.error('Error updating item offline:', error);
-    onError('Failed to update item. Please try again.');
+    onError('Couldn\'t update this item. Try again.');
   }
 }
 
@@ -195,7 +195,7 @@ export async function deleteItemOffline(
     onSuccess();
   } catch (error) {
     console.error('Error deleting item offline:', error);
-    onError('Failed to delete item. Please try again.');
+    onError('Couldn\'t delete this item. Try again.');
   }
 }
 

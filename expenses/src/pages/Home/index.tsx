@@ -49,7 +49,7 @@ const Home = () => {
       setShowDeleteModal(false);
       if (response.ok) {
         showNotification(
-          'Transaction was successfully deleted.',
+          'Expense deleted.',
           notificationType.SUCCESS
         );
         setIsSubmitting(false);
@@ -64,7 +64,7 @@ const Home = () => {
           );
         }, 0);
       } else {
-        showNotification('Something went wrong.', notificationType.ERROR);
+        showNotification('Couldn\'t delete this expense. Try again.', notificationType.ERROR);
         setIsSubmitting(false);
       }
     });
@@ -99,7 +99,7 @@ const Home = () => {
         onClose={() => setShowDeleteModal(false)}
         onConfirm={() => confirmDelete(showDeleteModal)}
         isSubmitting={isSubmitting}
-        itemLabel="transaction"
+        itemLabel="expense"
         preview={(() => {
           if (!showDeleteModal || !items.groupedData?.[currentMonth]) return undefined;
           const item = items.groupedData[currentMonth].find(

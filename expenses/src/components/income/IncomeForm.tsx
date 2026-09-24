@@ -79,7 +79,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
           token,
           async (_item: TransactionOrIncomeItem) => {
             onSuccess();
-            showNotification('Success!', notificationType.SUCCESS);
+            showNotification('Income added.', notificationType.SUCCESS);
             setIsSubmitting(false);
             setFormState(initialState);
             setSelectedTags([]);
@@ -98,7 +98,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
         const existingItem = await getItemFromDB(values.nid);
         if (!existingItem) {
           showNotification(
-            'Item not found in local cache',
+            'Couldn\'t find this income. Try again.',
             notificationType.ERROR
           );
           setIsSubmitting(false);
@@ -112,7 +112,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
           existingItem,
           async (_item: TransactionOrIncomeItem) => {
             onSuccess();
-            showNotification('Success!', notificationType.SUCCESS);
+            showNotification('Income updated.', notificationType.SUCCESS);
             setIsSubmitting(false);
             setFormState(initialState);
             setSelectedTags([]);
@@ -129,7 +129,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
       }
     } catch (error) {
       showNotification(
-        'Something went wrong, please contact Sergiu S :)',
+        'Couldn\'t save this income. Try again.',
         notificationType.ERROR
       );
       setIsSubmitting(false);

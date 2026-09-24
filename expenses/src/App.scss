@@ -2115,20 +2115,34 @@ input[type="date"] {
 
 .notification {
   position: fixed;
-  bottom: 72px;
+  bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
-  color: white;
-  padding: 10px;
-  border-radius: $border-radius-md;
   z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  max-width: calc(100% - 2rem);
+  padding: 0.8rem 1rem;
+  border-radius: $border-radius-md;
+  background: #f3f1ec;
+  color: #16181d;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.35;
 
-  &.success {
-    background-color: var(--accent-color);
+  svg {
+    flex-shrink: 0;
+    color: #16181d;
   }
 
   &.error {
-    background-color: #f13636;
+    background: #f6e4e1;
+    color: #3f2422;
+
+    svg {
+      color: #8c4d47;
+    }
   }
 }
 

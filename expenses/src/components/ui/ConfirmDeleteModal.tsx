@@ -17,7 +17,7 @@ interface ConfirmDeleteModalProps {
   onClose: () => void;
   onConfirm: () => void;
   isSubmitting: boolean;
-  /** e.g. "transaction" or "income" */
+  /** e.g. "expense" or "income" */
   itemLabel: string;
   preview?: DeletePreview;
 }
