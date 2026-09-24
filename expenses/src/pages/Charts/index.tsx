@@ -121,7 +121,7 @@ const Charts = () => {
 
   return (
     <div>
-      <h2>Charts page</h2>
+      <h2 className="page-title">Charts</h2>
       {!loading && !noEntries && <TotalTransactionsCount />}
       <Filters />
       {loading ? (

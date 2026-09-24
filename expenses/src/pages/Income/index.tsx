@@ -130,7 +130,7 @@ const Income = () => {
           }}
         />
       </Modal>
-      <h2 style={{ padding: '0 1.5rem', marginBottom: '1rem' }}>Incomes</h2>
+      <h2 className="page-title">Incomes</h2>
 
       {!noData && <TotalIncomeCount />}
       {!noData && <IncomeFilters />}

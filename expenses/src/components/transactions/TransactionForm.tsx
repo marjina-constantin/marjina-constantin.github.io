@@ -192,7 +192,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   };
   return (
     <div>
-      <h2>{formType === 'add' ? 'Add expense' : 'Edit expense'}</h2>
+      <h2 className="page-title">{formType === 'add' ? 'Add expense' : 'Edit expense'}</h2>
       <form className="add-transaction" onSubmit={handleSubmit}>
         <input
           required

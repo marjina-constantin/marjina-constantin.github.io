@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { AlertTriangle } from 'lucide-react';
 import { loginUser, useAuthDispatch, useAuthState } from '../../context';
 import { useNavigate } from 'react-router-dom';
 import { AuthState } from '../../types/types';
@@ -60,7 +61,10 @@ const Login = () => {
           Please login using Google to access app functionality.
         </p>
         {errorMessage && (
-          <div className="login-error">
+          <div className="login-error" role="alert">
+            <span className="login-error__icon">
+              <AlertTriangle size={16} strokeWidth={1.75} aria-hidden />
+            </span>
             <p>{errorMessage}</p>
           </div>
         )}

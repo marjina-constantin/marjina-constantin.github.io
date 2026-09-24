@@ -91,18 +91,25 @@ const Profile = () => {
       </div>
       <h3>{userDetails.current_user.name}</h3>
       <div className="user-settings">
-        <select
-          value={currency}
-          className="currency"
-          name="currency"
-          onChange={handleChange}
-        >
-          {sortedCurrencies.map(([id, currency]) => (
-            <option key={id} value={id}>
-              {currency}
-            </option>
-          ))}
-        </select>
+        <label className="currency-row">
+          <span>Currency</span>
+          <span className="currency-value">
+            {currencies[currency as keyof typeof currencies]}
+            <select
+              value={currency}
+              className="currency"
+              name="currency"
+              aria-label="Currency"
+              onChange={handleChange}
+            >
+              {sortedCurrencies.map(([id, currency]) => (
+                <option key={id} value={id}>
+                  {currency}
+                </option>
+              ))}
+            </select>
+          </span>
+        </label>
         <div className="theme-picker">
           {Object.entries(themeList).map(([id, { label, accent }]) => (
             <button

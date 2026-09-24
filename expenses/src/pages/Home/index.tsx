@@ -134,7 +134,7 @@ const Home = () => {
           }}
         />
       </Modal>
-      <h2 style={{ padding: '0 1.5rem', marginBottom: '1rem' }}>{currentMonth || 'Expenses'}</h2>
+      <h2 className="page-title">{currentMonth || 'Expenses'}</h2>
       <Filters />
 
       {loading && <PageLoader />}

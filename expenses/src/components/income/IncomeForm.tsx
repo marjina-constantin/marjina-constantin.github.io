@@ -164,7 +164,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
 
   return (
     <div>
-      <h2>{formType === 'add' ? 'Add income' : 'Edit income'}</h2>
+      <h2 className="page-title">{formType === 'add' ? 'Add income' : 'Edit income'}</h2>
       <form className="add-transaction" onSubmit={handleSubmit}>
         <input
           required
