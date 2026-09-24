@@ -7,14 +7,17 @@ interface ModalProps {
   children: ReactNode;
 }
 
+const closeEvent = {
+  preventDefault: () => {},
+} as React.MouseEvent<HTMLAnchorElement, MouseEvent>;
+
 export default function Modal({ show, onClose, children }: ModalProps) {
   const ref = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const checkIfClickedOutside = (e: MouseEvent) => {
       if (show && ref.current && !ref.current.contains(e.target as Node)) {
-        onClose(
-          e as unknown as React.MouseEvent<HTMLAnchorElement, MouseEvent>
-        );
+        onClose(e as unknown as React.MouseEvent<HTMLAnchorElement, MouseEvent>);
       }
     };
     document.addEventListener('mousedown', checkIfClickedOutside);
@@ -24,18 +27,51 @@ export default function Modal({ show, onClose, children }: ModalProps) {
   }, [show, onClose]);
 
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (show && e.key === 'Escape') {
-        // Create a synthetic event for onClose
-        const syntheticEvent = {
-          preventDefault: () => {},
-        } as React.MouseEvent<HTMLAnchorElement, MouseEvent>;
-        onClose(syntheticEvent);
+    if (!show || !ref.current) return;
+
+    const panel = ref.current;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const getFocusable = () =>
+      Array.from(
+        panel.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), textarea, input, select, a[href], [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((el) => !el.hasAttribute('disabled'));
+
+    const amount = panel.querySelector<HTMLElement>('input[name="field_amount"]');
+    const initial = amount ?? getFocusable()[0] ?? panel;
+    initial.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose(closeEvent);
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const items = getFocusable();
+      if (!items.length) {
+        event.preventDefault();
+        return;
+      }
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
       }
     };
-    document.addEventListener('keydown', handleEscape);
+
+    document.addEventListener('keydown', onKeyDown);
     return () => {
-      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previouslyFocused?.focus?.();
     };
   }, [show, onClose]);
 
@@ -43,7 +79,7 @@ export default function Modal({ show, onClose, children }: ModalProps) {
     <>
       {show ? (
         <div className="modal-window">
-          <div ref={ref}>
+          <div ref={ref} tabIndex={-1}>
             <button
               type="button"
               title="Close"
