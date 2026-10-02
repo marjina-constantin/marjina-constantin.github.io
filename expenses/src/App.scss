@@ -368,18 +368,18 @@ input[type='submit'] {
   input,
   textarea,
   select {
-    background: var(--surface-color);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: $border-radius-md;
-    min-height: 44px;
+    background: transparent;
+    border: none;
+    min-height: 40px;
     width: 100%;
-    margin-bottom: 12px;
-    font-weight: 500;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
-    color: rgba(255, 255, 255, 0.88);
+    margin-bottom: 20px;
+    border-bottom: 1px solid #6d7781;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    color: #ccc;
     font-size: 16px !important;
     line-height: 1.4;
-    padding: 0.75rem 0.9rem;
+    padding: 0;
     -webkit-appearance: none;
     appearance: none;
     box-sizing: border-box;
@@ -401,13 +401,9 @@ input[type='submit'] {
   }
 
   select {
+    background-image: none;
     cursor: pointer;
     font-size: 16px !important;
-    padding-right: 2.25rem;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.9rem center;
-    background-size: 12px;
 
     option {
       background: var(--bg-color);
@@ -420,24 +416,23 @@ input[type='submit'] {
   textarea {
     font-size: 16px !important;
     resize: vertical;
-    min-height: 88px;
+    min-height: 60px;
     font-family: inherit;
   }
 
   input:focus,
-  textarea:focus,
-  select:focus {
+  textarea:focus {
     outline: none;
-    border-color: color-mix(in srgb, var(--accent-color) 45%, transparent);
-    background-color: var(--surface-hover-color);
+    border-bottom: 1px solid var(--accent-color);
   }
 
   input::placeholder,
   textarea::placeholder,
   select::placeholder {
-    color: rgba(255, 255, 255, 0.4);
-    font-weight: 400;
+    color: #ccc;
+    font-weight: bold;
     font-size: 16px;
+    opacity: 1;
   }
 
   input[type='submit'] {
@@ -452,7 +447,6 @@ input[type='submit'] {
   input[type='date'] {
     position: relative;
     text-align: left !important;
-    padding-left: 0.9rem !important;
 
     &::-webkit-calendar-picker-indicator {
       filter: invert(1);
@@ -460,23 +454,23 @@ input[type='submit'] {
     }
 
     &::-webkit-datetime-edit {
-      color: rgba(255, 255, 255, 0.88);
+      color: #ccc;
       text-align: left;
     }
 
     &::-webkit-datetime-edit-fields-wrapper {
-      color: rgba(255, 255, 255, 0.88);
+      color: #ccc;
       text-align: left;
     }
 
     &::-webkit-datetime-edit-text {
-      color: rgba(255, 255, 255, 0.88);
+      color: #ccc;
     }
 
     &::-webkit-datetime-edit-month-field,
     &::-webkit-datetime-edit-day-field,
     &::-webkit-datetime-edit-year-field {
-      color: rgba(255, 255, 255, 0.88);
+      color: #ccc;
       text-align: left;
     }
   }
@@ -488,6 +482,7 @@ input[type='submit'] {
 
 input[type="date"] {
   text-align: left !important;
+  padding-left: 0 !important;
 
   &::-webkit-datetime-edit {
     text-align: left !important;
@@ -2331,7 +2326,7 @@ input[type="date"] {
   color: #d4d4d4;
   font-weight: 400;
   font-style: italic;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--surface-hover-color);
   padding: 3px 8px;
   border-radius: $border-radius-sm;
   display: inline-block;
