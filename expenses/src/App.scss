@@ -104,10 +104,35 @@ $color-map: (
     --text-color: #{map-get($colors, text-color)};
     --tag-selected-text-color: #{map-get($colors, tag-selected-text-color)};
     --accent-gradient-color: #{map-get($colors, accent-gradient-color)};
+    --surface-color: color-mix(in srgb, #fff 7%, var(--bg-color));
+    --surface-hover-color: color-mix(in srgb, #fff 8%, var(--bg-color));
+    --surface-muted-color: color-mix(in srgb, #fff 3%, var(--bg-color));
+    --surface-muted-hover-color: color-mix(in srgb, #fff 6%, var(--bg-color));
+    --surface-strong-color: color-mix(in srgb, #fff 12%, var(--bg-color));
+    --surface-strong-hover-color: color-mix(in srgb, #fff 15%, var(--bg-color));
+    --surface-track-color: color-mix(in srgb, #fff 10%, var(--bg-color));
+  }
+
+  html:has(.#{$class}) {
+    background-color: #{map-get($colors, bg-color)};
+    background-image:
+      radial-gradient(
+        ellipse 88% 34% at 50% -6%,
+        color-mix(in srgb, #{map-get($colors, accent-color)} 18%, transparent),
+        transparent 72%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, #{map-get($colors, accent-color)} 10%, #{map-get($colors, bg-color)}) 0%,
+        #{map-get($colors, bg-color)} 26%
+      );
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    min-height: 100%;
   }
 
   body:has(.#{$class}) {
-    background: #{map-get($colors, bg-color)};
+    background: transparent;
   }
 }
 
@@ -209,7 +234,7 @@ input[type='submit'] {
     font-weight: 500;
     border: 1px solid rgba(255, 255, 255, 0.15);
     min-height: 40px;
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--surface-color);
     border-radius: $border-radius-md;
     color: rgba(255, 255, 255, 0.85);
     padding: 0.625rem 1.25rem;
@@ -218,7 +243,7 @@ input[type='submit'] {
     transition: all 0.2s ease;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--surface-hover-color);
       border-color: var(--accent-color);
       color: var(--accent-color);
     }
@@ -238,7 +263,7 @@ input[type='submit'] {
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--surface-hover-color);
     border-color: var(--accent-color);
     color: var(--accent-color);
   }
@@ -257,9 +282,7 @@ input[type='submit'] {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 99;
   touch-action: none;
-  background: rgba(26, 29, 46, 0.85);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+  background: color-mix(in srgb, #1a1d2e 85%, var(--bg-color));
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.4);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 
@@ -683,7 +706,7 @@ input[type="date"] {
     cursor: pointer;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--surface-hover-color);
       color: #fff;
     }
   }
@@ -698,7 +721,7 @@ input[type="date"] {
     margin-bottom: 1.25rem;
     padding: 0.9rem 1rem;
     border-radius: $border-radius-md;
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--surface-color);
   }
 
   &__date {
@@ -792,7 +815,7 @@ input[type="date"] {
     justify-content: center;
     width: 40px;
     height: 40px;
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--surface-color);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: $border-radius-md;
     color: var(--accent-color);
@@ -800,7 +823,7 @@ input[type="date"] {
     transition: all 0.2s ease;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--surface-hover-color);
       border-color: var(--accent-color);
       transform: scale(1.05);
     }
@@ -810,7 +833,7 @@ input[type="date"] {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--surface-color);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: $border-radius-md;
     padding: 0 0.75rem;
@@ -819,7 +842,7 @@ input[type="date"] {
     transition: all 0.2s ease;
 
     &:focus-within {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--surface-hover-color);
       border-color: var(--accent-color);
     }
   }
@@ -860,7 +883,7 @@ input[type="date"] {
   }
 
   &__select {
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--surface-color);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: $border-radius-md;
     padding: 0 2.5rem 0 0.75rem;
@@ -879,13 +902,13 @@ input[type="date"] {
     min-width: 180px;
 
     &:hover {
-      background-color: rgba(255, 255, 255, 0.08);
+      background-color: var(--surface-hover-color);
       border-color: var(--accent-color);
     }
 
     &:focus {
       outline: none;
-      background-color: rgba(255, 255, 255, 0.08);
+      background-color: var(--surface-hover-color);
       border-color: var(--accent-color);
     }
 
@@ -896,7 +919,7 @@ input[type="date"] {
   }
 
   &__clear-button {
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--surface-color);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: $border-radius-md;
     padding: 0 1rem;
@@ -908,7 +931,7 @@ input[type="date"] {
     white-space: nowrap;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--surface-hover-color);
       border-color: var(--accent-color);
       color: var(--accent-color);
     }
@@ -923,7 +946,7 @@ input[type="date"] {
   }
 
   &__tag {
-    background: rgba(255, 255, 255, 0.12);
+    background: var(--surface-strong-color);
     border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: $border-radius-sm;
     padding: 0.4rem 0.75rem;
@@ -938,18 +961,18 @@ input[type="date"] {
     -webkit-tap-highlight-color: transparent;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.15);
+      background: var(--surface-strong-hover-color);
       border-color: rgba(255, 255, 255, 0.25);
     }
 
     &--selected {
       border: 1px solid var(--accent-color);
-      background: rgba(255, 255, 255, 0.12);
+      background: var(--surface-strong-color);
       color: var(--accent-color);
       font-weight: 500;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.15);
+        background: var(--surface-strong-hover-color);
         border-color: var(--accent-color);
       }
     }
@@ -1244,7 +1267,7 @@ input[type="date"] {
       width: 100%;
       padding: 0.75rem 0.9rem;
       border-radius: $border-radius-md;
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--surface-muted-color);
       box-sizing: border-box;
 
       span {
@@ -1322,17 +1345,17 @@ input[type="date"] {
       padding: 0.75rem 0.5rem;
       border: 2px solid transparent;
       border-radius: $border-radius-md;
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--surface-muted-color);
       cursor: pointer;
       transition: border-color 0.15s ease, background 0.15s ease;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.06);
+        background: var(--surface-muted-hover-color);
       }
 
       &.active {
         border-color: var(--accent-color);
-        background: rgba(255, 255, 255, 0.06);
+        background: var(--surface-muted-hover-color);
       }
 
       &__preview {
@@ -1446,7 +1469,7 @@ input[type="date"] {
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--surface-color);
   border-radius: $border-radius-lg;
   padding: 1rem 0.75rem;
   display: flex;
@@ -1460,7 +1483,7 @@ input[type="date"] {
   overflow: hidden;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--surface-hover-color);
   }
 
   .stat-icon {
@@ -1626,7 +1649,7 @@ input[type="date"] {
       width: 44px;
       height: 24px;
       padding: 2px;
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: var(--surface-track-color);
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 999px;
       transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -1644,7 +1667,7 @@ input[type="date"] {
     }
 
     &:hover input[type="checkbox"]:not(:checked) + .toggle-slider {
-      background-color: rgba(255, 255, 255, 0.15);
+      background-color: var(--surface-strong-hover-color);
       border-color: rgba(255, 255, 255, 0.3);
     }
 
@@ -1819,7 +1842,7 @@ input[type="date"] {
     margin-bottom: 0.75rem;
 
     .sort-button {
-      background: rgba(255, 255, 255, 0.07);
+      background: var(--surface-color);
       border: none;
       border-radius: $border-radius-sm;
       padding: 0.5rem 1rem;
@@ -1837,7 +1860,7 @@ input[type="date"] {
       }
 
       &:hover {
-        background: rgba(255, 255, 255, 0.08);
+        background: var(--surface-hover-color);
         color: rgba(255, 255, 255, 0.8);
       }
 
@@ -1851,7 +1874,7 @@ input[type="date"] {
 
   // Transaction List Item
   .transaction-list-item {
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--surface-color);
     border-radius: $border-radius-lg;
     padding: 1rem;
     padding-right: 1.5rem;
@@ -1870,7 +1893,7 @@ input[type="date"] {
     -webkit-overflow-scrolling: touch;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--surface-hover-color);
     }
 
     .transaction-date-box {
@@ -2094,19 +2117,17 @@ input[type="date"] {
   top: 1rem;
   right: 1rem;
   z-index: 100;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   animation: slideIn 0.3s ease-out;
 
   &--offline {
-    background: rgba(239, 68, 68, 0.15);
+    background: color-mix(in srgb, #ef4444 15%, var(--bg-color));
     border: 1px solid rgba(239, 68, 68, 0.3);
     color: #fecaca;
   }
 
   &--syncing {
-    background: rgba(59, 130, 246, 0.15);
+    background: color-mix(in srgb, #3b82f6 15%, var(--bg-color));
     border: 1px solid rgba(59, 130, 246, 0.3);
     color: #93c5fd;
 
@@ -2116,26 +2137,26 @@ input[type="date"] {
   }
 
   &--pending {
-    background: rgba(251, 191, 36, 0.15);
+    background: color-mix(in srgb, #fbbf24 15%, var(--bg-color));
     border: 1px solid rgba(251, 191, 36, 0.3);
     color: #fde68a;
   }
 
   &--success {
-    background: rgba(34, 197, 94, 0.15);
+    background: color-mix(in srgb, #22c55e 15%, var(--bg-color));
     border: 1px solid rgba(34, 197, 94, 0.3);
     color: #86efac;
     animation: slideIn 0.3s ease-out, slideOut 0.3s ease-in 2.7s forwards;
   }
 
   &--idle {
-    background: rgba(34, 197, 94, 0.1);
+    background: color-mix(in srgb, #22c55e 10%, var(--bg-color));
     border: 1px solid rgba(34, 197, 94, 0.2);
     color: #bbf7d0;
   }
 
   &--error {
-    background: rgba(248, 113, 113, 0.15);
+    background: color-mix(in srgb, #f87171 15%, var(--bg-color));
     border: 1px solid rgba(248, 113, 113, 0.4);
     color: #fecaca;
   }
@@ -2310,7 +2331,7 @@ input[type="date"] {
   color: #d4d4d4;
   font-weight: 400;
   font-style: italic;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface-hover-color);
   padding: 3px 8px;
   border-radius: $border-radius-sm;
   display: inline-block;
@@ -2331,7 +2352,11 @@ input[type="date"] {
   justify-content: center;
   align-items: center;
   z-index: 90;
-  background: linear-gradient(180deg, transparent 0%, rgba(26, 29, 46, 0.6) 50%);
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, #1a1d2e 85%, var(--bg-color)) 70%
+  );
 
   button {
     width: 2.5rem;
@@ -2343,9 +2368,7 @@ input[type="date"] {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(40, 42, 54, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: color-mix(in srgb, #282a36 70%, var(--bg-color));
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     color: rgba(255, 255, 255, 0.7);
@@ -2353,7 +2376,7 @@ input[type="date"] {
 
     &:hover:not(:disabled) {
       border-color: var(--accent-color);
-      background: rgba(40, 42, 54, 0.9);
+      background: color-mix(in srgb, #282a36 90%, var(--bg-color));
       transform: translateY(-2px);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     }
