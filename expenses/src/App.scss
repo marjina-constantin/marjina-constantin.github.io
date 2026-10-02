@@ -117,14 +117,9 @@ $color-map: (
     background-color: #{map-get($colors, bg-color)};
     background-image:
       radial-gradient(
-        ellipse 58% 28% at 82% -4%,
+        ellipse 120% 18% at 50% 0%,
         color-mix(in srgb, #{map-get($colors, accent-color)} 16%, transparent),
-        transparent 70%
-      ),
-      radial-gradient(
-        ellipse 42% 22% at 8% 0%,
-        color-mix(in srgb, #{map-get($colors, accent-color)} 8%, transparent),
-        transparent 68%
+        transparent 72%
       );
     background-attachment: fixed;
     background-repeat: no-repeat;
