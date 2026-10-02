@@ -20,7 +20,6 @@ const Home = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const items = data.filtered || data;
-  const hasGroupedData = items.groupedData && Object.keys(items.groupedData).length > 0;
 
   const [focusedItem, setFocusedItem] = useState({});
 
@@ -70,27 +69,22 @@ const Home = () => {
     });
   };
 
-  const months = useMemo(
-    () => items.groupedData ? Object.keys(items.groupedData) : [],
-    [items.groupedData]
+  const allMonths = useMemo(
+    () => (data.groupedData ? Object.keys(data.groupedData) : []),
+    [data.groupedData]
   );
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
-  const currentMonth = useMemo(
-    () => months[currentMonthIndex] ? months[currentMonthIndex] : months[0],
-    [months, currentMonthIndex]
-  );
+  const currentMonth = allMonths[currentMonthIndex] || allMonths[0] || '';
+  const monthTransactions = currentMonth
+    ? items.groupedData?.[currentMonth]
+    : undefined;
 
   useEffect(() => {
-    if (data?.filtered) {
-      const index = Object.keys(months).find(
-        // @ts-expect-error
-        (key: string) => months[key] === currentMonth
-      );
-      setCurrentMonthIndex(parseInt(index as string));
-    } else {
+    if (allMonths.length === 0) return;
+    if (currentMonthIndex < 0 || currentMonthIndex >= allMonths.length) {
       setCurrentMonthIndex(0);
     }
-  }, [data.filtered]);
+  }, [allMonths.length, currentMonthIndex]);
 
   return (
     <div style={{ overflowX: 'hidden', width: '100%' }}>
@@ -139,34 +133,42 @@ const Home = () => {
 
       {loading && <PageLoader />}
 
-      {!loading && !noData && hasGroupedData && (
+      {!loading && !noData && allMonths.length > 0 && (
         <>
-          <TransactionList
-            transactions={items.groupedData[currentMonth]}
-            categoryLabels={categories}
-            onEdit={handleEdit}
-            onDelete={(id) => setShowDeleteModal(id)}
-            changedItems={data.changedItems}
-            handleClearChangedItem={handleClearChangedItem}
-            month={currentMonth}
-            total={items.totals[currentMonth]}
-            incomeTotals={items.incomeTotals}
-          />
+          {!monthTransactions || monthTransactions.length === 0 ? (
+            <p className="empty-month">No expenses this month.</p>
+          ) : (
+            <TransactionList
+              transactions={monthTransactions}
+              categoryLabels={categories}
+              onEdit={handleEdit}
+              onDelete={(id) => setShowDeleteModal(id)}
+              changedItems={data.changedItems}
+              handleClearChangedItem={handleClearChangedItem}
+              month={currentMonth}
+              total={items.totals[currentMonth]}
+              incomeTotals={items.incomeTotals}
+            />
+          )}
           <div className="pager-navigation">
             <button
-              disabled={!months[currentMonthIndex + 1]}
+              disabled={!allMonths[currentMonthIndex + 1]}
               onClick={() => setCurrentMonthIndex(currentMonthIndex + 1)}
             >
               <ChevronLeft />
             </button>
             <button
-              disabled={!months[currentMonthIndex - 1]}
+              disabled={!allMonths[currentMonthIndex - 1]}
               onClick={() => setCurrentMonthIndex(currentMonthIndex - 1)}
             >
               <ChevronRight />
             </button>
           </div>
         </>
+      )}
+
+      {!loading && !noData && allMonths.length === 0 && (
+        <p className="empty-month">No expenses yet.</p>
       )}
     </div>
   );
