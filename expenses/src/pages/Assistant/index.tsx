@@ -1,11 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowUp, Check, Copy, KeyRound, RefreshCw, RotateCcw, Sparkles, Square } from 'lucide-react';
+import {
+  ArrowUp,
+  Check,
+  Copy,
+  KeyRound,
+  Mic,
+  MicOff,
+  RefreshCw,
+  RotateCcw,
+  Sparkles,
+  Square,
+} from 'lucide-react';
 import AiMarkdown from '../../components/ai/AiMarkdown';
 import { PageLoader } from '../../components/ui/LoadingSpinner';
 import { useDataFetcher } from '../../hooks/useDataFetcher';
 import { useAiApiKey } from '../../ai/hooks/useAiApiKey';
 import { useAiChat } from '../../ai/hooks/useAiChat';
+import { useSpeechInput } from '../../ai/hooks/useSpeechInput';
 import { ChatMessage } from '../../ai/chatSession';
 import { fallbackModelLabel } from '../../ai/config';
 
@@ -111,10 +123,25 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({ apiKey, data
     el.style.height = `${Math.min(el.scrollHeight, 140)}px`;
   }, [input]);
 
+  const speechPrefixRef = useRef('');
+  const speech = useSpeechInput((text) =>
+    setInput(speechPrefixRef.current ? `${speechPrefixRef.current} ${text}` : text)
+  );
+
+  const toggleSpeech = () => {
+    if (speech.listening) {
+      speech.stop();
+      return;
+    }
+    speechPrefixRef.current = input.trim();
+    speech.start();
+  };
+
   const canSend = online && hasData && !busy && input.trim().length > 0;
 
   const submit = (text = input) => {
     if (!online || !hasData || busy || !text.trim()) return;
+    speech.stop();
     send(text);
     setInput('');
   };
@@ -123,7 +150,9 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({ apiKey, data
     ? 'Offline: the assistant needs a connection'
     : !hasData
       ? 'Loading your data…'
-      : 'Ask about your money…';
+      : speech.listening
+        ? 'Listening…'
+        : 'Ask about your money…';
 
   return (
     <div className="ai-chat">
@@ -204,6 +233,19 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({ apiKey, data
           }}
           aria-label="Message"
         />
+        {speech.supported && (
+          <button
+            type="button"
+            className={`ai-composer__mic${speech.listening ? ' is-listening' : ''}`}
+            onClick={toggleSpeech}
+            disabled={!online || !hasData}
+            aria-label={speech.listening ? 'Stop voice input' : 'Ask with your voice'}
+            aria-pressed={speech.listening}
+            title={speech.listening ? 'Stop' : 'Ask with your voice'}
+          >
+            {speech.listening ? <MicOff size={18} /> : <Mic size={18} />}
+          </button>
+        )}
         {busy ? (
           <button type="button" className="ai-composer__send" onClick={stop} aria-label="Stop">
             <Square size={16} />
@@ -214,7 +256,11 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({ apiKey, data
           </button>
         )}
       </form>
-      <p className="ai-disclaimer">AI can make mistakes. Check important numbers.</p>
+      {speech.error ? (
+        <p className="ai-disclaimer ai-disclaimer--error" role="alert">{speech.error}</p>
+      ) : (
+        <p className="ai-disclaimer">AI can make mistakes. Check important numbers.</p>
+      )}
       </div>
     </div>
   );

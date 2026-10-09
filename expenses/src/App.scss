@@ -2934,6 +2934,7 @@ input[type="date"] {
     flex: 1;
     min-width: 0;
     max-height: 140px;
+    box-sizing: border-box;
     padding: 0.5rem 0.6rem;
     border: none;
     outline: none;
@@ -2948,7 +2949,8 @@ input[type="date"] {
   }
 
   &__send,
-  &__new {
+  &__new,
+  &__mic {
     display: flex;
     flex: 0 0 38px;
     align-items: center;
@@ -2969,13 +2971,35 @@ input[type="date"] {
     }
   }
 
-  &__new {
+  &__new,
+  &__mic {
     background: transparent;
     color: rgba(255, 255, 255, 0.6);
 
-    &:hover {
+    &:hover:not(:disabled) {
       color: var(--accent-color);
     }
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+  }
+
+  &__mic.is-listening {
+    background: color-mix(in srgb, #f87171 18%, transparent);
+    color: #f87171;
+    animation: ai-mic-pulse 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes ai-mic-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(248, 113, 113, 0);
   }
 }
 
@@ -2984,6 +3008,10 @@ input[type="date"] {
   color: rgba(255, 255, 255, 0.4);
   font-size: 0.7rem;
   text-align: center;
+
+  &--error {
+    color: #fca5a5;
+  }
 }
 
 .ai-setup {
