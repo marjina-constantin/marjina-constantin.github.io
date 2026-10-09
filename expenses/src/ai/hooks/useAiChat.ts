@@ -144,6 +144,19 @@ export function useAiChat(apiKey: string) {
     [apiKey, busy, items, patchMessage, shareDescriptions, summary]
   );
 
+  /** Re-asks the question behind a failed answer, replacing both messages. */
+  const retry = useCallback(
+    (assistantId: string) => {
+      if (busy) return;
+      const index = messages.findIndex((m) => m.id === assistantId);
+      const question = messages[index - 1];
+      if (index < 1 || question?.role !== 'user') return;
+      setMessages((prev) => prev.filter((m) => m.id !== assistantId && m.id !== question.id));
+      send(question.text);
+    },
+    [busy, messages, send]
+  );
+
   const stop = useCallback(() => abortRef.current?.abort(), []);
 
   const reset = useCallback(() => {
@@ -156,6 +169,7 @@ export function useAiChat(apiKey: string) {
     messages,
     busy,
     send,
+    retry,
     stop,
     reset,
     hasData: items.length > 0,

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowUp, Check, Copy, KeyRound, RotateCcw, Sparkles, Square } from 'lucide-react';
+import { ArrowUp, Check, Copy, KeyRound, RefreshCw, RotateCcw, Sparkles, Square } from 'lucide-react';
 import AiMarkdown from '../../components/ai/AiMarkdown';
 import { PageLoader } from '../../components/ui/LoadingSpinner';
 import { useDataFetcher } from '../../hooks/useDataFetcher';
@@ -35,7 +35,10 @@ const useOnline = () => {
   return online;
 };
 
-const AssistantMessage: React.FC<{ message: ChatMessage }> = ({ message }) => {
+const AssistantMessage: React.FC<{ message: ChatMessage; onRetry?: () => void }> = ({
+  message,
+  onRetry,
+}) => {
   const [copied, setCopied] = useState(false);
   const copy = () => {
     navigator.clipboard?.writeText(message.text).then(() => {
@@ -61,6 +64,12 @@ const AssistantMessage: React.FC<{ message: ChatMessage }> = ({ message }) => {
             <button type="button" onClick={copy} aria-label="Copy answer">
               {copied ? <Check size={14} /> : <Copy size={14} />}
             </button>
+            {onRetry && (
+              <button type="button" className="ai-message__retry" onClick={onRetry}>
+                <RefreshCw size={14} />
+                Retry
+              </button>
+            )}
             {message.status === 'stopped' && <span>Stopped</span>}
             {!!message.tokens && <span>{formatTokens(message.tokens)} tokens</span>}
             {fallbackModelLabel(message.model) && <span>via {fallbackModelLabel(message.model)}</span>}
@@ -72,7 +81,7 @@ const AssistantMessage: React.FC<{ message: ChatMessage }> = ({ message }) => {
 };
 
 const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({ apiKey, dataLoading }) => {
-  const { messages, busy, send, stop, reset, hasData, summaryTokens } = useAiChat(apiKey);
+  const { messages, busy, send, retry, stop, reset, hasData, summaryTokens } = useAiChat(apiKey);
   const [input, setInput] = useState('');
   const online = useOnline();
   const endRef = useRef<HTMLDivElement>(null);
@@ -146,13 +155,21 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({ apiKey, data
         </div>
       ) : (
         <div className="ai-chat__messages">
-          {messages.map((message) =>
+          {messages.map((message, index) =>
             message.role === 'user' ? (
               <div key={message.id} className="ai-message ai-message--user">
                 <div className="ai-message__body">{message.text}</div>
               </div>
             ) : (
-              <AssistantMessage key={message.id} message={message} />
+              <AssistantMessage
+                key={message.id}
+                message={message}
+                onRetry={
+                  index === messages.length - 1 && message.status === 'error' && online && !busy
+                    ? () => retry(message.id)
+                    : undefined
+                }
+              />
             )
           )}
           <div ref={endRef} />

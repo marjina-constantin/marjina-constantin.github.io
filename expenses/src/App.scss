@@ -2782,6 +2782,21 @@ input[type="date"] {
         color: var(--accent-color);
       }
     }
+
+    .ai-message__retry {
+      gap: 0.3rem;
+      align-items: center;
+      padding: 0.25rem 0.65rem;
+      border: 1px solid color-mix(in srgb, var(--accent-color) 45%, transparent);
+      border-radius: 999px;
+      color: var(--accent-color);
+      font-size: 0.75rem;
+      font-weight: 600;
+
+      &:hover {
+        background: color-mix(in srgb, var(--accent-color) 12%, transparent);
+      }
+    }
   }
 }
 
