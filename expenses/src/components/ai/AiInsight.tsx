@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ChevronUp,
@@ -43,8 +43,11 @@ interface AiInsightProps {
 const AiInsight: React.FC<AiInsightProps> = ({ feature, param }) => {
   const navigate = useNavigate();
   const { apiKey, status: keyStatus } = useAiApiKey();
-  const { entry, stale, status, error, generate, label } = useAiInsight(apiKey, feature, param);
-  const [collapsed, setCollapsed] = useState(false);
+  const { entry, stale, status, error, generate, collapsed, setCollapsed, label } = useAiInsight(
+    apiKey,
+    feature,
+    param
+  );
 
   const handleOpen = () => {
     if (keyStatus === 'missing') {

@@ -72,6 +72,8 @@ export interface InsightEntry {
   at: number;
   tokens: number;
   model?: string;
+  /** The user minimized the card; it stays a pill until opened again. */
+  collapsed?: boolean;
 }
 
 const readInsights = (): Record<string, InsightEntry> => {

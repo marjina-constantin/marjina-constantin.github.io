@@ -78,6 +78,18 @@ export function useAiInsight(apiKey: string, feature: InsightFeatureId, param?: 
   }, [hasEntry, definition, input, param]);
   const stale = !!entry && currentHash !== null && currentHash !== entry.hash;
 
+  const setCollapsed = useCallback(
+    (collapsed: boolean) => {
+      setEntry((current) => {
+        if (!current) return current;
+        const next = { ...current, collapsed };
+        saveInsightEntry(cacheKey, next);
+        return next;
+      });
+    },
+    [cacheKey]
+  );
+
   const generate = useCallback(async () => {
     const context = definition.build(input, param);
     if (!context) {
@@ -131,5 +143,14 @@ export function useAiInsight(apiKey: string, feature: InsightFeatureId, param?: 
     }
   }, [apiKey, cacheKey, definition, input, param]);
 
-  return { entry, stale, status, error, generate, label: definition.label };
+  return {
+    entry,
+    stale,
+    status,
+    error,
+    generate,
+    collapsed: !!entry?.collapsed,
+    setCollapsed,
+    label: definition.label,
+  };
 }
