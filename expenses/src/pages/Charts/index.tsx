@@ -9,6 +9,8 @@ import NoData from 'highcharts/modules/no-data-to-display';
 import { PageLoader } from '../../components/ui/LoadingSpinner';
 import { useDataFetcher } from '../../hooks/useDataFetcher';
 import { useIsVisible } from '../../hooks/useIsVisible';
+import AiInsight from '../../components/ai/LazyAiInsight';
+import type { InsightFeatureId } from '../../ai/insights/features';
 
 Boost(Highcharts);
 NoData(Highcharts);
@@ -18,12 +20,24 @@ NoData(Highcharts);
  * Defers rendering until the section is near the viewport (300px margin),
  * so off-screen charts don't compute data or initialize Highcharts on mount.
  */
-const ChartSection: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const ChartInsight: React.FC<{ feature: InsightFeatureId }> = ({ feature }) => (
+  <div className="ai-insights">
+    <AiInsight feature={feature} />
+  </div>
+);
+
+const ChartSection: React.FC<{ children: React.ReactNode; insight?: InsightFeatureId }> = ({
+  children,
+  insight,
+}) => {
   const { ref, isVisible } = useIsVisible('300px');
   return (
     <div className="charts-section" ref={ref}>
       {isVisible ? (
-        <Suspense fallback="">{children}</Suspense>
+        <>
+          <Suspense fallback="">{children}</Suspense>
+          {insight && <ChartInsight feature={insight} />}
+        </>
       ) : (
         <div style={{ minHeight: '250px' }} />
       )}
@@ -73,16 +87,18 @@ const Charts = () => {
           <div className="charts-page">
             <div className="charts-section">
               <MonthlyTotals />
+              <ChartInsight feature="monthlyTotals" />
             </div>
             <div className="charts-section">
               <YearAverageTrend />
+              <ChartInsight feature="yearsInReview" />
             </div>
-            <ChartSection><AllTimeSpendings /></ChartSection>
-            <ChartSection><MonthlyAverage /></ChartSection>
-            <ChartSection><MonthlyAverageTrend /></ChartSection>
-            <ChartSection><SavingsHistory /></ChartSection>
-            <ChartSection><DailyAverage /></ChartSection>
-            <ChartSection><DailyAverageTrend /></ChartSection>
+            <ChartSection insight="allTimeSpendings"><AllTimeSpendings /></ChartSection>
+            <ChartSection insight="monthlyAverage"><MonthlyAverage /></ChartSection>
+            <ChartSection insight="monthlyAverageTrend"><MonthlyAverageTrend /></ChartSection>
+            <ChartSection insight="savingsHistory"><SavingsHistory /></ChartSection>
+            <ChartSection insight="dailyAverage"><DailyAverage /></ChartSection>
+            <ChartSection insight="dailyAverageTrend"><DailyAverageTrend /></ChartSection>
             <ChartSection><LastTwoMonthsAverage /></ChartSection>
           </div>
         )

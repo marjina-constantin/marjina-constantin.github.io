@@ -4,6 +4,7 @@ import Login from '../pages/Login';
 import Profile from '../pages/Profile';
 import AddTransaction from '../pages/AddTransaction';
 import Income from '../pages/Income';
+import LazyAssistant from '../pages/LazyAssistant';
 
 const routes = [
   {
@@ -34,6 +35,11 @@ const routes = [
   {
     path: '/expenses/income',
     component: Income,
+    isPrivate: true,
+  },
+  {
+    path: '/expenses/assistant',
+    component: LazyAssistant,
     isPrivate: true,
   },
 ];

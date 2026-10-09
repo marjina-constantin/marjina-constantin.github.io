@@ -1,6 +1,8 @@
 import { LoginPayload, UserData } from '../types/types';
 import { clearExpensesDB } from '../utils/indexedDB';
 import { ROOT_URL } from '../utils/constants';
+import { clearAiLocalData } from '../ai/storage';
+import { clearChatSession } from '../ai/chatSession';
 
 export async function loginUser(dispatch: any, loginPayload: LoginPayload) {
   const requestOptions = {
@@ -34,6 +36,8 @@ export async function logout(dispatch: any, dataDispatch: any) {
   await dataDispatch({ type: 'REMOVE_DATA' });
   localStorage.removeItem('currentUser');
   localStorage.removeItem('token');
+  clearAiLocalData();
+  clearChatSession();
   // Clear IndexedDB cache on logout
   await clearExpensesDB();
 }

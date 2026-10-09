@@ -12,6 +12,7 @@ import { FaUserCircle } from 'react-icons/fa';
 import { fetchRequest } from '../../utils/utils';
 import { notificationType, themeList } from '../../utils/constants';
 import { AuthState } from '../../types/types';
+import AiSettings from '../../components/ai/AiSettings';
 
 const Profile = () => {
   const showNotification = useNotification();
@@ -126,6 +127,7 @@ const Profile = () => {
             </button>
           ))}
         </div>
+        <AiSettings />
         <button className="button logout" onClick={handleLogout}>
           Logout
         </button>

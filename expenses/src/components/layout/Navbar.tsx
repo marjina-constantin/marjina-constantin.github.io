@@ -4,6 +4,7 @@ import {
   List,
   PieChart,
   PlusCircle,
+  Sparkles,
   TrendingUp,
   User,
 } from 'lucide-react';
@@ -38,6 +39,11 @@ export default function Navbar() {
         <li>
           <NavLink to="/expenses/income">
             <TrendingUp />
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/expenses/assistant" aria-label="Assistant">
+            <Sparkles />
           </NavLink>
         </li>
         {userIsLoggedIn ? (

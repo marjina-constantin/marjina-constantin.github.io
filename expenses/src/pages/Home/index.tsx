@@ -11,6 +11,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { TransactionOrIncomeItem } from '../../types/types';
 import { PageLoader } from '../../components/ui/LoadingSpinner';
 import { useDataFetcher } from '../../hooks/useDataFetcher';
+import AiInsight from '../../components/ai/LazyAiInsight';
+import { monthLabelToKey } from '../../utils/utils';
 
 const Home = () => {
   const showNotification = useNotification();
@@ -141,6 +143,10 @@ const Home = () => {
 
       {!loading && !noData && hasGroupedData && (
         <>
+          <div className="ai-insights">
+            <AiInsight feature="month" param={monthLabelToKey(currentMonth)} />
+            <AiInsight feature="allTime" />
+          </div>
           <TransactionList
             transactions={items.groupedData[currentMonth]}
             categoryLabels={categories}

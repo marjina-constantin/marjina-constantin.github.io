@@ -188,6 +188,13 @@ export const formatNumber = (value: unknown): string => {
   }
 };
 
+/** "October 2026" -> "2026-10" */
+export const monthLabelToKey = (label: string): string => {
+  const [name, year] = (label || '').split(' ');
+  const index = monthNames.indexOf(name);
+  return index >= 0 && year ? `${year}-${String(index + 1).padStart(2, '0')}` : '';
+};
+
 export const getCategory: { [key: string]: string } = categories.reduce(
   (acc, item) => {
     // @ts-expect-error TBC
