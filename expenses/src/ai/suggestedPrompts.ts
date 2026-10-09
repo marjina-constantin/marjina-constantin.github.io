@@ -1,3 +1,5 @@
+import type { DataPrompt } from './dataPrompts';
+
 export const SUGGESTED_PROMPTS = [
   // Current month
   'Cum arată luna curentă față de media mea?',
@@ -63,14 +65,74 @@ export const SUGGESTED_PROMPTS = [
   'Care sunt 3 lucruri pe care le fac bine cu banii?',
   'Care sunt 3 obiceiuri care mă costă cel mai mult?',
   'Dacă păstrez ritmul actual, cât voi economisi până la sfârșitul anului?',
+
+  // Seasons
+  'Cât cheltui în decembrie față de restul anului?',
+  'Cât mă costă vacanțele de vară, în fiecare an?',
+  'Cum arată luna ianuarie după sărbători, comparativ cu alte luni?',
+
+  // What if
+  'Dacă aș investi lunar ce cheltui pe distracție, cât aș avea în 5 ani?',
+  'În cât timp aș strânge 50.000 cu ritmul actual de economisire?',
+  'Ce s-ar întâmpla cu economiile mele dacă venitul scade cu 20%?',
+
+  // Records
+  'Care a fost cea mai lungă perioadă fără cheltuieli mari?',
+  'Care a fost cea mai scumpă zi din istoric?',
+  'Ce lună a fost cea mai echilibrată între venituri și cheltuieli?',
+
+  // Year over year
+  'Cu cât mai mult cheltui acum pe mâncare decât acum 5 ani?',
+  'Care an a fost cel mai bun financiar și de ce?',
+  'Ce s-a schimbat cel mai mult în cheltuielile mele în ultimii 3 ani?',
+
+  // Planning
+  'Cât pot cheltui pe zi până la sfârșitul lunii ca să rămân în medie?',
+  'Ce buget ar trebui să am pentru călătorii anul viitor?',
+  'Cât ar trebui să economisesc lunar ca să am un fond de urgență de 6 luni?',
+  'Care e suma minimă de care am nevoie lunar ca să-mi acopăr cheltuielile de bază?',
+  'Ce cheltuieli aș putea amâna luna viitoare fără să-mi afecteze traiul?',
+
+  // Behaviour
+  'Cheltuiesc mai mult la început sau la sfârșit de lună?',
+  'Cât de des fac cheltuieli impulsive, de sume mari, neplanificate?',
+  'Am luni în care cheltui mult mai mult după ce primesc venitul?',
+
+  // Comparisons
+  'Cum arată primul semestru față de al doilea, în fiecare an?',
+  'Care e diferența dintre cea mai scumpă și cea mai ieftină lună din acest an?',
+
+  // Overview
+  'Dă-mi o notă de la 1 la 10 pentru cum gestionez banii și explică de ce',
+  'Ce tendință din cheltuielile mele ar trebui să mă îngrijoreze?',
 ];
 
-/** Picks `count` random prompts (Fisher–Yates on a copy). */
-export const pickSuggestedPrompts = (count = 6): string[] => {
-  const prompts = [...SUGGESTED_PROMPTS];
-  for (let i = prompts.length - 1; i > 0; i--) {
+const shuffle = <T,>(list: T[]): T[] => {
+  const copy = [...list];
+  for (let i = copy.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [prompts[i], prompts[j]] = [prompts[j], prompts[i]];
+    [copy[i], copy[j]] = [copy[j], copy[i]];
   }
-  return prompts.slice(0, count);
+  return copy;
+};
+
+export interface SuggestedPrompt {
+  text: string;
+  personal: boolean;
+}
+
+/**
+ * Up to 3 data-based prompts (the most unusual ones are favoured, with some
+ * randomness so "More ideas" shows others), then random generic ones.
+ */
+export const pickSuggestedPrompts = (dataPrompts: DataPrompt[] = [], count = 6): SuggestedPrompt[] => {
+  const personal = dataPrompts
+    .map((prompt) => ({ prompt, score: prompt.priority + Math.random() * 2 }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map(({ prompt }) => ({ text: prompt.text, personal: true }));
+  const generic = shuffle(SUGGESTED_PROMPTS)
+    .slice(0, count - personal.length)
+    .map((text) => ({ text, personal: false }));
+  return [...personal, ...generic];
 };

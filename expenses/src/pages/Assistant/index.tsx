@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   ArrowUp,
   Check,
   Copy,
+  Fingerprint,
   KeyRound,
   Mic,
   MicOff,
@@ -19,7 +20,14 @@ import { useDataFetcher } from '../../hooks/useDataFetcher';
 import { useAiApiKey } from '../../ai/hooks/useAiApiKey';
 import { useAiChat } from '../../ai/hooks/useAiChat';
 import { useSpeechInput } from '../../ai/hooks/useSpeechInput';
-import { pickSuggestedPrompts } from '../../ai/suggestedPrompts';
+import {
+  SuggestedPrompt,
+  pickSuggestedPrompts,
+} from '../../ai/suggestedPrompts';
+import { buildDataPrompts } from '../../ai/dataPrompts';
+import { getAiItems } from '../../ai/data';
+import { getShareDescriptions } from '../../ai/storage';
+import { useData } from '../../context';
 import { ChatMessage } from '../../ai/chatSession';
 import { fallbackModelLabel } from '../../ai/config';
 
@@ -40,10 +48,10 @@ const useOnline = () => {
   return online;
 };
 
-const AssistantMessage: React.FC<{ message: ChatMessage; onRetry?: () => void }> = ({
-  message,
-  onRetry,
-}) => {
+const AssistantMessage: React.FC<{
+  message: ChatMessage;
+  onRetry?: () => void;
+}> = ({ message, onRetry }) => {
   const [copied, setCopied] = useState(false);
   const copy = () => {
     navigator.clipboard?.writeText(message.text).then(() => {
@@ -53,7 +61,9 @@ const AssistantMessage: React.FC<{ message: ChatMessage; onRetry?: () => void }>
   };
 
   return (
-    <div className={`ai-message ai-message--assistant ai-message--${message.status}`}>
+    <div
+      className={`ai-message ai-message--assistant ai-message--${message.status}`}
+    >
       <div className="ai-message__avatar" aria-hidden>
         <Sparkles size={16} />
       </div>
@@ -70,14 +80,22 @@ const AssistantMessage: React.FC<{ message: ChatMessage; onRetry?: () => void }>
               {copied ? <Check size={14} /> : <Copy size={14} />}
             </button>
             {onRetry && (
-              <button type="button" className="ai-message__retry" onClick={onRetry}>
+              <button
+                type="button"
+                className="ai-message__retry"
+                onClick={onRetry}
+              >
                 <RefreshCw size={14} />
                 Retry
               </button>
             )}
             {message.status === 'stopped' && <span>Stopped</span>}
-            {!!message.tokens && <span>{formatTokens(message.tokens)} tokens</span>}
-            {fallbackModelLabel(message.model) && <span>via {fallbackModelLabel(message.model)}</span>}
+            {!!message.tokens && (
+              <span>{formatTokens(message.tokens)} tokens</span>
+            )}
+            {fallbackModelLabel(message.model) && (
+              <span>via {fallbackModelLabel(message.model)}</span>
+            )}
           </div>
         )}
       </div>
@@ -85,10 +103,31 @@ const AssistantMessage: React.FC<{ message: ChatMessage; onRetry?: () => void }>
   );
 };
 
-const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({ apiKey, dataLoading }) => {
-  const { messages, busy, send, retry, stop, reset, hasData, summaryTokens } = useAiChat(apiKey);
+const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
+  apiKey,
+  dataLoading,
+}) => {
+  const { messages, busy, send, retry, stop, reset, hasData, summaryTokens } =
+    useAiChat(apiKey);
   const [input, setInput] = useState('');
-  const [suggestions, setSuggestions] = useState(() => pickSuggestedPrompts());
+  const { data } = useData();
+  const [suggestions, setSuggestions] = useState<SuggestedPrompt[] | null>(
+    null
+  );
+  const shuffleSuggestions = useCallback(
+    () =>
+      setSuggestions(
+        pickSuggestedPrompts(
+          buildDataPrompts(getAiItems(data.raw || []), getShareDescriptions())
+        )
+      ),
+    [data.raw]
+  );
+
+  // Picked once when data is first available; later syncs don't reshuffle.
+  useEffect(() => {
+    if (!suggestions && data.raw?.length) shuffleSuggestions();
+  }, [suggestions, data.raw, shuffleSuggestions]);
   const online = useOnline();
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -99,7 +138,14 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({ apiKey, data
 
   // Follow-up questions from insight cards arrive as router state and are sent once.
   useEffect(() => {
-    if (!pendingPrompt || !hasData || !online || busy || sentPromptRef.current === pendingPrompt) return;
+    if (
+      !pendingPrompt ||
+      !hasData ||
+      !online ||
+      busy ||
+      sentPromptRef.current === pendingPrompt
+    )
+      return;
     sentPromptRef.current = pendingPrompt;
     navigate(location.pathname, { replace: true, state: null });
     send(pendingPrompt);
@@ -119,7 +165,9 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({ apiKey, data
 
   const speechPrefixRef = useRef('');
   const speech = useSpeechInput((text) =>
-    setInput(speechPrefixRef.current ? `${speechPrefixRef.current} ${text}` : text)
+    setInput(
+      speechPrefixRef.current ? `${speechPrefixRef.current} ${text}` : text
+    )
   );
 
   const toggleSpeech = () => {
@@ -156,32 +204,40 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({ apiKey, data
             <Sparkles size={28} />
           </div>
           <p>
-            Ask anything about your expenses and income. Numbers are calculated on
-            your device from your data.
+            Ask anything about your expenses and income. Numbers are calculated
+            on your device from your data.
           </p>
-          <div className="ai-chips">
-            {suggestions.map((prompt) => (
+          {suggestions && (
+            <>
+              <div className="ai-chips">
+                {suggestions.map((prompt) => (
+                  <button
+                    key={prompt.text}
+                    type="button"
+                    className={`ai-chip${prompt.personal ? ' ai-chip--personal' : ''}`}
+                    disabled={!online || !hasData || dataLoading}
+                    onClick={() => submit(prompt.text)}
+                    title={prompt.personal ? 'Based on your data' : undefined}
+                  >
+                    {prompt.personal && <Fingerprint size={13} />}
+                    {prompt.text}
+                  </button>
+                ))}
+              </div>
               <button
-                key={prompt}
                 type="button"
-                className="ai-chip"
-                disabled={!online || !hasData || dataLoading}
-                onClick={() => submit(prompt)}
+                className="ai-chat__shuffle"
+                onClick={shuffleSuggestions}
               >
-                {prompt}
+                <Shuffle size={14} />
+                More ideas
               </button>
-            ))}
-          </div>
-          <button
-            type="button"
-            className="ai-chat__shuffle"
-            onClick={() => setSuggestions(pickSuggestedPrompts())}
-          >
-            <Shuffle size={14} />
-            More ideas
-          </button>
+            </>
+          )}
           {hasData && (
-            <span className="ai-chat__meta">Data overview: ~{formatTokens(summaryTokens)} tokens per request</span>
+            <span className="ai-chat__meta">
+              Data overview: ~{formatTokens(summaryTokens)} tokens per request
+            </span>
           )}
         </div>
       ) : (
@@ -196,7 +252,10 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({ apiKey, data
                 key={message.id}
                 message={message}
                 onRetry={
-                  index === messages.length - 1 && message.status === 'error' && online && !busy
+                  index === messages.length - 1 &&
+                  message.status === 'error' &&
+                  online &&
+                  !busy
                     ? () => retry(message.id)
                     : undefined
                 }
@@ -208,61 +267,83 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({ apiKey, data
       )}
 
       <div className="ai-composer-dock">
-      <form
-        className="ai-composer"
-        onSubmit={(e) => {
-          e.preventDefault();
-          submit();
-        }}
-      >
-        {messages.length > 0 && (
-          <button type="button" className="ai-composer__new" onClick={reset} aria-label="New chat" title="New chat">
-            <RotateCcw size={18} />
-          </button>
-        )}
-        <textarea
-          ref={inputRef}
-          rows={1}
-          value={input}
-          placeholder={placeholder}
-          disabled={!online || !hasData}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              submit();
-            }
+        <form
+          className="ai-composer"
+          onSubmit={(e) => {
+            e.preventDefault();
+            submit();
           }}
-          aria-label="Message"
-        />
-        {speech.supported && (
-          <button
-            type="button"
-            className={`ai-composer__mic${speech.listening ? ' is-listening' : ''}`}
-            onClick={toggleSpeech}
+        >
+          {messages.length > 0 && (
+            <button
+              type="button"
+              className="ai-composer__new"
+              onClick={reset}
+              aria-label="New chat"
+              title="New chat"
+            >
+              <RotateCcw size={18} />
+            </button>
+          )}
+          <textarea
+            ref={inputRef}
+            rows={1}
+            value={input}
+            placeholder={placeholder}
             disabled={!online || !hasData}
-            aria-label={speech.listening ? 'Stop voice input' : 'Ask with your voice'}
-            aria-pressed={speech.listening}
-            title={speech.listening ? 'Stop' : 'Ask with your voice'}
-          >
-            {speech.listening ? <MicOff size={18} /> : <Mic size={18} />}
-          </button>
-        )}
-        {busy ? (
-          <button type="button" className="ai-composer__send" onClick={stop} aria-label="Stop">
-            <Square size={16} />
-          </button>
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submit();
+              }
+            }}
+            aria-label="Message"
+          />
+          {speech.supported && (
+            <button
+              type="button"
+              className={`ai-composer__mic${speech.listening ? ' is-listening' : ''}`}
+              onClick={toggleSpeech}
+              disabled={!online || !hasData}
+              aria-label={
+                speech.listening ? 'Stop voice input' : 'Ask with your voice'
+              }
+              aria-pressed={speech.listening}
+              title={speech.listening ? 'Stop' : 'Ask with your voice'}
+            >
+              {speech.listening ? <MicOff size={18} /> : <Mic size={18} />}
+            </button>
+          )}
+          {busy ? (
+            <button
+              type="button"
+              className="ai-composer__send"
+              onClick={stop}
+              aria-label="Stop"
+            >
+              <Square size={16} />
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="ai-composer__send"
+              disabled={!canSend}
+              aria-label="Send"
+            >
+              <ArrowUp size={18} />
+            </button>
+          )}
+        </form>
+        {speech.error ? (
+          <p className="ai-disclaimer ai-disclaimer--error" role="alert">
+            {speech.error}
+          </p>
         ) : (
-          <button type="submit" className="ai-composer__send" disabled={!canSend} aria-label="Send">
-            <ArrowUp size={18} />
-          </button>
+          <p className="ai-disclaimer">
+            AI can make mistakes. Check important numbers.
+          </p>
         )}
-      </form>
-      {speech.error ? (
-        <p className="ai-disclaimer ai-disclaimer--error" role="alert">{speech.error}</p>
-      ) : (
-        <p className="ai-disclaimer">AI can make mistakes. Check important numbers.</p>
-      )}
       </div>
     </div>
   );
@@ -282,8 +363,8 @@ const Assistant = () => {
             <KeyRound size={26} />
           </div>
           <p>
-            Add your Gemini API key in your profile to use the assistant. You can create a
-            free key in Google AI Studio.
+            Add your Gemini API key in your profile to use the assistant. You
+            can create a free key in Google AI Studio.
           </p>
           <NavLink to="/expenses/user" className="button ai-setup__button">
             Open profile

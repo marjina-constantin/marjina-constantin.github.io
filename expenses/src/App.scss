@@ -2730,6 +2730,14 @@ input[type="date"] {
     opacity: 0.5;
     cursor: default;
   }
+
+  &--personal {
+    svg {
+      margin-right: 0.35rem;
+      vertical-align: -2px;
+      color: var(--accent-color);
+    }
+  }
 }
 
 .ai-message {
