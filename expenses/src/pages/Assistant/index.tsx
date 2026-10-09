@@ -9,6 +9,7 @@ import {
   MicOff,
   RefreshCw,
   RotateCcw,
+  Shuffle,
   Sparkles,
   Square,
 } from 'lucide-react';
@@ -18,17 +19,9 @@ import { useDataFetcher } from '../../hooks/useDataFetcher';
 import { useAiApiKey } from '../../ai/hooks/useAiApiKey';
 import { useAiChat } from '../../ai/hooks/useAiChat';
 import { useSpeechInput } from '../../ai/hooks/useSpeechInput';
+import { pickSuggestedPrompts } from '../../ai/suggestedPrompts';
 import { ChatMessage } from '../../ai/chatSession';
 import { fallbackModelLabel } from '../../ai/config';
-
-const SUGGESTED_PROMPTS = [
-  'Cum arată luna curentă față de media mea?',
-  'Unde pot economisi 2000 luna viitoare?',
-  'Care sunt abonamentele mele și cât mă costă pe an?',
-  'Care a fost cea mai scumpă lună și de ce?',
-  'Cât am cheltuit pe mâncare anul acesta vs anul trecut?',
-  'Ce rată de economisire am avut în fiecare an?',
-];
 
 const formatTokens = (tokens: number) =>
   tokens >= 1000 ? `${(tokens / 1000).toFixed(1)}k` : `${tokens}`;
@@ -95,6 +88,7 @@ const AssistantMessage: React.FC<{ message: ChatMessage; onRetry?: () => void }>
 const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({ apiKey, dataLoading }) => {
   const { messages, busy, send, retry, stop, reset, hasData, summaryTokens } = useAiChat(apiKey);
   const [input, setInput] = useState('');
+  const [suggestions, setSuggestions] = useState(() => pickSuggestedPrompts());
   const online = useOnline();
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -166,7 +160,7 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({ apiKey, data
             your device from your data.
           </p>
           <div className="ai-chips">
-            {SUGGESTED_PROMPTS.map((prompt) => (
+            {suggestions.map((prompt) => (
               <button
                 key={prompt}
                 type="button"
@@ -178,6 +172,14 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({ apiKey, data
               </button>
             ))}
           </div>
+          <button
+            type="button"
+            className="ai-chat__shuffle"
+            onClick={() => setSuggestions(pickSuggestedPrompts())}
+          >
+            <Shuffle size={14} />
+            More ideas
+          </button>
           {hasData && (
             <span className="ai-chat__meta">Data overview: ~{formatTokens(summaryTokens)} tokens per request</span>
           )}

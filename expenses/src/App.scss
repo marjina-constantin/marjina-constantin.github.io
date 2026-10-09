@@ -2679,6 +2679,22 @@ input[type="date"] {
     font-size: 0.75rem;
   }
 
+  &__shuffle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.6rem;
+    border: none;
+    background: transparent;
+    color: var(--accent-color);
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
   &__messages {
     display: flex;
     flex-direction: column;
