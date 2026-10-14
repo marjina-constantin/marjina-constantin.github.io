@@ -7,6 +7,7 @@ import { maskApiKey } from '../../ai/apiKey';
 import { describeAiError, testApiKey } from '../../ai/client';
 import {
   getAiLanguage,
+  effectiveCooldownUntil,
   getAiUsage,
   getModelLimitLog,
   getShareDescriptions,
@@ -181,7 +182,8 @@ const AiSettings = () => {
         <div className="ai-settings__limits">
           <span className="ai-settings__label">Model limits</span>
           {limitedModels.map(([model, record]) => {
-            const paused = record.until > Date.now();
+            const until = effectiveCooldownUntil(record);
+            const paused = until > Date.now();
             return (
               <details key={model} className="ai-settings__limit">
                 <summary>
@@ -190,25 +192,19 @@ const AiSettings = () => {
                   {record.daily ? 'daily limit' : 'per-minute limit'}
                   {record.limit ? ` (${record.limit})` : ''}
                   {' · '}
-                  {paused ? `paused until ${formatTime(record.until)}` : `last hit ${formatTime(record.at)}`}
+                  {paused ? `paused until ${formatTime(until)}` : `last hit ${formatTime(record.at)}`}
                 </summary>
                 <dl>
                   <dt>Received</dt>
                   <dd>{formatTime(record.at)}</dd>
-                  {record.quotaId && (
-                    <>
-                      <dt>Quota</dt>
-                      <dd>{record.quotaId}</dd>
-                    </>
-                  )}
                   {record.retryAfterSeconds !== undefined && (
                     <>
-                      <dt>Retry delay</dt>
-                      <dd>{record.retryAfterSeconds}s</dd>
+                      <dt>Retry after</dt>
+                      <dd>{formatDuration(record.retryAfterSeconds)}</dd>
                     </>
                   )}
-                  <dt>Message</dt>
-                  <dd>{record.message}</dd>
+                  <dt>Paused until</dt>
+                  <dd>{formatTime(until)}</dd>
                 </dl>
               </details>
             );
@@ -226,5 +222,14 @@ const formatTime = (timestamp: number) =>
     hour: '2-digit',
     minute: '2-digit',
   });
+
+const formatDuration = (seconds: number) => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  if (hours && minutes) return `${hours}h ${minutes}m`;
+  if (hours) return `${hours}h`;
+  if (minutes) return `${minutes}m`;
+  return `${seconds}s`;
+};
 
 export default AiSettings;

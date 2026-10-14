@@ -7,7 +7,7 @@
 > - Profile → *AI assistant*: salvare, test, schimbare și ștergere a cheii; toggle "Share descriptions"; contor de requesturi și tokeni pe zi.
 > - Ruta `/expenses/assistant` (tab ✨ în navbar), lazy-loaded: chat cu streaming, Stop, New chat, Copy, tokeni per răspuns, sugestii de întrebări.
 > - Sumar compact (~2k tokeni pentru 5 ani) și 4 tools locale: `aggregate`, `query_transactions`, `get_month_summary`, `compare_periods`.
-> - Modele: `gemini-3.8-flash` (fallback `gemini-3.5-flash`), `thinkingLevel: low`. Cheia și istoricul de chat se șterg la logout.
+> - Modele: `gemini-3.8-flash` (fallback `gemini-3.6-flash`; `gemini-3.5-flash` e deprecated și Google îl rutează la 3.6), `thinkingLevel: low`. Cheia și istoricul de chat se șterg la logout.
 >
 > - **Faza 2–3 (insight-uri):** buton ✨ pe Home (*Month summary* pentru luna selectată, *All-time overview*), pe Income (*This month*, *All-time income*, plus grafice) și *Explain* pe fiecare grafic din Charts. Detalii:
 >   - un singur request, fără tools, cu cifre calculate local (~400–800 tokeni input) și JSON structurat;
@@ -16,7 +16,7 @@
 >   - întrebările de continuare deschid chat-ul;
 >   - limba insight-urilor se alege în Profile.
 >
-> - **Fallback de modele:** `gemini-3.8-flash` → `3.5-flash` → `3.5-flash-lite` → `3.1-flash-lite`. Fiecare model are cota lui pe free tier.
+> - **Fallback de modele:** `gemini-3.8-flash` → `3.6-flash` → `3.5-flash-lite` → `3.1-flash-lite`. Fiecare model are cota lui pe free tier. `gemini-3.5-flash` e deprecated (Google rutează requesturile la `3.6-flash`).
 >   - La 429, modelul primește un cooldown salvat în localStorage: până la miezul nopții Pacific pentru limita zilnică, sau `retryDelay` pentru limita pe minut.
 >   - Când cooldown-ul expiră, se revine la primul model.
 >

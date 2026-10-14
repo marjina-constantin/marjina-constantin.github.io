@@ -9,11 +9,11 @@ export const AI_KEY_FIELD = 'field_gemini_api_key';
  * is used. The first model is retried once its cooldown passes.
  */
 export const AI_MODELS = {
-  chat: ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'],
-  lite: ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.5-flash'],
+  chat: ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'],
+  lite: ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.6-flash'],
 } as const;
 
-/** Cooldown after a per-minute limit when the API does not send a retry delay. */
+/** Cooldown when a 429 has no retryDelay. */
 export const AI_DEFAULT_COOLDOWN_SECONDS = 60;
 
 export type AiModelTier = keyof typeof AI_MODELS;

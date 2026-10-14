@@ -97,6 +97,10 @@ export const saveInsightEntry = (key: string, entry: InsightEntry) => {
 export const getModelCooldowns = (): Record<string, number> => {
   try {
     const all = JSON.parse(localStorage.getItem(AI_STORAGE_KEYS.modelCooldowns) || '{}') || {};
+    const log = getModelLimitLog();
+    for (const [model, record] of Object.entries(log)) {
+      all[model] = effectiveCooldownUntil(record);
+    }
     const now = Date.now();
     return Object.fromEntries(
       Object.entries(all).filter(([, until]) => typeof until === 'number' && until > now)
@@ -122,8 +126,13 @@ export interface ModelLimitRecord {
   retryAfterSeconds?: number;
   quotaId?: string;
   limit?: number;
-  message: string;
 }
+
+/** Prefer Google's retryDelay when the record still has one. */
+export const effectiveCooldownUntil = (record: ModelLimitRecord) =>
+  record.retryAfterSeconds
+    ? record.at + record.retryAfterSeconds * 1000
+    : record.until;
 
 export const getModelLimitLog = (): Record<string, ModelLimitRecord> => {
   try {
