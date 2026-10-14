@@ -3196,6 +3196,54 @@ input[type="date"] {
     background: rgba(255, 255, 255, 0.07);
     font-size: 0.875rem;
   }
+
+  &__limits {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  &__label {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  &__limit {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+
+    summary {
+      cursor: pointer;
+      line-height: 1.5;
+    }
+
+    .is-paused {
+      color: #fbbf24;
+      font-weight: 600;
+    }
+
+    dl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.2rem 0.6rem;
+      margin: 0.4rem 0 0.2rem;
+      padding: 0.5rem 0.6rem;
+      border-radius: $border-radius-sm;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    dt {
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    dd {
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+  }
 }
 
 .ai-insights {

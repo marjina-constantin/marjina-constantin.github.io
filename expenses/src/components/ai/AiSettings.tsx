@@ -8,11 +8,12 @@ import { describeAiError, testApiKey } from '../../ai/client';
 import {
   getAiLanguage,
   getAiUsage,
+  getModelLimitLog,
   getShareDescriptions,
   setAiLanguage,
   setShareDescriptions,
 } from '../../ai/storage';
-import { AI_LANGUAGES } from '../../ai/config';
+import { AI_LANGUAGES, AI_MODELS, modelLabel } from '../../ai/config';
 import { ButtonSpinner } from '../ui/LoadingSpinner';
 
 const AiSettings = () => {
@@ -25,6 +26,10 @@ const AiSettings = () => {
   const [share, setShare] = useState(getShareDescriptions);
   const [language, setLanguage] = useState(getAiLanguage);
   const usage = getAiUsage();
+  const limitLog = getModelLimitLog();
+  const limitedModels = AI_MODELS.chat
+    .filter((model) => limitLog[model])
+    .map((model) => [model, limitLog[model]] as const);
 
   const handleSave = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -171,8 +176,55 @@ const AiSettings = () => {
         When off, only dates, amounts, categories and hashtags are sent.
         {usage.requests > 0 && ` Today: ${usage.requests} requests, ${usage.tokens.toLocaleString()} tokens.`}
       </p>
+
+      {limitedModels.length > 0 && (
+        <div className="ai-settings__limits">
+          <span className="ai-settings__label">Model limits</span>
+          {limitedModels.map(([model, record]) => {
+            const paused = record.until > Date.now();
+            return (
+              <details key={model} className="ai-settings__limit">
+                <summary>
+                  <span className={paused ? 'is-paused' : undefined}>{modelLabel(model)}</span>
+                  {' · '}
+                  {record.daily ? 'daily limit' : 'per-minute limit'}
+                  {record.limit ? ` (${record.limit})` : ''}
+                  {' · '}
+                  {paused ? `paused until ${formatTime(record.until)}` : `last hit ${formatTime(record.at)}`}
+                </summary>
+                <dl>
+                  <dt>Received</dt>
+                  <dd>{formatTime(record.at)}</dd>
+                  {record.quotaId && (
+                    <>
+                      <dt>Quota</dt>
+                      <dd>{record.quotaId}</dd>
+                    </>
+                  )}
+                  {record.retryAfterSeconds !== undefined && (
+                    <>
+                      <dt>Retry delay</dt>
+                      <dd>{record.retryAfterSeconds}s</dd>
+                    </>
+                  )}
+                  <dt>Message</dt>
+                  <dd>{record.message}</dd>
+                </dl>
+              </details>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
+
+const formatTime = (timestamp: number) =>
+  new Date(timestamp).toLocaleString(undefined, {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
 export default AiSettings;

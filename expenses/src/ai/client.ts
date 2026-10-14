@@ -1,5 +1,5 @@
 import { AI_DEFAULT_COOLDOWN_SECONDS, AI_MODELS, AiModelTier, GEMINI_API_URL } from './config';
-import { getModelCooldowns, setModelCooldown } from './storage';
+import { getModelCooldowns, saveModelLimit, setModelCooldown } from './storage';
 
 export interface GeminiPart {
   text?: string;
@@ -61,7 +61,8 @@ export class AiError extends Error {
     public kind: AiErrorKind,
     message: string,
     public retryAfterSeconds?: number,
-    public daily = false
+    public daily = false,
+    public quota?: { quotaId?: string; limit?: number }
   ) {
     super(message);
     this.name = 'AiError';
@@ -126,7 +127,15 @@ const toAiError = async (response: Response): Promise<AiError> => {
     // non-JSON error body
   }
   if (response.status === 429) {
-    return new AiError('quota', message, parseRetryDelay(details), isDailyQuota(message, details));
+    const violations: any[] = details?.flatMap((d) => d?.violations || []) || [];
+    const violation =
+      violations.find((v) => /PerDay/i.test(`${v?.quotaId ?? ''}`)) ||
+      violations.find((v) => v?.quotaId || v?.quotaMetric);
+    const limit = Number(message.match(/limit:\s*(\d+)/i)?.[1]) || undefined;
+    return new AiError('quota', message, parseRetryDelay(details), isDailyQuota(message, details), {
+      quotaId: violation?.quotaId || violation?.quotaMetric,
+      limit,
+    });
   }
   if (
     response.status === 401 ||
@@ -226,7 +235,16 @@ export async function streamGenerate({
         continue;
       }
       if (lastError.kind === 'quota') {
-        setModelCooldown(model, cooldownUntil(lastError));
+        const until = cooldownUntil(lastError);
+        setModelCooldown(model, until);
+        saveModelLimit(model, {
+          at: Date.now(),
+          until,
+          daily: lastError.daily,
+          retryAfterSeconds: lastError.retryAfterSeconds,
+          ...lastError.quota,
+          message: lastError.message.slice(0, 800),
+        });
         continue;
       }
       throw lastError;

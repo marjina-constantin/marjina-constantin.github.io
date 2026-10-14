@@ -113,6 +113,33 @@ export const setModelCooldown = (model: string, until: number) => {
   );
 };
 
+/** Last rate-limit (429) error received for a model, kept for diagnosis. */
+export interface ModelLimitRecord {
+  at: number;
+  /** Cooldown applied by the app. */
+  until: number;
+  daily: boolean;
+  retryAfterSeconds?: number;
+  quotaId?: string;
+  limit?: number;
+  message: string;
+}
+
+export const getModelLimitLog = (): Record<string, ModelLimitRecord> => {
+  try {
+    return JSON.parse(localStorage.getItem(AI_STORAGE_KEYS.modelLimits) || '{}') || {};
+  } catch {
+    return {};
+  }
+};
+
+export const saveModelLimit = (model: string, record: ModelLimitRecord) => {
+  localStorage.setItem(
+    AI_STORAGE_KEYS.modelLimits,
+    JSON.stringify({ ...getModelLimitLog(), [model]: record })
+  );
+};
+
 /** Removes every AI-related value from this device (used on logout). */
 export const clearAiLocalData = () => {
   Object.values(AI_STORAGE_KEYS).forEach((key) => localStorage.removeItem(key));
