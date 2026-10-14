@@ -18,9 +18,9 @@ export const AI_DEFAULT_COOLDOWN_SECONDS = 60;
 
 export type AiModelTier = keyof typeof AI_MODELS;
 
-/** Short model label, shown only when a fallback model answered. */
-export const fallbackModelLabel = (model?: string): string | null =>
-  model && model !== AI_MODELS.chat[0] ? model.replace(/^gemini-/, '') : null;
+/** Short model label shown under answers, e.g. "3.8-flash". */
+export const modelLabel = (model?: string): string | null =>
+  model ? model.replace(/^gemini-/, '') : null;
 
 export const AI_LIMITS = {
   /** Safety cap per step; includes thinking tokens. Actual usage is much lower. */

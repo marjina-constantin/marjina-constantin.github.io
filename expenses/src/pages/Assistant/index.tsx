@@ -31,7 +31,7 @@ import { getAiItems } from '../../ai/data';
 import { getShareDescriptions } from '../../ai/storage';
 import { useData } from '../../context';
 import { ChatMessage } from '../../ai/chatSession';
-import { AI_STORAGE_KEYS, fallbackModelLabel } from '../../ai/config';
+import { AI_STORAGE_KEYS, modelLabel } from '../../ai/config';
 
 const formatTokens = (tokens: number) =>
   tokens >= 1000 ? `${(tokens / 1000).toFixed(1)}k` : `${tokens}`;
@@ -95,8 +95,8 @@ const AssistantMessage: React.FC<{
             {!!message.tokens && (
               <span>{formatTokens(message.tokens)} tokens</span>
             )}
-            {fallbackModelLabel(message.model) && (
-              <span>via {fallbackModelLabel(message.model)}</span>
+            {modelLabel(message.model) && (
+              <span>{modelLabel(message.model)}</span>
             )}
           </div>
         )}

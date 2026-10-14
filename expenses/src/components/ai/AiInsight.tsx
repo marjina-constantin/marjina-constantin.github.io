@@ -11,7 +11,7 @@ import {
   Sparkles,
   TriangleAlert,
 } from 'lucide-react';
-import { fallbackModelLabel } from '../../ai/config';
+import { modelLabel } from '../../ai/config';
 import { useAiApiKey } from '../../ai/hooks/useAiApiKey';
 import { useAiInsight } from '../../ai/hooks/useAiInsight';
 import { InsightFeatureId } from '../../ai/insights/features';
@@ -144,7 +144,7 @@ const AiInsight: React.FC<AiInsightProps> = ({ feature, param }) => {
         <span className={stale ? 'ai-insight__stale' : undefined}>
           {stale ? 'Data changed since this summary' : timeAgo(entry.at)}
           {entry.tokens > 0 && ` · ${(entry.tokens / 1000).toFixed(1)}k tokens`}
-          {fallbackModelLabel(entry.model) && ` · via ${fallbackModelLabel(entry.model)}`}
+          {modelLabel(entry.model) && ` · ${modelLabel(entry.model)}`}
         </span>
         <button type="button" onClick={generate} aria-label="Regenerate insight">
           <RefreshCw size={13} />
