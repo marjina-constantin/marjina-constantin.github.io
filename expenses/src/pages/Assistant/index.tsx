@@ -31,7 +31,7 @@ import { getAiItems } from '../../ai/data';
 import { getShareDescriptions } from '../../ai/storage';
 import { useData } from '../../context';
 import { ChatMessage } from '../../ai/chatSession';
-import { AI_STORAGE_KEYS, modelLabel } from '../../ai/config';
+import { AI_STORAGE_KEYS, modelLabel, nextChatModel } from '../../ai/config';
 
 const formatTokens = (tokens: number) =>
   tokens >= 1000 ? `${(tokens / 1000).toFixed(1)}k` : `${tokens}`;
@@ -53,7 +53,9 @@ const useOnline = () => {
 const AssistantMessage: React.FC<{
   message: ChatMessage;
   onRetry?: () => void;
-}> = ({ message, onRetry }) => {
+  onRetryAlt?: () => void;
+  altModel?: string | null;
+}> = ({ message, onRetry, onRetryAlt, altModel }) => {
   const [copied, setCopied] = useState(false);
   const copy = () => {
     navigator.clipboard?.writeText(message.text).then(() => {
@@ -89,6 +91,16 @@ const AssistantMessage: React.FC<{
               >
                 <RefreshCw size={14} />
                 Retry
+              </button>
+            )}
+            {onRetryAlt && altModel && (
+              <button
+                type="button"
+                className="ai-message__retry"
+                onClick={onRetryAlt}
+              >
+                <RefreshCw size={14} />
+                Retry with {modelLabel(altModel)}
               </button>
             )}
             {message.status === 'stopped' && <span>Stopped</span>}
@@ -275,8 +287,14 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
         </div>
       ) : (
         <div className="ai-chat__messages">
-          {messages.map((message, index) =>
-            message.role === 'user' ? (
+          {messages.map((message, index) => {
+            const canRetry =
+              index === messages.length - 1 &&
+              message.status === 'error' &&
+              online &&
+              !busy;
+            const altModel = canRetry ? nextChatModel(message.failedModel) : null;
+            return message.role === 'user' ? (
               <div key={message.id} className="ai-message ai-message--user">
                 <div className="ai-message__body">{message.text}</div>
               </div>
@@ -284,17 +302,14 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
               <AssistantMessage
                 key={message.id}
                 message={message}
-                onRetry={
-                  index === messages.length - 1 &&
-                  message.status === 'error' &&
-                  online &&
-                  !busy
-                    ? () => retry(message.id)
-                    : undefined
+                onRetry={canRetry ? () => retry(message.id) : undefined}
+                onRetryAlt={
+                  altModel ? () => retry(message.id, altModel) : undefined
                 }
+                altModel={altModel}
               />
-            )
-          )}
+            );
+          })}
           <div ref={endRef} />
         </div>
       )}

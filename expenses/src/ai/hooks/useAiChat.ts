@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuthState, useData } from '../../context';
 import { AuthState } from '../../types/types';
 import { AiError, GeminiContent, GeminiRequest, describeAiError, streamGenerate } from '../client';
-import { AI_LIMITS } from '../config';
+import { AI_LIMITS, AI_MODELS } from '../config';
 import {
   ChatMessage,
   chatSession,
@@ -57,7 +57,7 @@ export function useAiChat(apiKey: string) {
   }, []);
 
   const send = useCallback(
-    async (question: string) => {
+    async (question: string, preferModel?: string) => {
       const trimmed = question.trim();
       if (!trimmed || busy || !apiKey) return;
 
@@ -97,6 +97,7 @@ export function useAiChat(apiKey: string) {
           const result = await streamGenerate({
             apiKey,
             tier: 'chat',
+            preferModel,
             request,
             signal: controller.signal,
             onText: (text) =>
@@ -145,11 +146,14 @@ export function useAiChat(apiKey: string) {
       } catch (error) {
         const stopped = controller.signal.aborted;
         const errorText = describeAiError(error);
+        const failedModel =
+          (error instanceof AiError && error.model) || preferModel || model || AI_MODELS.chat[0];
         patchMessage(assistantId, {
           text: stopped || !previousText ? previousText || errorText : `${previousText}\n\n_${errorText}_`,
           status: stopped ? 'stopped' : 'error',
           activity: undefined,
           tokens: tokens || undefined,
+          failedModel: stopped ? undefined : failedModel,
         });
       } finally {
         abortRef.current = null;
@@ -161,13 +165,13 @@ export function useAiChat(apiKey: string) {
 
   /** Re-asks the question behind a failed answer, replacing both messages. */
   const retry = useCallback(
-    (assistantId: string) => {
+    (assistantId: string, preferModel?: string) => {
       if (busy) return;
       const index = messages.findIndex((m) => m.id === assistantId);
       const question = messages[index - 1];
       if (index < 1 || question?.role !== 'user') return;
       setMessages((prev) => prev.filter((m) => m.id !== assistantId && m.id !== question.id));
-      send(question.text);
+      send(question.text, preferModel);
     },
     [busy, messages, send]
   );

@@ -62,7 +62,8 @@ export class AiError extends Error {
     message: string,
     public retryAfterSeconds?: number,
     public daily = false,
-    public quota?: { quotaId?: string; limit?: number }
+    public quota?: { quotaId?: string; limit?: number },
+    public model?: string
   ) {
     super(message);
     this.name = 'AiError';
@@ -193,6 +194,8 @@ interface StreamOptions {
   request: GeminiRequest;
   signal?: AbortSignal;
   onText?: (textSoFar: string) => void;
+  /** Start from this model (and later ones). Used when retrying with an alternate. */
+  preferModel?: string;
 }
 
 /**
@@ -205,12 +208,15 @@ export async function streamGenerate({
   request,
   signal,
   onText,
+  preferModel,
 }: StreamOptions): Promise<GeminiResult> {
   if (!navigator.onLine) {
     throw new AiError('offline', 'No internet connection');
   }
 
-  const models = AI_MODELS[tier].filter((m) => !unavailableModels.has(m));
+  const list: string[] = [...AI_MODELS[tier]];
+  const start = preferModel ? list.indexOf(preferModel) : 0;
+  const models = list.slice(start >= 0 && preferModel ? start : 0).filter((m) => !unavailableModels.has(m));
   const candidates = models.filter((m) => !getModelCooldowns()[m]);
 
   if (models.length && !candidates.length) throw allLimitedError(models);
@@ -247,6 +253,7 @@ export async function streamGenerate({
         });
         continue;
       }
+      lastError.model = model;
       throw lastError;
     }
 

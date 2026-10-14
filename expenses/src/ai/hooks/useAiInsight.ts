@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AiError, describeAiError, streamGenerate } from '../client';
-import { AI_INSIGHT_LIMITS } from '../config';
+import { AI_INSIGHT_LIMITS, AI_MODELS } from '../config';
 import { INSIGHT_FEATURES, InsightFeatureId } from '../insights/features';
 import { INSIGHT_SCHEMA, INSIGHT_SYSTEM_PROMPT, buildInsightPrompt } from '../prompts';
 import {
@@ -58,6 +58,7 @@ export function useAiInsight(apiKey: string, feature: InsightFeatureId, param?: 
   const [entry, setEntry] = useState<InsightEntry | null>(() => getInsightEntry(cacheKey));
   const [status, setStatus] = useState<InsightStatus>('idle');
   const [error, setError] = useState('');
+  const [failedModel, setFailedModel] = useState<string | undefined>();
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -65,6 +66,7 @@ export function useAiInsight(apiKey: string, feature: InsightFeatureId, param?: 
     setEntry(getInsightEntry(cacheKey));
     setStatus('idle');
     setError('');
+    setFailedModel(undefined);
   }, [cacheKey]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
@@ -90,7 +92,7 @@ export function useAiInsight(apiKey: string, feature: InsightFeatureId, param?: 
     [cacheKey]
   );
 
-  const generate = useCallback(async () => {
+  const generate = useCallback(async (preferModel?: string) => {
     const context = definition.build(input, param);
     if (!context) {
       setStatus('error');
@@ -110,6 +112,7 @@ export function useAiInsight(apiKey: string, feature: InsightFeatureId, param?: 
       const result = await streamGenerate({
         apiKey,
         tier: 'chat',
+        preferModel,
         signal: controller.signal,
         request: {
           systemInstruction: { parts: [{ text: INSIGHT_SYSTEM_PROMPT }] },
@@ -136,10 +139,14 @@ export function useAiInsight(apiKey: string, feature: InsightFeatureId, param?: 
       saveInsightEntry(cacheKey, next);
       setEntry(next);
       setStatus('idle');
+      setFailedModel(undefined);
     } catch (err) {
       if (controller.signal.aborted) return;
       setStatus('error');
       setError(err instanceof SyntaxError ? 'The AI answer was incomplete. Try again.' : describeAiError(err));
+      setFailedModel(
+        (err instanceof AiError && err.model) || preferModel || AI_MODELS.chat[0]
+      );
     }
   }, [apiKey, cacheKey, definition, input, param]);
 
@@ -149,6 +156,7 @@ export function useAiInsight(apiKey: string, feature: InsightFeatureId, param?: 
     status,
     error,
     generate,
+    failedModel,
     collapsed: !!entry?.collapsed,
     setCollapsed,
     label: definition.label,

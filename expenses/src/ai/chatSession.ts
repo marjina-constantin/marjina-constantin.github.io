@@ -9,6 +9,8 @@ export interface ChatMessage {
   activity?: string;
   tokens?: number;
   model?: string;
+  /** Model that failed this turn, used to offer retry with the next one. */
+  failedModel?: string;
 }
 
 /** Messages kept on the device; older ones are dropped. */

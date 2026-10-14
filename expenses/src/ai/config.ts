@@ -22,6 +22,13 @@ export type AiModelTier = keyof typeof AI_MODELS;
 export const modelLabel = (model?: string): string | null =>
   model ? model.replace(/^gemini-/, '') : null;
 
+/** Next model in the chat list after `after`, or the second model if none is given. */
+export const nextChatModel = (after?: string): string | null => {
+  const list = AI_MODELS.chat as readonly string[];
+  const index = after ? list.indexOf(after) : 0;
+  return index >= 0 ? list[index + 1] || null : list[1] || null;
+};
+
 export const AI_LIMITS = {
   /** Safety cap per step; includes thinking tokens. Actual usage is much lower. */
   chatMaxOutputTokens: 4096,

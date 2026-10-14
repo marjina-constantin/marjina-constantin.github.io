@@ -11,7 +11,7 @@ import {
   Sparkles,
   TriangleAlert,
 } from 'lucide-react';
-import { modelLabel } from '../../ai/config';
+import { modelLabel, nextChatModel } from '../../ai/config';
 import { useAiApiKey } from '../../ai/hooks/useAiApiKey';
 import { useAiInsight } from '../../ai/hooks/useAiInsight';
 import { InsightFeatureId } from '../../ai/insights/features';
@@ -43,11 +43,9 @@ interface AiInsightProps {
 const AiInsight: React.FC<AiInsightProps> = ({ feature, param }) => {
   const navigate = useNavigate();
   const { apiKey, status: keyStatus } = useAiApiKey();
-  const { entry, stale, status, error, generate, collapsed, setCollapsed, label } = useAiInsight(
-    apiKey,
-    feature,
-    param
-  );
+  const { entry, stale, status, error, generate, failedModel, collapsed, setCollapsed, label } =
+    useAiInsight(apiKey, feature, param);
+  const altModel = status === 'error' ? nextChatModel(failedModel) : null;
 
   const handleOpen = () => {
     if (keyStatus === 'missing') {
@@ -88,9 +86,17 @@ const AiInsight: React.FC<AiInsightProps> = ({ feature, param }) => {
           {label}
         </button>
         {status === 'error' && (
-          <span className="ai-insight-trigger__error" role="alert">
-            {error}
-          </span>
+          <>
+            <span className="ai-insight-trigger__error" role="alert">
+              {error}
+            </span>
+            {altModel && (
+              <button type="button" className="ai-pill" onClick={() => generate(altModel)}>
+                <RefreshCw size={14} />
+                Retry with {modelLabel(altModel)}
+              </button>
+            )}
+          </>
         )}
       </div>
     );
@@ -146,10 +152,16 @@ const AiInsight: React.FC<AiInsightProps> = ({ feature, param }) => {
           {entry.tokens > 0 && ` · ${(entry.tokens / 1000).toFixed(1)}k tokens`}
           {modelLabel(entry.model) && ` · ${modelLabel(entry.model)}`}
         </span>
-        <button type="button" onClick={generate} aria-label="Regenerate insight">
+        <button type="button" onClick={() => generate()} aria-label="Regenerate insight">
           <RefreshCw size={13} />
           Refresh
         </button>
+        {altModel && (
+          <button type="button" onClick={() => generate(altModel)}>
+            <RefreshCw size={13} />
+            Retry with {modelLabel(altModel)}
+          </button>
+        )}
       </div>
       {status === 'error' && (
         <p className="ai-insight-trigger__error" role="alert">
