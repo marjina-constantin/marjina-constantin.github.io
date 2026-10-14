@@ -6,6 +6,8 @@ import {
   Copy,
   Fingerprint,
   KeyRound,
+  Lightbulb,
+  MessagesSquare,
   Mic,
   MicOff,
   RefreshCw,
@@ -29,7 +31,7 @@ import { getAiItems } from '../../ai/data';
 import { getShareDescriptions } from '../../ai/storage';
 import { useData } from '../../context';
 import { ChatMessage } from '../../ai/chatSession';
-import { fallbackModelLabel } from '../../ai/config';
+import { AI_STORAGE_KEYS, fallbackModelLabel } from '../../ai/config';
 
 const formatTokens = (tokens: number) =>
   tokens >= 1000 ? `${(tokens / 1000).toFixed(1)}k` : `${tokens}`;
@@ -110,6 +112,16 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
   const { messages, busy, send, retry, stop, reset, hasData, summaryTokens } =
     useAiChat(apiKey);
   const [input, setInput] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(
+    () => localStorage.getItem(AI_STORAGE_KEYS.chatShowSuggestions) === 'true'
+  );
+  useEffect(() => {
+    if (showSuggestions) {
+      localStorage.setItem(AI_STORAGE_KEYS.chatShowSuggestions, 'true');
+    } else {
+      localStorage.removeItem(AI_STORAGE_KEYS.chatShowSuggestions);
+    }
+  }, [showSuggestions]);
   const { data } = useData();
   const [suggestions, setSuggestions] = useState<SuggestedPrompt[] | null>(
     null
@@ -148,13 +160,14 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
       return;
     sentPromptRef.current = pendingPrompt;
     navigate(location.pathname, { replace: true, state: null });
+    setShowSuggestions(false);
     send(pendingPrompt);
   }, [pendingPrompt, hasData, online, busy, navigate, location.pathname, send]);
 
   const lastText = messages[messages.length - 1]?.text;
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, [messages.length, lastText]);
+  }, [messages.length, lastText, showSuggestions]);
 
   useEffect(() => {
     const el = inputRef.current;
@@ -184,9 +197,18 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
   const submit = (text = input) => {
     if (!online || !hasData || busy || !text.trim()) return;
     speech.stop();
+    setShowSuggestions(false);
     send(text);
     setInput('');
   };
+
+  const startNewChat = () => {
+    setShowSuggestions(false);
+    reset();
+  };
+
+  const hasChat = messages.length > 0;
+  const suggestionsVisible = !hasChat || showSuggestions;
 
   const placeholder = !online
     ? 'Offline: the assistant needs a connection'
@@ -198,7 +220,7 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
 
   return (
     <div className="ai-chat">
-      {messages.length === 0 ? (
+      {suggestionsVisible ? (
         <div className="ai-chat__empty">
           <div className="ai-chat__empty-icon">
             <Sparkles size={28} />
@@ -239,6 +261,17 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
               Data overview: ~{formatTokens(summaryTokens)} tokens per request
             </span>
           )}
+          {hasChat && (
+            <button
+              type="button"
+              className="ai-chat__back"
+              onClick={() => setShowSuggestions(false)}
+            >
+              <MessagesSquare size={14} />
+              Back to conversation (
+              {messages.filter((m) => m.role === 'user').length})
+            </button>
+          )}
         </div>
       ) : (
         <div className="ai-chat__messages">
@@ -274,15 +307,31 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
             submit();
           }}
         >
-          {messages.length > 0 && (
+          {hasChat && (
             <button
               type="button"
               className="ai-composer__new"
-              onClick={reset}
+              onClick={startNewChat}
               aria-label="New chat"
-              title="New chat"
+              title="New chat (clears the conversation)"
             >
               <RotateCcw size={18} />
+            </button>
+          )}
+          {hasChat && (
+            <button
+              type="button"
+              className={`ai-composer__new${showSuggestions ? ' is-active' : ''}`}
+              onClick={() => setShowSuggestions((value) => !value)}
+              aria-label={
+                showSuggestions ? 'Back to conversation' : 'Suggested questions'
+              }
+              aria-pressed={showSuggestions}
+              title={
+                showSuggestions ? 'Back to conversation' : 'Suggested questions'
+              }
+            >
+              <Lightbulb size={18} />
             </button>
           )}
           <textarea

@@ -28,7 +28,7 @@ export const AI_LIMITS = {
   /** Tool-call rounds per question before the model is forced to answer. */
   maxToolRounds: 5,
   /** Past user+model turns kept in the request (older ones are dropped). */
-  maxHistoryTurns: 6,
+  maxHistoryTurns: 8,
   toolRowsDefault: 50,
   toolRowsMax: 300,
   toolGroupsDefault: 60,
@@ -42,6 +42,8 @@ export const AI_STORAGE_KEYS = {
   usage: 'aiUsage',
   language: 'aiLanguage',
   insights: 'aiInsights',
+  chat: 'aiChat',
+  chatShowSuggestions: 'aiChatShowSuggestions',
   modelCooldowns: 'aiModelCooldowns',
 };
 

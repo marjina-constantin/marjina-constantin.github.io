@@ -3,7 +3,13 @@ import { useAuthState, useData } from '../../context';
 import { AuthState } from '../../types/types';
 import { AiError, GeminiContent, GeminiRequest, describeAiError, streamGenerate } from '../client';
 import { AI_LIMITS } from '../config';
-import { ChatMessage, chatSession, clearChatSession } from '../chatSession';
+import {
+  ChatMessage,
+  chatSession,
+  clearChatSession,
+  markInterrupted,
+  saveChatSession,
+} from '../chatSession';
 import { buildDataSummary } from '../context/summary';
 import { getAiItems } from '../data';
 import { buildChatSystemInstruction } from '../prompts';
@@ -33,9 +39,18 @@ export function useAiChat(apiKey: string) {
 
   useEffect(() => {
     chatSession.messages = messages;
+    // Streaming updates are frequent; the finished answer is saved once.
+    if (!messages.some((m) => m.status === 'streaming')) saveChatSession();
   }, [messages]);
 
-  useEffect(() => () => abortRef.current?.abort(), []);
+  useEffect(
+    () => () => {
+      abortRef.current?.abort();
+      chatSession.messages = markInterrupted(chatSession.messages);
+      saveChatSession();
+    },
+    []
+  );
 
   const patchMessage = useCallback((id: string, patch: Partial<ChatMessage>) => {
     setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...patch } : m)));

@@ -2679,6 +2679,24 @@ input[type="date"] {
     font-size: 0.75rem;
   }
 
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.25rem;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid color-mix(in srgb, var(--accent-color) 45%, transparent);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--accent-color);
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    &:hover {
+      background: color-mix(in srgb, var(--accent-color) 12%, transparent);
+    }
+  }
+
   &__shuffle {
     display: inline-flex;
     align-items: center;
@@ -3008,6 +3026,10 @@ input[type="date"] {
       opacity: 0.35;
       cursor: default;
     }
+  }
+
+  &__new.is-active {
+    color: var(--accent-color);
   }
 
   &__mic.is-listening {
