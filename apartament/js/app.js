@@ -17,13 +17,13 @@
   ];
 
   const CAT_COLOR = {
-    manopera: "#335248",
-    mobilier: "#9c4a2b",
-    sanitar: "#3d5a80",
-    gresie: "#a67c52",
-    vopsea: "#c4b5a0",
-    plinta: "#6e645a",
-    adaos: "#241c16",
+    manopera: "#1a3a6b",
+    mobilier: "#d45a2a",
+    sanitar: "#3a74b8",
+    gresie: "#c9952a",
+    vopsea: "#6d8a45",
+    plinta: "#a56b3c",
+    adaos: "#7a5a8a",
   };
 
   const ROOM_ORDER = P.rooms.map((r) => r.id).filter((id) => id !== "obiect");
@@ -407,7 +407,7 @@
   function renderRoomPills() {
     const el = document.getElementById("rooms");
     el.innerHTML = ROOM_ORDER.map((id) => {
-      const on = !state.rooms.size || state.rooms.has(id);
+      const on = state.rooms.size > 0 && state.rooms.has(id);
       return `<button type="button" class="pill${on ? " is-on" : ""}" data-room="${id}">${roomName(id)}</button>`;
     }).join("");
   }
@@ -415,7 +415,7 @@
   function renderCatPills() {
     const el = document.getElementById("cats");
     el.innerHTML = CAT_META.map((c) => {
-      const on = !state.cats.size || state.cats.has(c.id);
+      const on = state.cats.size > 0 && state.cats.has(c.id);
       return `<button type="button" class="pill${on ? " is-on" : ""}" data-cat="${c.id}">${c.label}</button>`;
     }).join("");
   }
@@ -473,18 +473,18 @@
     });
     const maxRoom = Math.max(1, ...Object.values(roomMap));
     const kpis = [
-      ["Manoperă", (cats.manopera || 0) + (cats.adaos || 0)],
-      ["Mobilier", cats.mobilier || 0],
-      ["Sanitar", cats.sanitar || 0],
-      ["Finisaje", (cats.gresie || 0) + (cats.vopsea || 0) + (cats.plinta || 0)],
+      ["manopera", "Manoperă", (cats.manopera || 0) + (cats.adaos || 0)],
+      ["mobilier", "Mobilier", cats.mobilier || 0],
+      ["sanitar", "Sanitar", cats.sanitar || 0],
+      ["finisaje", "Finisaje", (cats.gresie || 0) + (cats.vopsea || 0) + (cats.plinta || 0)],
     ];
 
     return `
       <div class="kpis">
         ${kpis
           .map(
-            ([l, v]) =>
-              `<div class="kpi"><strong>${lei(v)}</strong><span>${l}</span></div>`
+            ([id, l, v]) =>
+              `<div class="kpi kpi--${id}"><strong>${lei(v)}</strong><span>${l}</span></div>`
           )
           .join("")}
       </div>
@@ -548,13 +548,13 @@
         const area = r && r.area_m2 != null ? r.area_m2 + " m²" : "—";
         const total = own.reduce((s, it) => s + it.total, 0);
         return `<article class="card">
-          <p class="meta">${area}${r && r.note ? " · " + r.note : ""}</p>
           <h3>${roomName(id)}</h3>
+          <p class="meta">${area}${r && r.note ? " · " + r.note : ""}</p>
           <p class="sum">${lei(total)} lei</p>
           <table class="mini">
             ${CAT_META.map((c) =>
               cats[c.id]
-                ? `<tr><td>${c.label}</td><td class="n">${lei(cats[c.id])}</td></tr>`
+                ? `<tr><td><i class="swatch" style="background:${CAT_COLOR[c.id]}"></i>${c.label}</td><td class="n">${lei(cats[c.id])}</td></tr>`
                 : ""
             ).join("")}
           </table>
@@ -571,7 +571,7 @@
         const cls = it.invalid ? "is-invalid" : it.duplicate ? "is-dup" : it.option ? "is-option" : "";
         return `<tr class="${cls}">
           <td>${roomName(it.room)}</td>
-          <td><span class="tag">${it.cat}</span></td>
+          <td><span class="tag tag--${it.cat}">${it.cat}</span></td>
           <td>${it.code ? `<code>${it.code}</code> ` : ""}${escapeHtml(it.name)}${
             it.comment
               ? `<div style="color:var(--muted);font-size:12px;margin-top:2px">${escapeHtml(it.comment)}</div>`
@@ -589,7 +589,7 @@
     }
     const alloc = allocatedMarkups(items);
     const allocRow = alloc
-      ? `<tr><td>Obiect</td><td><span class="tag">adaos</span></td><td>Adaosuri alocate (transport / regie / beneficiu) — calcul, nu linie din documente</td><td></td><td class="n"></td><td class="n">${lei(alloc)}</td><td>Deviz 07.10.2026</td></tr>`
+      ? `<tr><td>Obiect</td><td><span class="tag tag--adaos">adaos</span></td><td>Adaosuri alocate (transport / regie / beneficiu) — calcul, nu linie din documente</td><td></td><td class="n"></td><td class="n">${lei(alloc)}</td><td>Deviz 07.10.2026</td></tr>`
       : "";
     return `<div class="panel"><div class="table-wrap"><table class="data">
       <thead><tr><th>Încăpere</th><th>Cat.</th><th>Denumire</th><th>Cant.</th><th class="n">Unitar</th><th class="n">Total</th><th>Sursă</th></tr></thead>
