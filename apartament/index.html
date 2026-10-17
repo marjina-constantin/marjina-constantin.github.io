@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Costuri reparație — Aldea-Teodorovici</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <div class="top__identity">
+        <p class="eyebrow">Space Design Studio · Marjina Constantin</p>
+        <h1>Reparație apartament</h1>
+        <p class="lede">str. Doina și Ion Aldea-Teodorovici · 101,85 m² + 2 loggii + terasă. Doar sume din documente, fără dubluri.</p>
+      </div>
+      <div class="top__total" aria-live="polite">
+        <p class="top__label">Total filtrat</p>
+        <p class="top__value" id="grand-total">—</p>
+        <p class="top__meta" id="grand-meta"></p>
+      </div>
+    </header>
+
+    <section class="filters" aria-label="Filtre">
+      <div class="filter-row">
+        <span class="filter-label">Scenariu</span>
+        <div class="pills" id="presets"></div>
+      </div>
+      <div class="filter-row">
+        <span class="filter-label">Încăpere</span>
+        <div class="pills pills--wrap" id="rooms"></div>
+      </div>
+      <div class="filter-row">
+        <span class="filter-label">Categorie</span>
+        <div class="pills pills--wrap" id="cats"></div>
+      </div>
+      <div class="filter-row filter-row--tools">
+        <label class="search">
+          <span class="vh">Caută</span>
+          <input id="q" type="search" placeholder="Caută lucrare, produs, cod…" autocomplete="off" />
+        </label>
+        <label class="check"><input type="checkbox" id="opt-options" /> Include opțiuni de manoperă</label>
+        <label class="check"><input type="checkbox" id="opt-markups" /> Alocă adaosurile pe încăperile alese</label>
+        <label class="check"><input type="checkbox" id="opt-dups" /> Arată Lista Constantin (dubluri)</label>
+      </div>
+      <p class="filter-note" id="filter-note"></p>
+    </section>
+
+    <nav class="views" aria-label="Secțiuni">
+      <button type="button" data-view="sumar" class="is-on">Sumar</button>
+      <button type="button" data-view="incaperi">Încăperi</button>
+      <button type="button" data-view="linii">Linii de preț</button>
+      <button type="button" data-view="duplicate">Duplicate</button>
+      <button type="button" data-view="lipsa">Ce lipsește</button>
+    </nav>
+
+    <main id="main"></main>
+
+    <footer class="foot">
+      <p>Date extrase 17.10.2026 din 7 PDF-uri. Manoperă fără TVA, valabilă 30 zile de la 07.10.2026. Cont STO cu TVA, valabil 3 zile bancare de la 13.10.2026.</p>
+      <p>Nu aduna Lista Constantin peste total. Vas WC: proiectul cere MERIDIAN-N, oferta Simplex e GAP.</p>
+    </footer>
+  </div>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
