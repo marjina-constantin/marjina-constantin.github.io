@@ -17,6 +17,7 @@ import {
   Square,
 } from 'lucide-react';
 import AiMarkdown from '../../components/ai/AiMarkdown';
+import LazyAiChatChart from '../../components/ai/LazyAiChatChart';
 import { PageLoader } from '../../components/ui/LoadingSpinner';
 import { useDataFetcher } from '../../hooks/useDataFetcher';
 import { useAiApiKey } from '../../ai/hooks/useAiApiKey';
@@ -72,6 +73,9 @@ const AssistantMessage: React.FC<{
         <Sparkles size={16} />
       </div>
       <div className="ai-message__body">
+        {message.charts?.map((chart, index) => (
+          <LazyAiChatChart key={`${message.id}-${index}`} spec={chart} />
+        ))}
         {message.activity && !message.text && (
           <div className="ai-message__activity">
             <span className="ai-shimmer">{message.activity}…</span>
@@ -177,9 +181,10 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
   }, [pendingPrompt, hasData, online, busy, navigate, location.pathname, send]);
 
   const lastText = messages[messages.length - 1]?.text;
+  const lastCharts = messages[messages.length - 1]?.charts?.length;
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, [messages.length, lastText, showSuggestions]);
+  }, [messages.length, lastText, lastCharts, showSuggestions]);
 
   useEffect(() => {
     const el = inputRef.current;

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuthState, useData } from '../../context';
 import { AuthState } from '../../types/types';
+import { ChatChart, isChatChart } from '../chart';
 import { AiError, GeminiContent, GeminiRequest, describeAiError, streamGenerate } from '../client';
 import { AI_LIMITS, AI_MODELS } from '../config';
 import {
@@ -74,11 +75,12 @@ export function useAiChat(apiKey: string) {
       const userTurn: GeminiContent = { role: 'user', parts: [{ text: trimmed }] };
       const contents: GeminiContent[] = [...trimHistory(chatSession.history), userTurn];
       const systemInstruction = { parts: [{ text: buildChatSystemInstruction(summary) }] };
-      const toolContext = { items, shareDescriptions };
+      const toolContext = { items, shareDescriptions, currency };
 
       let previousText = '';
       let tokens = 0;
       let model: string | undefined;
+      const charts: ChatChart[] = [];
 
       try {
         for (let round = 0; round <= AI_LIMITS.maxToolRounds; round++) {
@@ -123,13 +125,20 @@ export function useAiChat(apiKey: string) {
           });
           contents.push({
             role: 'user',
-            parts: result.functionCalls.map((call) => ({
-              functionResponse: {
-                ...(call.id && { id: call.id }),
-                name: call.name,
-                response: executeTool(call.name, call.args, toolContext),
-              },
-            })),
+            parts: result.functionCalls.map((call) => {
+              const { _chart, ...response } = executeTool(call.name, call.args, toolContext);
+              if (isChatChart(_chart)) {
+                charts.push(_chart);
+                patchMessage(assistantId, { charts: [...charts] });
+              }
+              return {
+                functionResponse: {
+                  ...(call.id && { id: call.id }),
+                  name: call.name,
+                  response,
+                },
+              };
+            }),
           });
         }
 
@@ -142,7 +151,14 @@ export function useAiChat(apiKey: string) {
           userTurn,
           { role: 'model', parts: [{ text: previousText }] },
         ];
-        patchMessage(assistantId, { text: previousText, status: 'done', activity: undefined, tokens, model });
+        patchMessage(assistantId, {
+          text: previousText,
+          status: 'done',
+          activity: undefined,
+          tokens,
+          model,
+          ...(charts.length && { charts }),
+        });
       } catch (error) {
         const stopped = controller.signal.aborted;
         const errorText = describeAiError(error);
@@ -160,7 +176,7 @@ export function useAiChat(apiKey: string) {
         setBusy(false);
       }
     },
-    [apiKey, busy, items, patchMessage, shareDescriptions, summary]
+    [apiKey, busy, currency, items, patchMessage, shareDescriptions, summary]
   );
 
   /** Re-asks the question behind a failed answer, replacing both messages. */

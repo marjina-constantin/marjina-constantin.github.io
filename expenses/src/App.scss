@@ -2842,6 +2842,18 @@ input[type="date"] {
   }
 }
 
+.ai-chat-chart {
+  margin: 0.35rem 0 0.75rem;
+  min-height: 220px;
+  padding: 0.35rem 0.2rem 0.1rem;
+  border-radius: $border-radius-lg;
+  background: rgba(255, 255, 255, 0.04);
+
+  &--loading {
+    min-height: 220px;
+  }
+}
+
 .ai-shimmer {
   background: linear-gradient(
     90deg,

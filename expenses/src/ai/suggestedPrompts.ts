@@ -29,6 +29,8 @@ export const SUGGESTED_PROMPTS = [
   'Cât de mult au crescut costurile la utilități în timp?',
   'Cum s-a schimbat media zilnică a cheltuielilor de-a lungul anilor?',
   'Care e trendul cheltuielilor mele în ultimele 6 luni?',
+  'Arată-mi un grafic cu cheltuielile lunare din ultimele 12 luni',
+  'Fă un grafic pe categorii pentru anul acesta',
 
   // Categories
   'Cât am cheltuit pe mâncare anul acesta vs anul trecut?',

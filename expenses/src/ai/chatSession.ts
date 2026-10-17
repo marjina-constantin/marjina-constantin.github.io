@@ -1,3 +1,4 @@
+import { isChatChart, type ChatChart } from './chart';
 import type { GeminiContent } from './client';
 import { AI_LIMITS, AI_STORAGE_KEYS } from './config';
 
@@ -11,6 +12,7 @@ export interface ChatMessage {
   model?: string;
   /** Model that failed this turn, used to offer retry with the next one. */
   failedModel?: string;
+  charts?: ChatChart[];
 }
 
 /** Messages kept on the device; older ones are dropped. */
@@ -29,6 +31,12 @@ export const markInterrupted = (messages: ChatMessage[]): ChatMessage[] =>
       : m
   );
 
+const sanitizeCharts = (charts: unknown): ChatChart[] | undefined => {
+  if (!Array.isArray(charts)) return undefined;
+  const valid = charts.filter(isChatChart);
+  return valid.length ? valid : undefined;
+};
+
 const load = (): { messages: ChatMessage[]; history: GeminiContent[] } => {
   try {
     const stored = JSON.parse(
@@ -37,7 +45,12 @@ const load = (): { messages: ChatMessage[]; history: GeminiContent[] } => {
     if (!Array.isArray(stored?.messages) || !Array.isArray(stored?.history))
       throw new Error();
     return {
-      messages: markInterrupted(stored.messages),
+      messages: markInterrupted(
+        stored.messages.map((message: ChatMessage) => ({
+          ...message,
+          charts: sanitizeCharts(message.charts),
+        }))
+      ),
       history: stored.history,
     };
   } catch {

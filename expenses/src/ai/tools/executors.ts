@@ -1,5 +1,6 @@
 import { monthNames } from '../../utils/constants';
 import { extractHashtags } from '../../utils/utils';
+import { ChatChart, ChatChartType } from '../chart';
 import { AI_LIMITS } from '../config';
 import {
   AiItem,
@@ -14,6 +15,7 @@ import {
 export interface ToolContext {
   items: AiItem[];
   shareDescriptions: boolean;
+  currency?: string;
 }
 
 type Args = Record<string, any>;
@@ -251,11 +253,190 @@ const comparePeriods = ({ items }: ToolContext, args: Args) => {
   };
 };
 
+const CHART_TYPES: ChatChartType[] = ['column', 'line', 'pie'];
+const CHART_GROUPS = ['month', 'year', 'category', 'hashtag', 'weekday'];
+
+const axisLabel = (key: string, groupBy: string) => {
+  if (groupBy === 'month' && /^\d{4}-\d{2}$/.test(key)) {
+    const [y, m] = key.split('-').map(Number);
+    return `${monthNames[m - 1].slice(0, 3)} ${y}`;
+  }
+  if (groupBy === 'category' && key.includes('=')) return key.split('=')[1] || key;
+  return key;
+};
+
+const fillKeys = (keys: string[], groupBy: string, from?: string, to?: string, limit = 24) => {
+  const fromKey = typeof from === 'string' ? from : '';
+  const toKey = typeof to === 'string' ? to : '';
+  if (groupBy === 'month') {
+    const sorted = keys.filter((k) => /^\d{4}-\d{2}$/.test(k)).sort();
+    const start = (/^\d{4}-\d{2}/.test(fromKey) ? fromKey : sorted[0] || '').slice(0, 7);
+    const end = (/^\d{4}-\d{2}/.test(toKey) ? toKey : sorted[sorted.length - 1] || '').slice(0, 7);
+    if (!/^\d{4}-\d{2}$/.test(start) || !/^\d{4}-\d{2}$/.test(end) || start > end) return sorted;
+    const out: string[] = [];
+    for (let month = start; month <= end && out.length < 48; month = shiftMonth(month, 1)) {
+      out.push(month);
+    }
+    return out.length > limit ? out.slice(-limit) : out;
+  }
+  if (groupBy === 'year') {
+    const sorted = keys.filter((k) => /^\d{4}$/.test(k)).sort();
+    const start = parseInt((/^\d{4}/.test(fromKey) ? fromKey : sorted[0] || '').slice(0, 4), 10);
+    const end = parseInt((/^\d{4}/.test(toKey) ? toKey : sorted[sorted.length - 1] || '').slice(0, 4), 10);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || start > end) return sorted;
+    const out: string[] = [];
+    for (let year = start; year <= end && out.length < 24; year++) out.push(String(year));
+    return out.length > limit ? out.slice(-limit) : out;
+  }
+  return keys;
+};
+
+const chartTitle = (args: Args, chart: string, groupBy: string, splitBy?: string) => {
+  const fallback =
+    splitBy === 'category'
+      ? groupBy === 'month'
+        ? 'Monthly totals by category'
+        : 'Yearly totals by category'
+      : chart === 'pie'
+        ? groupBy === 'category'
+          ? 'Spending by category'
+          : `Spending by ${groupBy}`
+        : groupBy === 'month'
+          ? 'Monthly totals'
+          : groupBy === 'year'
+            ? 'Yearly totals'
+            : `Totals by ${groupBy}`;
+  const title = String(args.title || '')
+    .replace(/[\u0000-\u001f<>]/g, '')
+    .trim();
+  return (title || fallback).slice(0, 80);
+};
+
+const chartResponse = (spec: ChatChart, matched: number) => ({
+  ok: true,
+  chart: spec.type,
+  title: spec.title,
+  groups: spec.categories.length,
+  series: spec.series.map((s) => s.name).join(', '),
+  matchedRecords: matched,
+  total: round(spec.series.reduce((sum, s) => sum + s.data.reduce((a, b) => a + b, 0), 0)),
+  preview: spec.categories
+    .map((label, i) => `${label}|${spec.series.map((s) => `${s.name}:${round(s.data[i])}`).join('|')}`)
+    .join('\n'),
+  _chart: spec,
+});
+
+const showChart = ({ items, currency = '' }: ToolContext, args: Args) => {
+  const chart = String(args.chart || '') as ChatChartType;
+  const groupBy = String(args.groupBy || '');
+  const splitBy = args.splitBy ? String(args.splitBy) : '';
+  if (!CHART_TYPES.includes(chart)) return { error: 'chart must be column, line or pie' };
+  if (!CHART_GROUPS.includes(groupBy)) return { error: 'Unsupported groupBy' };
+  if (splitBy && splitBy !== 'category') return { error: 'splitBy must be category' };
+  if (splitBy && chart === 'pie') return { error: 'splitBy is not used with pie charts' };
+  if (splitBy && groupBy !== 'month' && groupBy !== 'year') {
+    return { error: 'splitBy category only works with month or year' };
+  }
+
+  const matched = applyFilters(items, args);
+  if (!matched.length) return { error: 'No matching records' };
+
+  const maxGroups = chart === 'pie' ? 8 : 24;
+  const limit = clampLimit(args.limit, chart === 'pie' ? 8 : 12, maxGroups);
+  const title = chartTitle(args, chart, groupBy, splitBy || undefined);
+  const seriesName = args.kind === 'income' ? 'Income' : args.kind === 'all' ? 'Total' : 'Expenses';
+
+  if (splitBy === 'category') {
+    const rawKeys = [...new Set(matched.flatMap((item) => groupKeys(item, groupBy)))];
+    const xKeys = fillKeys(rawKeys, groupBy, args.from, args.to, limit);
+    if (xKeys.length < 2) return { error: 'Need at least 2 groups for a chart' };
+
+    const byCat = new Map<string, Map<string, number>>();
+    const catTotals = new Map<string, number>();
+    for (const item of matched) {
+      const xKey = groupKeys(item, groupBy)[0];
+      const catKey = groupKeys(item, 'category')[0];
+      if (!xKeys.includes(xKey)) continue;
+      const catMap = byCat.get(catKey) || new Map<string, number>();
+      catMap.set(xKey, (catMap.get(xKey) || 0) + item.amount);
+      byCat.set(catKey, catMap);
+      catTotals.set(catKey, (catTotals.get(catKey) || 0) + item.amount);
+    }
+
+    const ranked = [...catTotals.entries()].sort((a, b) => b[1] - a[1]);
+    const top = ranked.slice(0, 6).map(([key]) => key);
+    const rest = ranked.slice(6);
+    const series = top.map((key) => ({
+      name: axisLabel(key, 'category'),
+      data: xKeys.map((x) => round(byCat.get(key)?.get(x) || 0)),
+    }));
+    if (rest.length) {
+      const other = new Map<string, number>();
+      for (const [key] of rest) {
+        const catMap = byCat.get(key);
+        if (!catMap) continue;
+        for (const [x, value] of catMap) other.set(x, (other.get(x) || 0) + value);
+      }
+      series.push({ name: 'Other', data: xKeys.map((x) => round(other.get(x) || 0)) });
+    }
+
+    return chartResponse(
+      {
+        type: chart,
+        title,
+        currency,
+        categories: xKeys.map((key) => axisLabel(key, groupBy)),
+        series,
+      },
+      matched.length
+    );
+  }
+
+  const totals = new Map<string, number>();
+  for (const item of matched) {
+    for (const key of groupKeys(item, groupBy)) {
+      totals.set(key, (totals.get(key) || 0) + item.amount);
+    }
+  }
+
+  let keys: string[];
+  if (groupBy === 'weekday') {
+    keys = WEEKDAYS.filter((day) => totals.has(day));
+    if (keys.length === WEEKDAYS.length || keys.length >= 3) keys = WEEKDAYS;
+  } else if (groupBy === 'month' || groupBy === 'year') {
+    keys = fillKeys([...totals.keys()], groupBy, args.from, args.to, limit);
+  } else {
+    keys = [...totals.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([key]) => key);
+  }
+
+  if (keys.length < 2) return { error: 'Need at least 2 groups for a chart' };
+
+  const leftover = keys.slice(limit);
+  keys = keys.slice(0, limit);
+  if (chart === 'pie' && leftover.length) {
+    const other = leftover.reduce((sum, key) => sum + (totals.get(key) || 0), 0);
+    if (other) {
+      keys = [...keys, 'Other'];
+      totals.set('Other', other);
+    }
+  }
+
+  const categories = keys.map((key) => axisLabel(key, groupBy));
+  const data = keys.map((key) => round(totals.get(key) || 0));
+  return chartResponse(
+    { type: chart, title, currency, categories, series: [{ name: seriesName, data }] },
+    matched.length
+  );
+};
+
 const executors: Record<string, (ctx: ToolContext, args: Args) => Record<string, unknown>> = {
   query_transactions: queryTransactions,
   aggregate,
   get_month_summary: monthSummary,
   compare_periods: comparePeriods,
+  show_chart: showChart,
 };
 
 export const executeTool = (name: string, args: Args | undefined, ctx: ToolContext) => {
@@ -273,4 +454,5 @@ export const TOOL_LABELS: Record<string, string> = {
   aggregate: 'Calculating totals',
   get_month_summary: 'Summarizing the month',
   compare_periods: 'Comparing periods',
+  show_chart: 'Building a chart',
 };

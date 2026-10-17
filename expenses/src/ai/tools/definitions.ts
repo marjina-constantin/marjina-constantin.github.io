@@ -77,4 +77,32 @@ export const toolDeclarations: GeminiFunctionDeclaration[] = [
       required: ['aFrom', 'aTo', 'bFrom', 'bTo'],
     },
   },
+  {
+    name: 'show_chart',
+    description:
+      'Renders a chart in the chat from locally computed totals. Call only when the user explicitly asks for a chart or graph. Still write a short commentary. Do not invent chart numbers.',
+    parameters: {
+      type: 'object',
+      properties: {
+        chart: {
+          type: 'string',
+          enum: ['column', 'line', 'pie'],
+          description: 'column or line for time/weekday; pie for a breakdown (category or hashtag).',
+        },
+        groupBy: {
+          type: 'string',
+          enum: ['month', 'year', 'category', 'hashtag', 'weekday'],
+        },
+        splitBy: {
+          type: 'string',
+          enum: ['category'],
+          description: 'Optional. On month/year charts, one series per category (max 6).',
+        },
+        title: { type: 'string', description: 'Short chart title, max 80 characters.' },
+        ...filterProperties,
+        limit: { type: 'integer', description: 'Max groups. Default 12, max 24 (8 for pie).' },
+      },
+      required: ['chart', 'groupBy'],
+    },
+  },
 ];
