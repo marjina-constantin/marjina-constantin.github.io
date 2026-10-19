@@ -3,9 +3,7 @@ import { TransactionOrIncomeItem } from '../types/types';
 import { notifyQueueUpdated } from './syncCallbacks';
 
 // Sort function to match TransactionsTable sorting (by date desc, then created desc)
-const sortExpenses = (
-  data: TransactionOrIncomeItem[]
-): TransactionOrIncomeItem[] => {
+const sortExpenses = (data: TransactionOrIncomeItem[]): TransactionOrIncomeItem[] => {
   return [...data].sort((a, b) => {
     // First, compare by 'dt' (date) - descending
     const dateComparison = new Date(b.dt).getTime() - new Date(a.dt).getTime();
@@ -29,8 +27,8 @@ export interface PendingOperation {
   itemType: 'transaction' | 'incomes';
   itemId?: string; // For update/delete operations
   data?: any; // For add/update operations
-  url?: string;
-  method?: string;
+  url: string;
+  method: string;
   timestamp: number; // When the operation was created
   lastAttempt?: number; // Last sync attempt timestamp
   retryCount?: number;
@@ -52,24 +50,20 @@ function openDB(): Promise<IDBDatabase> {
 
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
-
+      
       // Create expenses store if it doesn't exist
       if (!db.objectStoreNames.contains(STORE_NAME)) {
-        const expensesStore = db.createObjectStore(STORE_NAME, {
-          keyPath: 'id',
-        });
+        const expensesStore = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
         expensesStore.createIndex('updated', 'cr', { unique: false });
       }
-
+      
       // Create offline queue store
       if (!db.objectStoreNames.contains(QUEUE_STORE_NAME)) {
-        const queueStore = db.createObjectStore(QUEUE_STORE_NAME, {
-          keyPath: 'id',
-        });
+        const queueStore = db.createObjectStore(QUEUE_STORE_NAME, { keyPath: 'id' });
         queueStore.createIndex('timestamp', 'timestamp', { unique: false });
         queueStore.createIndex('itemId', 'itemId', { unique: false });
       }
-
+      
       // Create sync metadata store
       if (!db.objectStoreNames.contains(SYNC_METADATA_STORE_NAME)) {
         db.createObjectStore(SYNC_METADATA_STORE_NAME, { keyPath: 'key' });
@@ -112,9 +106,7 @@ export async function saveExpensesToDB(
 }
 
 // Get expense data from IndexedDB (sorted consistently)
-export async function getExpensesFromDB(): Promise<
-  TransactionOrIncomeItem[] | null
-> {
+export async function getExpensesFromDB(): Promise<TransactionOrIncomeItem[] | null> {
   try {
     const db = await openDB();
     const transaction = db.transaction(STORE_NAME, 'readonly');
@@ -144,33 +136,15 @@ export async function getExpensesFromDB(): Promise<
 export async function clearExpensesDB(): Promise<void> {
   try {
     const db = await openDB();
-    const transaction = db.transaction(
-      [STORE_NAME, QUEUE_STORE_NAME, SYNC_METADATA_STORE_NAME],
-      'readwrite'
-    );
-
-    await Promise.all(
-      [STORE_NAME, QUEUE_STORE_NAME, SYNC_METADATA_STORE_NAME].map(
-        (name) =>
-          new Promise<void>((resolve, reject) => {
-            const request = transaction.objectStore(name).clear();
-            request.onsuccess = () => resolve();
-            request.onerror = () => reject(request.error);
-          })
-      )
-    );
+    const transaction = db.transaction(STORE_NAME, 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
 
     await new Promise<void>((resolve, reject) => {
-      transaction.oncomplete = () => {
-        db.close();
-        resolve();
-      };
-      transaction.onerror = () => {
-        db.close();
-        reject(transaction.error);
-      };
+      const request = store.clear();
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+      transaction.oncomplete = () => db.close();
     });
-    notifyQueueUpdated();
   } catch (error) {
     console.error('Error clearing IndexedDB:', error);
   }
@@ -182,14 +156,12 @@ export function isIndexedDBAvailable(): boolean {
 }
 
 // Individual item operations for offline support
-export async function addItemToDB(
-  item: TransactionOrIncomeItem
-): Promise<void> {
+export async function addItemToDB(item: TransactionOrIncomeItem): Promise<void> {
   try {
     const db = await openDB();
     const transaction = db.transaction(STORE_NAME, 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
-
+    
     await new Promise<void>((resolve, reject) => {
       const request = store.put(item);
       request.onsuccess = () => resolve();
@@ -202,14 +174,12 @@ export async function addItemToDB(
   }
 }
 
-export async function updateItemInDB(
-  item: TransactionOrIncomeItem
-): Promise<void> {
+export async function updateItemInDB(item: TransactionOrIncomeItem): Promise<void> {
   try {
     const db = await openDB();
     const transaction = db.transaction(STORE_NAME, 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
-
+    
     await new Promise<void>((resolve, reject) => {
       const request = store.put(item);
       request.onsuccess = () => resolve();
@@ -222,10 +192,7 @@ export async function updateItemInDB(
   }
 }
 
-export async function setItemFailed(
-  itemId: string,
-  failed: boolean
-): Promise<void> {
+export async function setItemFailed(itemId: string, failed: boolean): Promise<void> {
   if (!itemId) return;
   try {
     const db = await openDB();
@@ -258,7 +225,7 @@ export async function deleteItemFromDB(itemId: string): Promise<void> {
     const db = await openDB();
     const transaction = db.transaction(STORE_NAME, 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
-
+    
     await new Promise<void>((resolve, reject) => {
       const request = store.delete(itemId);
       request.onsuccess = () => resolve();
@@ -271,14 +238,12 @@ export async function deleteItemFromDB(itemId: string): Promise<void> {
   }
 }
 
-export async function getItemFromDB(
-  itemId: string
-): Promise<TransactionOrIncomeItem | null> {
+export async function getItemFromDB(itemId: string): Promise<TransactionOrIncomeItem | null> {
   try {
     const db = await openDB();
     const transaction = db.transaction(STORE_NAME, 'readonly');
     const store = transaction.objectStore(STORE_NAME);
-
+    
     return new Promise((resolve, reject) => {
       const request = store.get(itemId);
       request.onsuccess = () => {
@@ -297,14 +262,12 @@ export async function getItemFromDB(
 }
 
 // Offline queue operations
-export async function addToOfflineQueue(
-  operation: PendingOperation
-): Promise<void> {
+export async function addToOfflineQueue(operation: PendingOperation): Promise<void> {
   try {
     const db = await openDB();
     const transaction = db.transaction(QUEUE_STORE_NAME, 'readwrite');
     const store = transaction.objectStore(QUEUE_STORE_NAME);
-
+    
     await new Promise<void>((resolve, reject) => {
       const request = store.put({
         ...operation,
@@ -329,7 +292,7 @@ export async function getOfflineQueue(): Promise<PendingOperation[]> {
     const db = await openDB();
     const transaction = db.transaction(QUEUE_STORE_NAME, 'readonly');
     const store = transaction.objectStore(QUEUE_STORE_NAME);
-
+    
     return new Promise((resolve, reject) => {
       const request = store.getAll();
       request.onsuccess = () => {
@@ -347,14 +310,12 @@ export async function getOfflineQueue(): Promise<PendingOperation[]> {
   }
 }
 
-export async function removeFromOfflineQueue(
-  operationId: string
-): Promise<void> {
+export async function removeFromOfflineQueue(operationId: string): Promise<void> {
   try {
     const db = await openDB();
     const transaction = db.transaction(QUEUE_STORE_NAME, 'readwrite');
     const store = transaction.objectStore(QUEUE_STORE_NAME);
-
+    
     await new Promise<void>((resolve, reject) => {
       const request = store.delete(operationId);
       request.onsuccess = () => resolve();
@@ -370,14 +331,12 @@ export async function removeFromOfflineQueue(
   }
 }
 
-export async function updateQueueOperation(
-  operation: PendingOperation
-): Promise<void> {
+export async function updateQueueOperation(operation: PendingOperation): Promise<void> {
   try {
     const db = await openDB();
     const transaction = db.transaction(QUEUE_STORE_NAME, 'readwrite');
     const store = transaction.objectStore(QUEUE_STORE_NAME);
-
+    
     await new Promise<void>((resolve, reject) => {
       const request = store.put(operation);
       request.onsuccess = () => resolve();
@@ -393,9 +352,7 @@ export async function updateQueueOperation(
   }
 }
 
-export async function getQueueOperationsByItemId(
-  itemId: string
-): Promise<PendingOperation[]> {
+export async function getQueueOperationsByItemId(itemId: string): Promise<PendingOperation[]> {
   if (!itemId) {
     return [];
   }
@@ -422,9 +379,7 @@ export async function getQueueOperationsByItemId(
   }
 }
 
-export async function removeQueueOperationsByItemId(
-  itemId: string
-): Promise<void> {
+export async function removeQueueOperationsByItemId(itemId: string): Promise<void> {
   if (!itemId) {
     return;
   }
@@ -464,7 +419,7 @@ export async function getSyncMetadata(): Promise<SyncMetadata | null> {
     const db = await openDB();
     const transaction = db.transaction(SYNC_METADATA_STORE_NAME, 'readonly');
     const store = transaction.objectStore(SYNC_METADATA_STORE_NAME);
-
+    
     return new Promise((resolve, reject) => {
       const request = store.get('main');
       request.onsuccess = () => {
@@ -482,35 +437,31 @@ export async function getSyncMetadata(): Promise<SyncMetadata | null> {
   }
 }
 
-export async function updateSyncMetadata(
-  metadata: Partial<SyncMetadata>
-): Promise<void> {
+export async function updateSyncMetadata(metadata: Partial<SyncMetadata>): Promise<void> {
   try {
     const db = await openDB();
     const transaction = db.transaction(SYNC_METADATA_STORE_NAME, 'readwrite');
     const store = transaction.objectStore(SYNC_METADATA_STORE_NAME);
-
+    
     // Read existing metadata within the same transaction
-    const existing = await new Promise<SyncMetadata | null>(
-      (resolve, reject) => {
-        const request = store.get('main');
-        request.onsuccess = () => resolve(request.result || null);
-        request.onerror = () => reject(request.error);
-      }
-    );
-
+    const existing = await new Promise<SyncMetadata | null>((resolve, reject) => {
+      const request = store.get('main');
+      request.onsuccess = () => resolve(request.result || null);
+      request.onerror = () => reject(request.error);
+    });
+    
     const updated: SyncMetadata = {
       key: 'main',
       lastSyncTime: metadata.lastSyncTime ?? existing?.lastSyncTime ?? 0,
       lastUpdated: metadata.lastUpdated ?? existing?.lastUpdated ?? Date.now(),
     };
-
+    
     await new Promise<void>((resolve, reject) => {
       const request = store.put(updated);
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
     });
-
+    
     // Close DB after transaction completes
     transaction.oncomplete = () => db.close();
     transaction.onerror = () => {
@@ -521,3 +472,4 @@ export async function updateSyncMetadata(
     throw error;
   }
 }
+

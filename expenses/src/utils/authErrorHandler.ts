@@ -1,6 +1,6 @@
 import { logout } from '../context/actions';
-import { getAdapter } from '../storage';
 
+// Store dispatch functions for authentication error handling
 let dispatch: any = null;
 let dataDispatch: any = null;
 
@@ -16,49 +16,69 @@ export function initializeAuthErrorHandler(
   dataDispatch = appDataDispatch;
 }
 
+/**
+ * Handle authentication errors (403 responses)
+ * Checks if the token is actually expired and logs out if so
+ */
 export async function handleAuthError(
-  response?: { status: number },
+  response: Response,
   options?: RequestInit
 ): Promise<boolean> {
-  const status = response?.status;
-  const adapter = getAdapter();
-  if (status === undefined || !adapter.isAuthError(status)) {
-    return false;
+  // If we already know it's a 403, verify it's actually an auth issue
+  if (response.status === 403) {
+    // Double-check by trying to validate the token
+    const verifyOptions: RequestInit = {
+      method: 'GET',
+      headers: new Headers({
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        ...(options?.headers as Headers),
+      }),
+    };
+
+    try {
+      const verifyResponse = await fetch(
+        'https://dev-expenses-api.pantheonsite.io/jwt/token',
+        verifyOptions
+      );
+
+      if (verifyResponse.status === 403) {
+        // Token is definitely expired, log out
+        if (dispatch && dataDispatch) {
+          console.warn('JWT token expired, logging out user');
+          await logout(dispatch, dataDispatch);
+          return true; // Indicates user was logged out
+        } else {
+          console.error(
+            'Authentication error detected but dispatch functions not initialized'
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Error verifying token:', error);
+      // If verification fails, assume token is expired and log out
+      if (dispatch && dataDispatch) {
+        console.warn('Token verification failed, logging out user');
+        await logout(dispatch, dataDispatch);
+        return true;
+      }
+    }
   }
 
-  const token =
-    (options?.headers instanceof Headers
-      ? options.headers.get('JWT-Authorization') ||
-        options.headers.get('Authorization')
-      : undefined) || undefined;
-  const bearer = token?.replace(/^Bearer\s+/i, '');
-
-  try {
-    const stillValid = bearer ? await adapter.verifyAuth(bearer) : false;
-    if (!stillValid && dispatch && dataDispatch) {
-      console.warn('Auth token expired, logging out user');
-      await logout(dispatch, dataDispatch);
-      return true;
-    }
-  } catch (error) {
-    console.error('Error verifying token:', error);
-    if (dispatch && dataDispatch) {
-      console.warn('Token verification failed, logging out user');
-      await logout(dispatch, dataDispatch);
-      return true;
-    }
-  }
-
-  return false;
+  return false; // No logout occurred
 }
 
+/**
+ * Check if a response indicates an authentication error and handle it
+ * Returns true if the user was logged out, false otherwise
+ */
 export async function checkAndHandleAuthError(
-  response: { status: number },
+  response: Response,
   options?: RequestInit
 ): Promise<boolean> {
-  const adapter = getAdapter();
-  if (adapter.isAuthError(response.status)) {
+  if (response.status === 403) {
     return await handleAuthError(response, options);
   }
   return false;
 }
+

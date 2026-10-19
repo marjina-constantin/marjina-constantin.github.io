@@ -1,13 +1,5 @@
 export const ROOT_URL = 'https://dev-expenses-api.pantheonsite.io';
 
-export const GOOGLE_CLIENT_ID =
-  '954790461001-2p4vab8hud9u6mj4n6hb6iio4uaiofe5.apps.googleusercontent.com';
-
-export const GOOGLE_SCOPES = {
-  drupal: 'openid email profile',
-  drive: 'openid email profile https://www.googleapis.com/auth/drive.appdata',
-} as const;
-
 export const categories = [
   { value: '', label: 'Category' },
   { value: '1', label: 'Clothing' },
@@ -251,15 +243,7 @@ export const suggestions = {
   ],
   6: ['apartment rent', 'mortgage rate'],
   7: ['farmacie', 'stomatolog', 'pediatru'],
-  8: [
-    'haircut',
-    'cursor subscription',
-    'spotify subscription',
-    'chatgpt subscription',
-    'youtube premium subscription',
-    'ufc subscription',
-    'google drive storage',
-  ],
+  8: ['haircut', 'cursor subscription', 'spotify subscription', 'chatgpt subscription', 'youtube premium subscription', 'ufc subscription', 'google drive storage'],
   9: [
     'benzina',
     'motorina',
