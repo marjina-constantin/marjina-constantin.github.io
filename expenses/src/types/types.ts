@@ -83,6 +83,7 @@ export interface ItemTotal {
 
 export interface LoginPayload {
   access_token: string;
+  storage?: 'drupal' | 'drive';
 }
 
 export interface UserData {

@@ -1149,6 +1149,35 @@ input[type="date"] {
         opacity: 0.6;
         cursor: not-allowed;
       }
+
+      &--secondary {
+        margin-top: 0;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        color: rgba(255, 255, 255, 0.92);
+
+        body:has(.has-gradient-accent) & {
+          background: transparent;
+          color: rgba(255, 255, 255, 0.92);
+        }
+      }
+    }
+
+    .login-split {
+      margin: 1.15rem 0 0.75rem;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    .login-hint {
+      margin: 0.7rem 0 0;
+      text-align: center;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      color: rgba(255, 255, 255, 0.5);
     }
   }
 }
@@ -1189,9 +1218,17 @@ input[type="date"] {
     box-sizing: border-box;
 
     h3 {
-      margin: 1.5rem 0;
+      margin: 1.5rem 0 0.4rem;
       text-align: center;
       width: 100%;
+    }
+
+    .storage-hint {
+      margin: 0 0 1.25rem;
+      text-align: center;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.5);
     }
 
     @media (max-width: 640px) {

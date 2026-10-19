@@ -1,5 +1,4 @@
 import {
-  addToOfflineQueue,
   getOfflineQueue,
   removeFromOfflineQueue,
   updateQueueOperation,
@@ -10,15 +9,18 @@ import {
   saveExpensesToDB,
   getExpensesFromDB,
   updateSyncMetadata,
-  getSyncMetadata,
   PendingOperation,
   setItemFailed,
 } from './indexedDB';
 import { TransactionOrIncomeItem } from '../types/types';
 import { processData, dispatchProcessedData } from './dataProcessing';
-import { notifyItemSynced, notifySyncFinish, notifySyncStart } from './syncCallbacks';
+import {
+  notifyItemSynced,
+  notifySyncFinish,
+  notifySyncStart,
+} from './syncCallbacks';
 import { checkAndHandleAuthError } from './authErrorHandler';
-import { ROOT_URL } from './constants';
+import { getAdapter } from '../storage';
 
 // Custom error class for authentication failures
 export class AuthenticationError extends Error {
@@ -38,91 +40,39 @@ const yieldToMainThread = () =>
     setTimeout(resolve, 0);
   });
 
-const parseTimestamp = (value: any): number | undefined => {
-  if (value === undefined || value === null) {
-    return undefined;
-  }
-  if (typeof value === 'number') {
-    return value > 1e12 ? value : value * 1000;
-  }
-  if (typeof value === 'string') {
-    const trimmed = value.trim();
-    if (!trimmed) {
-      return undefined;
-    }
-    const numeric = Number(trimmed);
-    if (!Number.isNaN(numeric)) {
-      return numeric > 1e12 ? numeric : numeric * 1000;
-    }
-    const parsed = Date.parse(trimmed);
-    if (!Number.isNaN(parsed)) {
-      return parsed;
-    }
+const httpStatus = (error: unknown): number | undefined => {
+  if (typeof error === 'object' && error && 'status' in error) {
+    return (error as { status: number }).status;
   }
   return undefined;
 };
 
-// Convert API payload (list or single node) to TransactionOrIncomeItem
-function convertNodeDataToItem(nodeData: any): TransactionOrIncomeItem {
-
-  // Determine ID (handles new simplified format and legacy node payload)
-  const id =
-    (nodeData.id !== undefined ? nodeData.id : undefined)?.toString() ||
-    nodeData.nid?.[0]?.value?.toString() ||
-    '';
-
-  // Determine type
-  let type = '';
-  if (typeof nodeData.type === 'string') {
-    type = nodeData.type;
-  } else if (Array.isArray(nodeData.type) && nodeData.type.length > 0) {
-    type = nodeData.type[0]?.value || nodeData.type[0]?.target_id || '';
+async function handleAdapterAuthError(
+  status?: number,
+  token?: string
+): Promise<void> {
+  if (status === undefined) {
+    return;
   }
-
-  const amountValue =
-    nodeData.sum ??
-    nodeData.field_amount?.[0]?.value ??
-    nodeData.field_amount?.[0]?.target_id ??
-    '0';
-  const sum = amountValue?.toString() || '0';
-
-  const date = nodeData.dt || nodeData.field_date?.[0]?.value || '';
-  const description =
-    nodeData.dsc || nodeData.field_description?.[0]?.value || '';
-
-  const categoryEntry = nodeData.field_category?.[0];
-  const category =
-    (nodeData.cat !== undefined ? nodeData.cat : undefined)?.toString() ||
-    (categoryEntry?.target_id ?? categoryEntry?.value ?? '').toString();
-
-  const created =
-    parseTimestamp(
-      nodeData.cr ??
-        nodeData.created?.[0]?.value ??
-        nodeData.created ??
-        undefined
-    ) ?? Date.now();
-
-  const updated =
-    parseTimestamp(
-      nodeData.upd ??
-        nodeData.updated ??
-        nodeData.updated?.[0]?.value ??
-        nodeData.changed?.[0]?.value ??
-        nodeData.revision_timestamp?.[0]?.value
-    ) ?? created;
-
-  return {
-    id,
-    type,
-    sum,
-    dt: date,
-    dsc: description,
-    cat: category,
-    cr: created,
-    updated,
-    failed: !!nodeData.failed,
-  };
+  const adapter = getAdapter();
+  if (!adapter.isAuthError(status)) {
+    return;
+  }
+  const loggedOut = await checkAndHandleAuthError(
+    { status },
+    token
+      ? {
+          headers: new Headers({
+            'JWT-Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
+          }),
+        }
+      : undefined
+  );
+  if (loggedOut) {
+    throw new AuthenticationError('Authentication failed - user logged out');
+  }
+  throw new AuthenticationError('Authentication failed');
 }
 
 // Check if network is available
@@ -135,98 +85,52 @@ export function generateTempId(): string {
   return `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
 
-// Fetch current server version of an item
 async function fetchServerItem(
   itemId: string,
   token: string
 ): Promise<TransactionOrIncomeItem | null> {
   try {
-    const fetchOptions: RequestInit = {
-      method: 'GET',
-      headers: new Headers({
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'JWT-Authorization': `Bearer ${token}`,
-      }),
-    };
-
-    const response = await fetch(
-      `${ROOT_URL}/node/${itemId}?_format=json`,
-      fetchOptions
-    );
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        // Item doesn't exist on server (might have been deleted)
-        return null;
-      }
-      if (response.status === 403) {
-        // Check and handle authentication error (will log out if token expired)
-        const loggedOut = await checkAndHandleAuthError(response, fetchOptions);
-        if (loggedOut) {
-          throw new AuthenticationError('Authentication failed - user logged out');
-        }
-        throw new AuthenticationError('Authentication failed');
-      }
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const nodeData = await response.json();
-    return convertNodeDataToItem(nodeData);
+    return await getAdapter().fetchOne(token, itemId);
   } catch (error) {
+    await handleAdapterAuthError(httpStatus(error), token);
     console.error('Error fetching server item:', error);
     return null;
   }
 }
 
-// Sync a single pending operation
 async function syncOperation(
   operation: PendingOperation,
   token: string
-): Promise<{ success: boolean; data?: any; newId?: string }> {
+): Promise<{ success: boolean; item?: TransactionOrIncomeItem }> {
+  const adapter = getAdapter();
   try {
-    const fetchOptions: RequestInit = {
-      method: operation.method,
-      headers: new Headers({
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'JWT-Authorization': `Bearer ${token}`,
-      }),
-    };
-
-    if (operation.data && operation.method !== 'DELETE') {
-      fetchOptions.body = JSON.stringify(operation.data);
+    if (operation.type === 'delete') {
+      if (operation.itemId) {
+        await adapter.delete(token, operation.itemId);
+      }
+      return { success: true };
     }
 
-    const response = await fetch(operation.url, fetchOptions);
+    const localItem = operation.itemId
+      ? await getItemFromDB(operation.itemId)
+      : null;
 
-    if (!response.ok) {
-      // Treat missing remote resource for delete as success (already removed)
-      if (operation.type === 'delete' && response.status === 404) {
-        return { success: true };
-      }
-      // Handle token expiration
-      if (response.status === 403) {
-        // Check and handle authentication error (will log out if token expired)
-        const loggedOut = await checkAndHandleAuthError(response, fetchOptions);
-        if (loggedOut) {
-          throw new AuthenticationError('Authentication failed - user logged out');
-        }
-        throw new AuthenticationError('Authentication failed');
-      }
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    if (operation.type === 'add') {
+      const created = await adapter.create(
+        token,
+        localItem || ({} as TransactionOrIncomeItem),
+        operation.data
+      );
+      return { success: true, item: created };
     }
 
-    let data: any = null;
-    if (response.status !== 204) {
-      try {
-        data = await response.json();
-      } catch (error) {
-        console.warn('No JSON payload returned for operation', operation.id, error);
-      }
+    if (!localItem) {
+      return { success: true };
     }
-    return { success: true, data };
+    const updated = await adapter.update(token, localItem, operation.data);
+    return { success: true, item: updated };
   } catch (error) {
+    await handleAdapterAuthError(httpStatus(error), token);
     console.error('Error syncing operation:', error);
     return { success: false };
   }
@@ -237,10 +141,50 @@ export function syncPendingOperations(
   token: string,
   onItemSynced?: (itemId: string) => void
 ): Promise<void> {
-  syncQueue = syncQueue.catch(() => {}).then(() =>
-    processPendingOperations(token, onItemSynced)
-  );
+  syncQueue = syncQueue
+    .catch(() => {})
+    .then(() => processPendingOperations(token, onItemSynced));
   return syncQueue;
+}
+
+async function processSnapshotQueue(
+  token: string,
+  onItemSynced?: (itemId: string) => void
+) {
+  const adapter = getAdapter();
+  if (!adapter.saveAll) {
+    return;
+  }
+
+  const queue = await getOfflineQueue();
+  if (queue.length === 0) {
+    return;
+  }
+
+  notifySyncStart();
+  let success = false;
+  try {
+    const localData = (await getExpensesFromDB()) || [];
+    const remoteData = await adapter.fetchAll(token);
+    const merged = await resolveConflicts(localData, remoteData);
+    await adapter.saveAll(token, merged);
+    await saveExpensesToDB(merged);
+
+    for (const operation of queue) {
+      if (operation.itemId) {
+        onItemSynced?.(operation.itemId);
+        notifyItemSynced(operation.itemId);
+      }
+      await removeFromOfflineQueue(operation.id);
+    }
+    await updateSyncMetadata({ lastSyncTime: Date.now() });
+    success = true;
+  } catch (error) {
+    await handleAdapterAuthError(httpStatus(error), token);
+    throw error;
+  } finally {
+    notifySyncFinish(success);
+  }
 }
 
 async function processPendingOperations(
@@ -249,6 +193,11 @@ async function processPendingOperations(
 ) {
   if (!isOnline()) {
     console.log('Offline - skipping sync');
+    return;
+  }
+
+  if (getAdapter().mode === 'snapshot') {
+    await processSnapshotQueue(token, onItemSynced);
     return;
   }
 
@@ -277,7 +226,9 @@ async function processPendingOperations(
         if (operation.type === 'update' && operation.itemId) {
           const localItem = await getItemFromDB(operation.itemId);
           if (!localItem) {
-            console.warn(`Local item ${operation.itemId} not found, skipping update`);
+            console.warn(
+              `Local item ${operation.itemId} not found, skipping update`
+            );
             await removeFromOfflineQueue(operation.id);
             processedAny = true;
             continue;
@@ -327,11 +278,9 @@ async function processPendingOperations(
         if (result.success) {
           processedAny = true;
 
-          if (operation.type === 'add' && result.data) {
+          if (operation.type === 'add' && result.item) {
             if (operation.itemId && operation.itemId.startsWith('temp_')) {
-              const nodeData = result.data;
-              const newItem = convertNodeDataToItem(nodeData);
-
+              const newItem = result.item;
               await deleteItemFromDB(operation.itemId);
               await addItemToDB(newItem);
 
@@ -343,15 +292,17 @@ async function processPendingOperations(
               onItemSynced?.(operation.itemId);
               notifyItemSynced(operation.itemId);
             }
-          } else if (operation.type === 'update' && result.data) {
-            const nodeData = result.data;
-            const updatedItem = convertNodeDataToItem(nodeData);
+          } else if (operation.type === 'update' && result.item) {
+            const updatedItem = result.item;
             await updateItemInDB(updatedItem);
 
             if (updatedItem.id) {
               onItemSynced?.(updatedItem.id);
               notifyItemSynced(updatedItem.id);
             }
+          } else if (operation.type === 'delete' && operation.itemId) {
+            onItemSynced?.(operation.itemId);
+            notifyItemSynced(operation.itemId);
           }
 
           await removeFromOfflineQueue(operation.id);
@@ -363,7 +314,7 @@ async function processPendingOperations(
             retryCount: (operation.retryCount || 0) + 1,
           };
 
-        if (updatedOperation.retryCount >= 50) {
+          if (updatedOperation.retryCount >= 50) {
             console.error(
               `Operation ${operation.id} failed after 50 retries, removing from queue`
             );
@@ -422,59 +373,16 @@ export async function syncWithServer(
   let success = false;
 
   try {
-    const fetchOptions = {
-      method: 'GET',
-      headers: new Headers({
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'JWT-Authorization': `Bearer ${token}`,
-      }),
-    };
-
-    const response = await fetch(
-      `${ROOT_URL}/api/expenses`,
-      fetchOptions
-    );
-
-    if (!response.ok) {
-      if (response.status === 403) {
-        // Check and handle authentication error (will log out if token expired)
-        const loggedOut = await checkAndHandleAuthError(response, fetchOptions);
-        if (loggedOut) {
-          throw new AuthenticationError('Authentication failed - user logged out');
-        }
-        throw new AuthenticationError('Authentication failed');
-      }
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    let serverData: any[] = await response.json();
-    
-    // Convert API response to TransactionOrIncomeItem format
-    // Handle both NodeData format (with nested arrays) and simplified format
-    const convertedData: TransactionOrIncomeItem[] = serverData.map((item: any) => {
-      // If already in TransactionOrIncomeItem format (has 'id' and 'dt' directly)
-      if (item.id && item.dt && !item.nid) {
-        const created =
-          parseTimestamp(item.cr ?? item.created) ?? Date.now();
-        const updated =
-          parseTimestamp(item.upd ?? item.updated) ?? created;
-
-        return {
-          ...item,
-          cr: created,
-          updated,
-          failed: !!item.failed,
-        };
-      }
-      // Otherwise, convert from NodeData format
-      return convertNodeDataToItem(item);
-    });
-    
+    const adapter = getAdapter();
+    const convertedData = await adapter.fetchAll(token);
     const localData = await getExpensesFromDB();
 
     // Resolve conflicts: last updated wins
     const mergedData = await resolveConflicts(localData || [], convertedData);
+
+    if (adapter.saveAll) {
+      await adapter.saveAll(token, mergedData);
+    }
 
     // Save merged data
     await saveExpensesToDB(mergedData);
@@ -504,6 +412,7 @@ export async function syncWithServer(
     if (error instanceof AuthenticationError) {
       throw error;
     }
+    await handleAdapterAuthError(httpStatus(error), token);
     console.error('Error syncing with server:', error);
     // Return cached data on error (but not for auth errors)
     const cachedData = await getExpensesFromDB();
@@ -518,17 +427,17 @@ async function resolveConflicts(
   localData: TransactionOrIncomeItem[],
   serverData: TransactionOrIncomeItem[]
 ): Promise<TransactionOrIncomeItem[]> {
-  const localMap = new Map(localData.map(item => [item.id, item]));
-  const serverMap = new Map(serverData.map(item => [item.id, item]));
+  const localMap = new Map(localData.map((item) => [item.id, item]));
+  const serverMap = new Map(serverData.map((item) => [item.id, item]));
   const merged: TransactionOrIncomeItem[] = [];
 
   // Inspect pending queue to understand local-only items
   const queue = await getOfflineQueue();
   const pendingDeletes = new Set(
-    queue.filter(op => op.type === 'delete').map(op => op.itemId)
+    queue.filter((op) => op.type === 'delete').map((op) => op.itemId)
   );
   const pendingAdds = new Set(
-    queue.filter(op => op.type === 'add').map(op => op.itemId)
+    queue.filter((op) => op.type === 'add').map((op) => op.itemId)
   );
 
   // Process all items from both sources
@@ -539,14 +448,14 @@ async function resolveConflicts(
     const serverItem = serverMap.get(id);
 
     if (!localItem) {
-      // Only on server - add it
-      if (serverItem) merged.push(serverItem);
+      if (serverItem && !pendingDeletes.has(id)) merged.push(serverItem);
     } else if (!serverItem) {
       const isTempId = id?.startsWith('temp_');
       const hasPendingAdd = pendingAdds.has(id);
+      const keepLocalOnly =
+        getAdapter().mode === 'snapshot' || isTempId || hasPendingAdd;
 
-      // Only keep local-only entries if they're still queued for creation
-      if ((isTempId || hasPendingAdd) && !pendingDeletes.has(id)) {
+      if (keepLocalOnly && !pendingDeletes.has(id)) {
         merged.push(localItem);
       }
     } else {
@@ -613,7 +522,10 @@ export function scheduleBackgroundSync(token: string) {
 }
 
 // Initialize sync on app start
-export async function initializeSync(token: string, dataDispatch: any): Promise<void> {
+export async function initializeSync(
+  token: string,
+  dataDispatch: any
+): Promise<void> {
   // Load cached data immediately
   const cachedData = await getExpensesFromDB();
   if (cachedData && cachedData.length > 0) {
@@ -626,7 +538,7 @@ export async function initializeSync(token: string, dataDispatch: any): Promise<
     try {
       // First sync pending operations
       await syncPendingOperations(token);
-      
+
       // Then sync data from server
       await syncWithServer(token, dataDispatch);
     } catch (error) {
@@ -665,7 +577,9 @@ export function setupNetworkListener(
     } catch (error) {
       // Authentication errors are already handled (user logged out)
       if (error instanceof AuthenticationError) {
-        console.warn('Sync after coming online stopped due to authentication error');
+        console.warn(
+          'Sync after coming online stopped due to authentication error'
+        );
         return;
       }
       console.error('Error syncing after coming online:', error);
@@ -673,10 +587,9 @@ export function setupNetworkListener(
   };
 
   window.addEventListener('online', handleOnline);
-  
+
   // Return cleanup function
   return () => {
     window.removeEventListener('online', handleOnline);
   };
 }
-

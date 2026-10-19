@@ -1,17 +1,9 @@
 import { categories, monthNames } from './constants';
-import { logout } from '../context';
-import {
-  DataStructure,
-  ItemTotal,
-  TransactionOrIncomeItem,
-} from '../types/types';
-import {
-  getExpensesFromDB,
-  saveExpensesToDB,
-  isIndexedDBAvailable,
-} from './indexedDB';
+import { DataStructure } from '../types/types';
+import { getExpensesFromDB, isIndexedDBAvailable } from './indexedDB';
 import { processData, dispatchProcessedData } from './dataProcessing';
 import { checkAndHandleAuthError } from './authErrorHandler';
+import { getAdapter } from '../storage';
 
 const handleErrors = async (
   response: Response,
@@ -21,7 +13,7 @@ const handleErrors = async (
 ) => {
   if (!response.ok) {
     // Use the centralized auth error handler
-    if (response.status === 403) {
+    if (getAdapter().isAuthError(response.status)) {
       await checkAndHandleAuthError(response, options);
     }
     return response.statusText;
@@ -62,7 +54,10 @@ export const fetchRequest = (
   callback: any
 ) => {
   fetch(url, options)
-    .then(async (response) => await handleErrors(response, options, dataDispatch, dispatch))
+    .then(
+      async (response) =>
+        await handleErrors(response, options, dataDispatch, dispatch)
+    )
     .then((response) => callback(response))
     .catch((error) => console.log(error));
 };
@@ -71,11 +66,11 @@ export const deleteNode = async (nid: string, token: string, callback: any) => {
   // Import offline API dynamically to avoid circular dependencies
   const { deleteItemOffline } = await import('./offlineAPI');
   const { getItemFromDB } = await import('./indexedDB');
-  
+
   // Get item to determine type
   const item = await getItemFromDB(nid);
   const itemType = item?.type === 'transaction' ? 'transaction' : 'incomes';
-  
+
   await deleteItemOffline(
     nid,
     itemType,
@@ -112,25 +107,27 @@ export const fetchData = async (
     if (cachedData && cachedData.length > 0) {
       // Process cached data immediately (instant load!)
       processData(cachedData, (processed) => {
-        dispatchProcessedData(cachedData, processed, dataDispatch, category, textFilter);
+        dispatchProcessedData(
+          cachedData,
+          processed,
+          dataDispatch,
+          category,
+          textFilter
+        );
       });
     }
   }
 
   // Sync with server (handles online/offline automatically)
-  const { syncWithServer, syncPendingOperations, AuthenticationError } = await import('./syncService');
-  
+  const { syncWithServer, syncPendingOperations, AuthenticationError } =
+    await import('./syncService');
+
   try {
     // First sync pending operations (callbacks handled in App.tsx SyncSetup)
     await syncPendingOperations(token);
-    
+
     // Then sync data from server
-    await syncWithServer(
-      token,
-      dataDispatch,
-      category,
-      textFilter
-    );
+    await syncWithServer(token, dataDispatch, category, textFilter);
   } catch (error) {
     // If it's an authentication error, the user has already been logged out
     // Don't try to fallback to direct API call
@@ -138,35 +135,8 @@ export const fetchData = async (
       console.warn('Authentication failed during sync, user logged out');
       return;
     }
-    
+
     console.error('Error during sync:', error);
-    // Fallback to direct API call if sync fails (but not for auth errors)
-    const fetchOptions = {
-      method: 'GET',
-      headers: new Headers({
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'JWT-Authorization': 'Bearer ' + token,
-      }),
-    };
-
-    fetchRequest(
-      'https://dev-expenses-api.pantheonsite.io/api/expenses',
-      fetchOptions,
-      dataDispatch,
-      dispatch,
-      async (data: TransactionOrIncomeItem[]) => {
-        // Save to IndexedDB for next time
-        if (isIndexedDBAvailable()) {
-          await saveExpensesToDB(data);
-        }
-
-        // Process data (using Web Worker if available)
-        processData(data, (processed) => {
-          dispatchProcessedData(data, processed, dataDispatch, category, textFilter);
-        });
-      }
-    );
   }
 };
 
@@ -192,7 +162,9 @@ export const formatNumber = (value: unknown): string => {
 export const monthLabelToKey = (label: string): string => {
   const [name, year] = (label || '').split(' ');
   const index = monthNames.indexOf(name);
-  return index >= 0 && year ? `${year}-${String(index + 1).padStart(2, '0')}` : '';
+  return index >= 0 && year
+    ? `${year}-${String(index + 1).padStart(2, '0')}`
+    : '';
 };
 
 export const getCategory: { [key: string]: string } = categories.reduce(
@@ -211,7 +183,7 @@ export const extractHashtags = (text: string): string[] => {
   // This handles multi-word tags like "#happy hour" or "#car service"
   const hashtagRegex = /#([a-zA-Z0-9\/]+(?:\s+[a-zA-Z0-9\/]+)*)/g;
   const matches = text.match(hashtagRegex);
-  return matches ? matches.map(tag => tag.substring(1)) : [];
+  return matches ? matches.map((tag) => tag.substring(1)) : [];
 };
 
 // Check if a tag already exists in text (supports multi-word tags)

@@ -9,8 +9,22 @@ import {
   updateQueueOperation,
 } from './indexedDB';
 import { TransactionOrIncomeItem } from '../types/types';
-import { isOnline, generateTempId, scheduleBackgroundSync } from './syncService';
-import { ROOT_URL } from './constants';
+import {
+  isOnline,
+  generateTempId,
+  scheduleBackgroundSync,
+} from './syncService';
+import { getAdapter, getStorageProvider } from '../storage';
+
+function newItemId(): string {
+  if (
+    getStorageProvider() === 'drive' &&
+    typeof crypto.randomUUID === 'function'
+  ) {
+    return crypto.randomUUID();
+  }
+  return generateTempId();
+}
 
 // Convert form data to TransactionOrIncomeItem format
 function convertFormDataToItem(
@@ -18,7 +32,7 @@ function convertFormDataToItem(
   itemId?: string,
   existingItem?: TransactionOrIncomeItem
 ): TransactionOrIncomeItem {
-  const id = itemId || generateTempId();
+  const id = itemId || newItemId();
   const type = formData.type;
   const amount = Array.isArray(formData.field_amount)
     ? formData.field_amount[0]
@@ -58,8 +72,7 @@ export async function addItemOffline(
   onSuccess: (item: TransactionOrIncomeItem) => void,
   onError: (error: string) => void
 ): Promise<void> {
-  const tempId = generateTempId();
-  const item = convertFormDataToItem(formData, tempId);
+  const item = convertFormDataToItem(formData);
   item.failed = false;
 
   try {
@@ -68,13 +81,11 @@ export async function addItemOffline(
 
     // Queue for later sync
     const operation: PendingOperation = {
-      id: `add_${tempId}_${Date.now()}`,
+      id: `add_${item.id}_${Date.now()}`,
       type: 'add',
       itemType: formData.type === 'transaction' ? 'transaction' : 'incomes',
-      itemId: tempId,
+      itemId: item.id,
       data: formData,
-      url: `${ROOT_URL}/node?_format=json`,
-      method: 'POST',
       timestamp: Date.now(),
     };
 
@@ -87,7 +98,7 @@ export async function addItemOffline(
     onSuccess(item);
   } catch (error) {
     console.error('Error adding item offline:', error);
-    onError('Couldn\'t add this item. Try again.');
+    onError("Couldn't add this item. Try again.");
   }
 }
 
@@ -136,8 +147,6 @@ export async function updateItemOffline(
         itemType: formData.type === 'transaction' ? 'transaction' : 'incomes',
         itemId: itemId,
         data: formData,
-        url: `${ROOT_URL}/node/${itemId}?_format=json`,
-        method: 'PATCH',
         timestamp: Date.now(),
       };
 
@@ -151,7 +160,7 @@ export async function updateItemOffline(
     onSuccess(updatedItem);
   } catch (error) {
     console.error('Error updating item offline:', error);
-    onError('Couldn\'t update this item. Try again.');
+    onError("Couldn't update this item. Try again.");
   }
 }
 
@@ -174,15 +183,17 @@ export async function deleteItemOffline(
       await removeQueueOperationsByItemId(itemId);
     }
 
-    if (!hadPendingAdd && !itemId.startsWith('temp_')) {
-      // Queue delete only if item exists on server
+    const existsRemotely =
+      getAdapter().mode === 'snapshot' || !itemId.startsWith('temp_');
+    if (!hadPendingAdd && existsRemotely) {
+      // Queue delete only if the item may already exist remotely. Drupal temp
+      // ids are local-only until sync; Drive snapshot ids are already the
+      // remote key, even if an older row still has a temp_ prefix.
       const operation: PendingOperation = {
         id: `delete_${itemId}_${Date.now()}`,
         type: 'delete',
         itemType,
         itemId: itemId,
-        url: `${ROOT_URL}/node/${itemId}?_format=json`,
-        method: 'DELETE',
         timestamp: Date.now(),
       };
 
@@ -195,7 +206,6 @@ export async function deleteItemOffline(
     onSuccess();
   } catch (error) {
     console.error('Error deleting item offline:', error);
-    onError('Couldn\'t delete this item. Try again.');
+    onError("Couldn't delete this item. Try again.");
   }
 }
-
