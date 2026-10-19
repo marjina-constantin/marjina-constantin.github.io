@@ -232,15 +232,23 @@ async function syncOperation(
   }
 }
 
+// Pushing pending operations and pulling/merging server data both rewrite IndexedDB,
+// so they must never interleave.
+function runExclusive<T>(task: () => Promise<T>): Promise<T> {
+  const run = syncQueue.catch(() => {}).then(task);
+  syncQueue = run.then(
+    () => {},
+    () => {}
+  );
+  return run;
+}
+
 // Sync all pending operations
 export function syncPendingOperations(
   token: string,
   onItemSynced?: (itemId: string) => void
 ): Promise<void> {
-  syncQueue = syncQueue.catch(() => {}).then(() =>
-    processPendingOperations(token, onItemSynced)
-  );
-  return syncQueue;
+  return runExclusive(() => processPendingOperations(token, onItemSynced));
 }
 
 async function processPendingOperations(
@@ -406,11 +414,22 @@ async function processPendingOperations(
 }
 
 // Sync data from server and resolve conflicts
-export async function syncWithServer(
+export function syncWithServer(
   token: string,
   dataDispatch: any,
   category: string = '',
   textFilter: string = ''
+): Promise<TransactionOrIncomeItem[]> {
+  return runExclusive(() =>
+    pullAndMergeFromServer(token, dataDispatch, category, textFilter)
+  );
+}
+
+async function pullAndMergeFromServer(
+  token: string,
+  dataDispatch: any,
+  category: string,
+  textFilter: string
 ): Promise<TransactionOrIncomeItem[]> {
   if (!isOnline()) {
     // Return cached data if offline
