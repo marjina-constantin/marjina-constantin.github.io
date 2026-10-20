@@ -13,18 +13,21 @@ const closeEvent = {
 
 export default function Modal({ show, onClose, children }: ModalProps) {
   const ref = useRef<HTMLDivElement>(null);
+  // Callers often pass an inline onClose; depending on it would re-run the focus effect on every render.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     const checkIfClickedOutside = (e: MouseEvent) => {
       if (show && ref.current && !ref.current.contains(e.target as Node)) {
-        onClose(e as unknown as React.MouseEvent<HTMLAnchorElement, MouseEvent>);
+        onCloseRef.current(e as unknown as React.MouseEvent<HTMLAnchorElement, MouseEvent>);
       }
     };
     document.addEventListener('mousedown', checkIfClickedOutside);
     return () => {
       document.removeEventListener('mousedown', checkIfClickedOutside);
     };
-  }, [show, onClose]);
+  }, [show]);
 
   useEffect(() => {
     if (!show || !ref.current) return;
@@ -43,7 +46,7 @@ export default function Modal({ show, onClose, children }: ModalProps) {
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        onClose(closeEvent);
+        onCloseRef.current(closeEvent);
         return;
       }
       if (event.key !== 'Tab') return;
@@ -68,7 +71,7 @@ export default function Modal({ show, onClose, children }: ModalProps) {
       document.removeEventListener('keydown', onKeyDown);
       previouslyFocused?.focus?.();
     };
-  }, [show, onClose]);
+  }, [show]);
 
   return (
     <>

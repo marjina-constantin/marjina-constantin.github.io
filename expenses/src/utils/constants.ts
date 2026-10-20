@@ -1,4 +1,6 @@
 export const ROOT_URL = 'https://dev-expenses-api.pantheonsite.io';
+export const GOOGLE_CLIENT_ID =
+  '954790461001-2p4vab8hud9u6mj4n6hb6iio4uaiofe5.apps.googleusercontent.com';
 
 export const categories = [
   { value: '', label: 'Category' },

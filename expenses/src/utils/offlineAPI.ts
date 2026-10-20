@@ -11,6 +11,7 @@ import {
 import { TransactionOrIncomeItem } from '../types/types';
 import { isOnline, generateTempId, scheduleBackgroundSync } from './syncService';
 import { ROOT_URL } from './constants';
+import { isWriteBlocked, writeBlockedMessage } from '../crypto/encryptionState';
 
 // Convert form data to TransactionOrIncomeItem format
 function convertFormDataToItem(
@@ -58,6 +59,10 @@ export async function addItemOffline(
   onSuccess: (item: TransactionOrIncomeItem) => void,
   onError: (error: string) => void
 ): Promise<void> {
+  if (isWriteBlocked()) {
+    onError(writeBlockedMessage());
+    return;
+  }
   const tempId = generateTempId();
   const item = convertFormDataToItem(formData, tempId);
   item.failed = false;
@@ -100,6 +105,10 @@ export async function updateItemOffline(
   onSuccess: (item: TransactionOrIncomeItem) => void,
   onError: (error: string) => void
 ): Promise<void> {
+  if (isWriteBlocked()) {
+    onError(writeBlockedMessage());
+    return;
+  }
   const updatedItem = convertFormDataToItem(formData, itemId, existingItem);
   // Preserve original created timestamp, but update the item
   updatedItem.cr = existingItem.cr;
@@ -163,6 +172,10 @@ export async function deleteItemOffline(
   onSuccess: () => void,
   onError: (error: string) => void
 ): Promise<void> {
+  if (isWriteBlocked()) {
+    onError(writeBlockedMessage());
+    return;
+  }
   try {
     // Delete from IndexedDB immediately
     await deleteItemFromDB(itemId);

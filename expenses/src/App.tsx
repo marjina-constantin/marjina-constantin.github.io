@@ -12,6 +12,26 @@ import SyncStatusIndicator from './components/sync/SyncStatusIndicator';
 import { setupNetworkListener } from './utils/syncService';
 import { AuthState } from './types/types';
 import { initializeAuthErrorHandler } from './utils/authErrorHandler';
+import { refreshStatus, useEncryptionState } from './crypto/encryptionState';
+import KeyNeededScreen from './components/privacy/KeyNeededScreen';
+import MigrationProgress from './components/privacy/MigrationProgress';
+
+// A locked account without the key on this device shows the key screen instead of the pages.
+const EncryptionGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { token, userIsLoggedIn } = useAuthState() as AuthState;
+  const { status, hasKey } = useEncryptionState();
+
+  useEffect(() => {
+    if (token) {
+      refreshStatus(true);
+    }
+  }, [token]);
+
+  if (userIsLoggedIn && status && status !== 'off' && !hasKey) {
+    return <KeyNeededScreen />;
+  }
+  return <>{children}</>;
+};
 
 // Component to setup sync when user is logged in
 const SyncSetup: React.FC = () => {
@@ -54,22 +74,25 @@ function App() {
           <Router>
             <SyncSetup />
             <SyncStatusIndicator />
+            <MigrationProgress />
             <Navbar />
 
-            <Routes>
-              {routes.map((route) => (
-                <Route
-                  key={route.path}
-                  path={route.path}
-                  element={
-                    <AppRoute
-                      component={route.component}
-                      isPrivate={route.isPrivate}
-                    />
-                  }
-                />
-              ))}
-            </Routes>
+            <EncryptionGate>
+              <Routes>
+                {routes.map((route) => (
+                  <Route
+                    key={route.path}
+                    path={route.path}
+                    element={
+                      <AppRoute
+                        component={route.component}
+                        isPrivate={route.isPrivate}
+                      />
+                    }
+                  />
+                ))}
+              </Routes>
+            </EncryptionGate>
           </Router>
         </SyncStatusProvider>
       </NotificationProvider>

@@ -3,6 +3,7 @@ import { clearExpensesDB } from '../utils/indexedDB';
 import { ROOT_URL } from '../utils/constants';
 import { clearAiLocalData } from '../ai/storage';
 import { clearChatSession } from '../ai/chatSession';
+import { applyLoginStatus, resetEncryptionState } from '../crypto/encryptionState';
 
 export async function loginUser(dispatch: any, loginPayload: LoginPayload) {
   const requestOptions = {
@@ -20,8 +21,9 @@ export async function loginUser(dispatch: any, loginPayload: LoginPayload) {
     const data: UserData = await response.json();
 
     if (data.current_user) {
-      dispatch({ type: 'LOGIN_SUCCESS', payload: data });
       localStorage.setItem('currentUser', JSON.stringify(data));
+      applyLoginStatus(data.current_user.encryption_status);
+      dispatch({ type: 'LOGIN_SUCCESS', payload: data });
       return data;
     }
 
@@ -36,6 +38,7 @@ export async function logout(dispatch: any, dataDispatch: any) {
   await dataDispatch({ type: 'REMOVE_DATA' });
   localStorage.removeItem('currentUser');
   localStorage.removeItem('token');
+  resetEncryptionState();
   clearAiLocalData();
   clearChatSession();
   // Clear IndexedDB cache on logout

@@ -12,6 +12,7 @@ import {
 } from './indexedDB';
 import { processData, dispatchProcessedData } from './dataProcessing';
 import { checkAndHandleAuthError } from './authErrorHandler';
+import { getEncryptionSnapshot } from '../crypto/encryptionState';
 
 const handleErrors = async (
   response: Response,
@@ -140,6 +141,10 @@ export const fetchData = async (
     }
     
     console.error('Error during sync:', error);
+    // The fallback stores the raw response, so it only runs for accounts known to be plain.
+    if (getEncryptionSnapshot().status !== 'off') {
+      return;
+    }
     // Fallback to direct API call if sync fails (but not for auth errors)
     const fetchOptions = {
       method: 'GET',

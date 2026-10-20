@@ -13,6 +13,7 @@ import { fetchRequest } from '../../utils/utils';
 import { notificationType, themeList } from '../../utils/constants';
 import { AuthState } from '../../types/types';
 import AiSettings from '../../components/ai/AiSettings';
+import PrivacySettings from '../../components/privacy/PrivacySettings';
 
 const Profile = () => {
   const showNotification = useNotification();
@@ -127,6 +128,7 @@ const Profile = () => {
             </button>
           ))}
         </div>
+        <PrivacySettings />
         <AiSettings />
         <button className="button logout" onClick={handleLogout}>
           Logout

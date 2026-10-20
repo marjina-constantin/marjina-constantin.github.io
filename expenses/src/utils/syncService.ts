@@ -19,6 +19,13 @@ import { processData, dispatchProcessedData } from './dataProcessing';
 import { notifyItemSynced, notifySyncFinish, notifySyncStart } from './syncCallbacks';
 import { checkAndHandleAuthError } from './authErrorHandler';
 import { ROOT_URL } from './constants';
+import { decodeServerItem, encodeNodeBody } from '../crypto/nodeCodec';
+import {
+  getEncryptionSnapshot,
+  isMigrationActive,
+  refreshStatus,
+  setCorruptCount,
+} from '../crypto/encryptionState';
 
 // Custom error class for authentication failures
 export class AuthenticationError extends Error {
@@ -125,6 +132,19 @@ function convertNodeDataToItem(nodeData: any): TransactionOrIncomeItem {
   };
 }
 
+// Decode a POST/PATCH response. If it can't be decrypted, keep the local values under the server id.
+async function decodeResponseItem(
+  nodeData: any,
+  fallback: TransactionOrIncomeItem | null
+): Promise<TransactionOrIncomeItem> {
+  const base = convertNodeDataToItem(nodeData);
+  const result = await decodeServerItem(nodeData, base);
+  if (result.kind === 'ok') {
+    return result.item;
+  }
+  return fallback ? { ...fallback, id: base.id || fallback.id, updated: base.updated } : base;
+}
+
 // Check if network is available
 export function isOnline(): boolean {
   return navigator.onLine;
@@ -135,54 +155,56 @@ export function generateTempId(): string {
   return `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
 
-// Fetch current server version of an item
+// Fetch current server version of an item.
+// Returns null only when the server says the item is gone (404); any other failure throws,
+// so a network error or an undecryptable item never gets the local copy deleted.
 async function fetchServerItem(
   itemId: string,
   token: string
 ): Promise<TransactionOrIncomeItem | null> {
-  try {
-    const fetchOptions: RequestInit = {
-      method: 'GET',
-      headers: new Headers({
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'JWT-Authorization': `Bearer ${token}`,
-      }),
-    };
+  const fetchOptions: RequestInit = {
+    method: 'GET',
+    headers: new Headers({
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'JWT-Authorization': `Bearer ${token}`,
+    }),
+  };
 
-    const response = await fetch(
-      `${ROOT_URL}/node/${itemId}?_format=json`,
-      fetchOptions
-    );
+  const response = await fetch(
+    `${ROOT_URL}/node/${itemId}?_format=json`,
+    fetchOptions
+  );
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        // Item doesn't exist on server (might have been deleted)
-        return null;
-      }
-      if (response.status === 403) {
-        // Check and handle authentication error (will log out if token expired)
-        const loggedOut = await checkAndHandleAuthError(response, fetchOptions);
-        if (loggedOut) {
-          throw new AuthenticationError('Authentication failed - user logged out');
-        }
-        throw new AuthenticationError('Authentication failed');
-      }
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  if (!response.ok) {
+    if (response.status === 404) {
+      // Item doesn't exist on server (might have been deleted)
+      return null;
     }
-
-    const nodeData = await response.json();
-    return convertNodeDataToItem(nodeData);
-  } catch (error) {
-    console.error('Error fetching server item:', error);
-    return null;
+    if (response.status === 403) {
+      // Check and handle authentication error (will log out if token expired)
+      const loggedOut = await checkAndHandleAuthError(response, fetchOptions);
+      if (loggedOut) {
+        throw new AuthenticationError('Authentication failed - user logged out');
+      }
+      throw new AuthenticationError('Authentication failed');
+    }
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
   }
+
+  const nodeData = await response.json();
+  const result = await decodeServerItem(nodeData, convertNodeDataToItem(nodeData));
+  if (result.kind !== 'ok') {
+    throw new Error(`Server item ${itemId} could not be decrypted (${result.kind})`);
+  }
+  return result.item;
 }
 
 // Sync a single pending operation
 async function syncOperation(
   operation: PendingOperation,
-  token: string
+  token: string,
+  body: any
 ): Promise<{ success: boolean; data?: any; newId?: string }> {
   try {
     const fetchOptions: RequestInit = {
@@ -194,8 +216,8 @@ async function syncOperation(
       }),
     };
 
-    if (operation.data && operation.method !== 'DELETE') {
-      fetchOptions.body = JSON.stringify(operation.data);
+    if (body && operation.method !== 'DELETE') {
+      fetchOptions.body = JSON.stringify(body);
     }
 
     const response = await fetch(operation.url, fetchOptions);
@@ -259,11 +281,17 @@ async function processPendingOperations(
     console.log('Offline - skipping sync');
     return;
   }
+  if (isMigrationActive()) {
+    return;
+  }
 
   const queue = await getOfflineQueue();
   if (queue.length === 0) {
     return;
   }
+
+  // Another device may have locked or unlocked the account since the last check.
+  await refreshStatus();
 
   notifySyncStart();
   console.log(`Syncing ${queue.length} pending operations...`);
@@ -281,6 +309,17 @@ async function processPendingOperations(
       processedCount += 1;
 
       try {
+        let body: any = null;
+        if (operation.method !== 'DELETE' && operation.data) {
+          const encoded = await encodeNodeBody(operation.data);
+          if (encoded.kind === 'hold') {
+            // Keep this and every later operation queued, in order, without counting a retry.
+            console.log(`Sync paused (${encoded.reason})`);
+            break;
+          }
+          body = encoded.body;
+        }
+
         // Pre-check for update operations: compare with server version
         if (operation.type === 'update' && operation.itemId) {
           const localItem = await getItemFromDB(operation.itemId);
@@ -330,7 +369,7 @@ async function processPendingOperations(
         }
 
         // Proceed with the sync operation
-        const result = await syncOperation(operation, token);
+        const result = await syncOperation(operation, token, body);
 
         if (result.success) {
           processedAny = true;
@@ -338,7 +377,10 @@ async function processPendingOperations(
           if (operation.type === 'add' && result.data) {
             if (operation.itemId && operation.itemId.startsWith('temp_')) {
               const nodeData = result.data;
-              const newItem = convertNodeDataToItem(nodeData);
+              const newItem = await decodeResponseItem(
+                nodeData,
+                await getItemFromDB(operation.itemId)
+              );
 
               await deleteItemFromDB(operation.itemId);
               await addItemToDB(newItem);
@@ -353,7 +395,10 @@ async function processPendingOperations(
             }
           } else if (operation.type === 'update' && result.data) {
             const nodeData = result.data;
-            const updatedItem = convertNodeDataToItem(nodeData);
+            const updatedItem = await decodeResponseItem(
+              nodeData,
+              operation.itemId ? await getItemFromDB(operation.itemId) : null
+            );
             await updateItemInDB(updatedItem);
 
             if (updatedItem.id) {
@@ -437,6 +482,16 @@ async function pullAndMergeFromServer(
     return cachedData || [];
   }
 
+  // Locked account without the key on this device, or a lock/unlock running: don't touch the cache.
+  const encryption = getEncryptionSnapshot();
+  if (
+    isMigrationActive() ||
+    (encryption.status && encryption.status !== 'off' && !encryption.hasKey)
+  ) {
+    const cachedData = await getExpensesFromDB();
+    return cachedData || [];
+  }
+
   notifySyncStart();
   let success = false;
 
@@ -471,7 +526,7 @@ async function pullAndMergeFromServer(
     
     // Convert API response to TransactionOrIncomeItem format
     // Handle both NodeData format (with nested arrays) and simplified format
-    const convertedData: TransactionOrIncomeItem[] = serverData.map((item: any) => {
+    const toBaseItem = (item: any): TransactionOrIncomeItem => {
       // If already in TransactionOrIncomeItem format (has 'id' and 'dt' directly)
       if (item.id && item.dt && !item.nid) {
         const created =
@@ -479,18 +534,40 @@ async function pullAndMergeFromServer(
         const updated =
           parseTimestamp(item.upd ?? item.updated) ?? created;
 
-        return {
+        const plainItem = {
           ...item,
           cr: created,
           updated,
           failed: !!item.failed,
         };
+        delete plainItem.payload;
+        return plainItem;
       }
       // Otherwise, convert from NodeData format
       return convertNodeDataToItem(item);
-    });
-    
+    };
+
     const localData = await getExpensesFromDB();
+    const localById = new Map((localData || []).map((item) => [item.id, item]));
+
+    // Items that can't be decrypted keep their local copy and are never treated as deleted.
+    const convertedData: TransactionOrIncomeItem[] = [];
+    let corruptCount = 0;
+    for (const record of serverData) {
+      const result = await decodeServerItem(record, toBaseItem(record));
+      if (result.kind === 'ok') {
+        convertedData.push(result.item);
+        continue;
+      }
+      if (result.kind === 'corrupt') {
+        corruptCount += 1;
+      }
+      const localItem = localById.get(result.id);
+      if (localItem) {
+        convertedData.push(localItem);
+      }
+    }
+    setCorruptCount(corruptCount);
 
     // Resolve conflicts: last updated wins
     const mergedData = await resolveConflicts(localData || [], convertedData);
