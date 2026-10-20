@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import {
   ArrowUp,
   Check,
@@ -159,27 +159,6 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
   const online = useOnline();
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const location = useLocation();
-  const navigate = useNavigate();
-  const pendingPrompt = (location.state as { prompt?: string } | null)?.prompt;
-  const sentPromptRef = useRef<string | null>(null);
-
-  // Follow-up questions from insight cards arrive as router state and are sent once.
-  useEffect(() => {
-    if (
-      !pendingPrompt ||
-      !hasData ||
-      !online ||
-      busy ||
-      sentPromptRef.current === pendingPrompt
-    )
-      return;
-    sentPromptRef.current = pendingPrompt;
-    navigate(location.pathname, { replace: true, state: null });
-    setShowSuggestions(false);
-    send(pendingPrompt);
-  }, [pendingPrompt, hasData, online, busy, navigate, location.pathname, send]);
-
   const lastText = messages[messages.length - 1]?.text;
   const lastCharts = messages[messages.length - 1]?.charts?.length;
   useEffect(() => {

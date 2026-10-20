@@ -1,4 +1,4 @@
-import { AI_INSIGHT_LIMITS, AI_LANGUAGES, AI_STORAGE_KEYS } from './config';
+import { AI_LANGUAGES, AI_STORAGE_KEYS } from './config';
 
 export const getStoredApiKey = (): string =>
   localStorage.getItem(AI_STORAGE_KEYS.apiKey) || '';
@@ -54,43 +54,6 @@ export const getAiLanguage = (): string => {
 
 export const setAiLanguage = (value: string) => {
   localStorage.setItem(AI_STORAGE_KEYS.language, value);
-};
-
-export type InsightTone = 'positive' | 'negative' | 'warning' | 'tip' | 'neutral';
-
-export interface Insight {
-  headline: string;
-  bullets: { tone: InsightTone; text: string }[];
-  suggestions: string[];
-  followUps: string[];
-}
-
-export interface InsightEntry {
-  /** Hash of the data + language the insight was generated from. */
-  hash: string;
-  insight: Insight;
-  at: number;
-  tokens: number;
-  model?: string;
-  /** The user minimized the card; it stays a pill until opened again. */
-  collapsed?: boolean;
-}
-
-const readInsights = (): Record<string, InsightEntry> => {
-  try {
-    return JSON.parse(localStorage.getItem(AI_STORAGE_KEYS.insights) || '{}') || {};
-  } catch {
-    return {};
-  }
-};
-
-export const getInsightEntry = (key: string): InsightEntry | null => readInsights()[key] || null;
-
-export const saveInsightEntry = (key: string, entry: InsightEntry) => {
-  const entries = { ...readInsights(), [key]: entry };
-  const keys = Object.keys(entries).sort((a, b) => entries[b].at - entries[a].at);
-  keys.slice(AI_INSIGHT_LIMITS.cacheEntries).forEach((k) => delete entries[k]);
-  localStorage.setItem(AI_STORAGE_KEYS.insights, JSON.stringify(entries));
 };
 
 /** Model → timestamp (ms) until which it is rate limited. Expired entries are dropped. */

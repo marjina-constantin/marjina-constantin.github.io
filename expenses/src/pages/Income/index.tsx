@@ -13,7 +13,6 @@ import TotalIncomeCount from '../../components/income/TotalIncomeCount';
 import { TransactionOrIncomeItem } from '../../types/types';
 import { ArrowUpCircle, TrendingUp } from 'lucide-react';
 import { useDataFetcher } from '../../hooks/useDataFetcher';
-import AiInsight from '../../components/ai/LazyAiInsight';
 
 const IncomeSources = React.lazy(
   () => import('../../components/charts/IncomeSources')
@@ -145,13 +144,6 @@ const Income = () => {
             </div>
           )}
 
-          {hasIncomeData && (
-            <div className="ai-insights">
-              <AiInsight feature="incomeMonth" />
-              <AiInsight feature="incomeAll" />
-            </div>
-          )}
-
           <div className="income-button-container">
             <button
               onClick={() => { setShowEditModal(true); setIsNewModal(true); }}
@@ -188,15 +180,9 @@ const Income = () => {
         <>
           <div className="charts-section">
             <Suspense fallback=""><IncomeSources /></Suspense>
-            <div className="ai-insights">
-              <AiInsight feature="incomeSources" />
-            </div>
           </div>
           <div className="charts-section">
             <Suspense fallback=""><YearIncomeAverageTrend /></Suspense>
-            <div className="ai-insights">
-              <AiInsight feature="yearIncome" />
-            </div>
           </div>
         </>
       )}

@@ -48,6 +48,7 @@ export const AI_STORAGE_KEYS = {
   shareDescriptions: 'aiShareDescriptions',
   usage: 'aiUsage',
   language: 'aiLanguage',
+  /** Kept so logout still clears insight cards cached before they were removed. */
   insights: 'aiInsights',
   chat: 'aiChat',
   chatShowSuggestions: 'aiChatShowSuggestions',
@@ -56,9 +57,3 @@ export const AI_STORAGE_KEYS = {
 };
 
 export const AI_LANGUAGES = ['Romanian', 'English', 'Russian'] as const;
-
-export const AI_INSIGHT_LIMITS = {
-  maxOutputTokens: 2048,
-  /** Cached insights kept on the device (oldest are evicted). */
-  cacheEntries: 40,
-};

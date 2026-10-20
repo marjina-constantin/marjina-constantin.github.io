@@ -153,7 +153,7 @@ const AiSettings = () => {
       )}
 
       <label className="ai-settings__row">
-        <span>Insights language</span>
+        <span>Language</span>
         <select
           className="ai-settings__select"
           value={language}
