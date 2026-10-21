@@ -18,6 +18,7 @@ const spendingPieColors: Record<string, string> = {
   '11': '#6e7fd6',
   '12': '#d47b6a',
   '13': '#3fafa8',
+  '15': '#4a6fa5',
 };
 
 export default function AllTimeSpendings() {

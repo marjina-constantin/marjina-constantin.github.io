@@ -17,6 +17,7 @@ export const categories = [
   { value: '11', label: 'Travel' },
   { value: '12', label: 'Family' },
   { value: '13', label: 'Investment' },
+  { value: '15', label: 'Work' },
 ];
 
 export const monthNames = [
@@ -259,6 +260,7 @@ export const suggestions = {
   11: [],
   12: [],
   13: ['nunta', 'cumatrie'],
+  15: ['jakala'],
 };
 
 export const incomeSuggestions = [

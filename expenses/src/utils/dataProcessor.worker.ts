@@ -81,7 +81,8 @@ self.onmessage = function (e: MessageEvent<TransactionOrIncomeItem[]>) {
       );
       if (cat && categoryTotals[cat]) {
         const categoryKey = cat as keyof typeof categories;
-        categoryTotals[categoryKey].name = categories[categoryKey]?.label || '';
+        categoryTotals[categoryKey].name =
+          categories.find((c) => c.value === String(cat))?.label || '';
         categoryTotals[categoryKey].y = parseFloat(
           (categoryTotals[categoryKey].y + parseFloat(sum)).toFixed(2)
         );

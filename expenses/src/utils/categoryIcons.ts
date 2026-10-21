@@ -12,6 +12,7 @@ import {
   Plane,
   Users,
   ChartLine,
+  Briefcase,
   CircleHelp,
   type LucideIcon,
 } from 'lucide-react';
@@ -31,6 +32,7 @@ export const categoryIcons: Record<string, LucideIcon> = {
   '11': Plane, // Travel
   '12': Users, // Family
   '13': ChartLine, // Investment
+  '15': Briefcase, // Work
 };
 
 /** Soft chip background tints — icon stroke stays monochrome. */
@@ -48,6 +50,7 @@ export const categoryTints: Record<string, string> = {
   '11': 'rgba(45, 212, 191, 0.22)', // Travel — turquoise
   '12': 'rgba(251, 146, 120, 0.24)', // Family — warm coral
   '13': 'rgba(52, 211, 153, 0.26)', // Investment — emerald
+  '15': 'rgba(96, 165, 250, 0.24)', // Work — professional blue
 };
 
 export function getCategoryIcon(catValue: string | undefined): LucideIcon {

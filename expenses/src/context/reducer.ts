@@ -139,8 +139,7 @@ const buildFilteredState = (items: TransactionOrIncomeItem[]) => {
           acc.categoryTotals[cat] = { name: '', y: 0 };
         }
         acc.categoryTotals[cat].name =
-          // @ts-expect-error YBC
-          categories[cat]?.label || '';
+          categories.find((c) => c.value === String(cat))?.label || '';
         acc.categoryTotals[cat].y += sum || 0;
       }
 
