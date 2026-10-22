@@ -149,6 +149,7 @@ const Home = () => {
             changedItems={data.changedItems}
             handleClearChangedItem={handleClearChangedItem}
             month={currentMonth}
+            monthLabels={months}
             total={items.totals[currentMonth]}
             incomeTotals={items.incomeTotals}
           />
