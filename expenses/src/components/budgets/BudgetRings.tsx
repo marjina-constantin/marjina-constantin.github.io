@@ -12,6 +12,7 @@ import {
   calendarMonthLabel,
   countCompleteExpenseMonths,
   latestMonthLabel,
+  monthKeyLabel,
 } from '../../budgets/model';
 import { formatNumber } from '../../utils/utils';
 
@@ -184,7 +185,11 @@ const BudgetRings: React.FC<{ monthLabel?: string; monthLabels: string[] }> = ({
   if (!visible) return null;
 
   const monthCount = baseline?.months.length || windowSize;
-  const note = `Average of your last ${monthCount} completed ${monthCount === 1 ? 'month' : 'months'}.`;
+  const sourceMonth = baseline?.months[baseline.months.length - 1];
+  const note =
+    completeMonths < 3 && sourceMonth
+      ? `${monthKeyLabel(today.slice(0, 7))} is based on ${monthKeyLabel(sourceMonth)}, your last completed month.`
+      : `Average of your last ${monthCount} completed ${monthCount === 1 ? 'month' : 'months'}.`;
   const hasCurrentExpenses = items.some(
     (item) => item.kind === 'expense' && item.month === today.slice(0, 7)
   );

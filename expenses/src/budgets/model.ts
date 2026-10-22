@@ -6,6 +6,12 @@ export type BudgetWindow = 1 | 3 | 6 | 12;
 export const calendarMonthLabel = (date: Date) =>
   `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
 
+export const monthKeyLabel = (key: string) => {
+  const [year, month] = key.split('-').map(Number);
+  if (!year || !month || month < 1 || month > 12) return key;
+  return `${monthNames[month - 1]} ${year}`;
+};
+
 export const latestMonthLabel = (labels: string[]) => {
   let best: { label: string; order: number } | null = null;
   for (const label of labels) {
