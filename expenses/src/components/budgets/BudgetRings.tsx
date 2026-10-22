@@ -22,30 +22,45 @@ import { formatNumber } from '../../utils/utils';
 const prefersReducedMotion = () =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const useAnimatedRatio = (ratio: number) => {
-  const [value, setValue] = useState(ratio);
-  const valueRef = useRef(ratio);
+const useAnimatedRatio = (ratio: number, active = true, delay = 0) => {
+  const [value, setValue] = useState(0);
+  const valueRef = useRef(0);
 
   useEffect(() => {
-    const from = valueRef.current;
-    if (prefersReducedMotion() || Math.abs(from - ratio) < 0.0005) {
-      valueRef.current = ratio;
-      setValue(ratio);
+    if (!active) {
+      valueRef.current = 0;
+      setValue(0);
       return;
     }
-    const start = performance.now();
+
+    const from = valueRef.current;
+    const to = Math.max(0, ratio);
+    if (prefersReducedMotion() || Math.abs(from - to) < 0.0005) {
+      valueRef.current = to;
+      setValue(to);
+      return;
+    }
+
     let frame = 0;
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / 560);
-      const eased = 1 - (1 - t) ** 3;
-      const next = from + (ratio - from) * eased;
-      valueRef.current = next;
-      setValue(next);
-      if (t < 1) frame = requestAnimationFrame(tick);
+    const duration = from < 0.01 ? 820 : 560;
+    const wait = window.setTimeout(() => {
+      const start = performance.now();
+      const tick = (now: number) => {
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - (1 - t) ** 3;
+        const next = from + (to - from) * eased;
+        valueRef.current = next;
+        setValue(next);
+        if (t < 1) frame = requestAnimationFrame(tick);
+      };
+      frame = requestAnimationFrame(tick);
+    }, from < 0.01 ? delay : 0);
+
+    return () => {
+      window.clearTimeout(wait);
+      cancelAnimationFrame(frame);
     };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [ratio]);
+  }, [ratio, active, delay]);
 
   return value;
 };
@@ -70,12 +85,14 @@ const remainingText = (left: number) =>
 const Ring: React.FC<{
   ring: BudgetRing;
   pace: number;
+  play: boolean;
+  delay: number;
   tip: boolean;
   onShowTip: (id: string, hold: boolean) => void;
   onHideTip: (id: string) => void;
-}> = ({ ring, pace, tip, onShowTip, onHideTip }) => {
+}> = ({ ring, pace, play, delay, tip, onShowTip, onHideTip }) => {
   const circumference = 2 * Math.PI * RADIUS;
-  const animated = useAnimatedRatio(Math.max(0, ring.ratio));
+  const animated = useAnimatedRatio(Math.max(0, ring.ratio), play, delay);
   const shown = Math.min(animated, 1);
   const status = budgetStatus(animated, pace);
   const percent = Math.round(animated * 100);
@@ -134,7 +151,7 @@ const Ring: React.FC<{
 };
 
 const SummaryBar: React.FC<{ ratio: number; pace: number }> = ({ ratio, pace }) => {
-  const animated = useAnimatedRatio(ratio);
+  const animated = useAnimatedRatio(ratio, true, 80);
   const status = budgetStatus(animated, pace);
   return (
     <div className={`budget-card__bar is-${status}`} aria-hidden>
@@ -302,11 +319,13 @@ const BudgetRings: React.FC<{ monthLabel?: string }> = ({ monthLabel }) => {
                   )}
                 </div>
                 <div className="budget-rings" ref={ringsRef}>
-                  {shown.map((ring) => (
+                  {shown.map((ring, index) => (
                     <Ring
                       key={ring.id}
                       ring={ring}
                       pace={pace}
+                      play={open}
+                      delay={index * 55}
                       tip={tipId === ring.id}
                       onShowTip={showTip}
                       onHideTip={hideTip}
