@@ -212,7 +212,7 @@ const BudgetRings: React.FC<{ monthLabel?: string }> = ({ monthLabel }) => {
     if (tipTimer.current) window.clearTimeout(tipTimer.current);
     setTipId(id);
     if (!hold) return;
-    tipTimer.current = window.setTimeout(() => setTipId(null), 1600);
+    tipTimer.current = window.setTimeout(() => setTipId(null), 2500);
   };
 
   const hideTip = (id: string) => {

@@ -4190,6 +4190,7 @@ $privacy-warn: #fde68a;
 // MONTHLY BUDGETS
 // =============================================================================
 
+$budget-ok: #6ee7b7;
 $budget-ahead: #fbbf6a;
 $budget-over: #ff8f8f;
 
@@ -4222,6 +4223,11 @@ $budget-over: #ff8f8f;
     font: inherit;
     text-align: left;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    &:focus {
+      outline: none;
+    }
 
     &:focus-visible {
       outline: 2px solid var(--accent-color);
@@ -4294,7 +4300,7 @@ $budget-over: #ff8f8f;
       position: absolute;
       inset: 0 auto 0 0;
       border-radius: inherit;
-      background: var(--accent-color);
+      background: $budget-ok;
       transition: background 0.35s ease;
     }
 
@@ -4403,7 +4409,12 @@ $budget-over: #ff8f8f;
     padding: 0 0.75rem;
     font-size: 0.75rem;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
     transition: background 0.2s ease, color 0.2s ease;
+
+    &:focus {
+      outline: none;
+    }
 
     &:focus-visible {
       outline: 2px solid var(--accent-color);
@@ -4428,11 +4439,17 @@ $budget-over: #ff8f8f;
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .budget-rings {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(112px, 124px));
+  justify-content: center;
   gap: 1.25rem 0.75rem;
   margin-top: 1.1rem;
 
@@ -4459,9 +4476,16 @@ $budget-over: #ff8f8f;
   padding: 0;
   font: inherit;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 
-  &:hover {
-    transform: translateY(-2px);
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  &:focus {
+    outline: none;
   }
 
   &:focus-visible {
@@ -4495,7 +4519,7 @@ $budget-over: #ff8f8f;
   }
 
   &__value {
-    stroke: var(--accent-color);
+    stroke: $budget-ok;
     stroke-linecap: round;
     transition: stroke 0.35s ease;
   }
