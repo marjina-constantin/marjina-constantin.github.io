@@ -21,7 +21,6 @@ interface TransactionListProps {
   changedItems?: any;
   handleClearChangedItem?: any;
   month?: string;
-  monthLabels?: string[];
   total?: number;
   incomeTotals?: { [month: string]: number };
 }
@@ -34,7 +33,6 @@ const TransactionList: React.FC<TransactionListProps> = ({
   changedItems = {},
   handleClearChangedItem,
   month,
-  monthLabels = [],
   total,
   incomeTotals,
 }) => {
@@ -99,7 +97,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
         )}
       </div>
 
-      <BudgetRings monthLabel={month} monthLabels={monthLabels} />
+      <BudgetRings monthLabel={month} />
 
       {/* Transaction List */}
       <div className="transaction-list-component" ref={listRef}>

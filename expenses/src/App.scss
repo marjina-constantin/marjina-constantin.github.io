@@ -4190,6 +4190,9 @@ $privacy-warn: #fde68a;
 // MONTHLY BUDGETS
 // =============================================================================
 
+$budget-ahead: #fbbf6a;
+$budget-over: #ff8f8f;
+
 .budget-home {
   text-align: left;
   margin: 0 0 1.5rem;
@@ -4202,34 +4205,115 @@ $privacy-warn: #fde68a;
 }
 
 .budget-card {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: $border-radius-lg;
-  padding: 0.85rem 1rem;
+  padding: 0.9rem 1rem 1rem;
 
   &__toggle {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 0.75rem;
     width: 100%;
     border: none;
     background: transparent;
     color: #fff;
-    padding: 0.15rem 0;
+    padding: 0;
     font: inherit;
-    font-size: 0.95rem;
-    font-weight: 600;
     text-align: left;
     cursor: pointer;
 
-    svg {
-      flex-shrink: 0;
-      color: rgba(255, 255, 255, 0.55);
-      transition: transform 0.28s ease;
+    &:focus-visible {
+      outline: 2px solid var(--accent-color);
+      outline-offset: 4px;
+      border-radius: $border-radius-md;
+    }
+  }
+
+  &__heading {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  &__title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.62);
+    font-variant-numeric: tabular-nums;
+
+    strong {
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.05rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+
+    &.is-over {
+      background: rgba(255, 143, 143, 0.16);
+      color: $budget-over;
+    }
+  }
+
+  &__chevron {
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, 0.55);
+    transition: transform 0.28s ease;
+
+    &.is-open {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__bar {
+    position: relative;
+    height: 6px;
+    margin-top: 0.8rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+
+    &-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      border-radius: inherit;
+      background: var(--accent-color);
+      transition: background 0.35s ease;
     }
 
-    svg.is-open {
-      transform: rotate(180deg);
+    &.is-ahead &-fill {
+      background: $budget-ahead;
+    }
+
+    &.is-over &-fill {
+      background: $budget-over;
+    }
+
+    &-pace {
+      position: absolute;
+      top: -3px;
+      width: 2px;
+      height: 12px;
+      margin-left: -1px;
+      border-radius: 1px;
+      background: rgba(255, 255, 255, 0.8);
     }
   }
 
@@ -4257,7 +4341,7 @@ $privacy-warn: #fde68a;
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
-    margin-top: 0.85rem;
+    margin-top: 1rem;
 
     @media (max-width: 640px) {
       align-items: flex-start;
@@ -4268,13 +4352,38 @@ $privacy-warn: #fde68a;
   &__note {
     margin: 0.85rem 0 0;
     color: rgba(255, 255, 255, 0.62);
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     line-height: 1.45;
   }
 
   &__tools &__note {
     margin: 0;
     flex: 1;
+  }
+
+  &__legend {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.2rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.74rem;
+  }
+
+  &__legend-tick {
+    width: 2px;
+    height: 10px;
+    border-radius: 1px;
+    background: rgba(255, 255, 255, 0.8);
+  }
+
+  &__extra {
+    margin: 0.85rem 0 0;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.76rem;
+    line-height: 1.45;
   }
 }
 
@@ -4291,10 +4400,15 @@ $privacy-warn: #fde68a;
     color: rgba(255, 255, 255, 0.7);
     border-radius: 999px;
     min-height: 28px;
-    padding: 0 0.7rem;
+    padding: 0 0.75rem;
     font-size: 0.75rem;
     cursor: pointer;
     transition: background 0.2s ease, color 0.2s ease;
+
+    &:focus-visible {
+      outline: 2px solid var(--accent-color);
+      outline-offset: 1px;
+    }
   }
 
   button.is-on {
@@ -4305,27 +4419,36 @@ $privacy-warn: #fde68a;
 }
 
 .budget-text-btn {
-  display: inline-flex;
-  margin-top: 0.85rem;
+  display: flex;
+  margin: 0.85rem auto 0;
   border: none;
   background: transparent;
   color: var(--accent-color);
-  padding: 0;
+  padding: 0.25rem 0.5rem;
   font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
 }
 
 .budget-rings {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.15rem 0.85rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 1.25rem 0.75rem;
   margin-top: 1.1rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem 0.4rem;
+  }
+
+  @media (max-width: 360px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .budget-ring {
   position: relative;
-  width: 124px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -4349,15 +4472,16 @@ $privacy-warn: #fde68a;
 
   &__dial {
     position: relative;
-    width: 108px;
-    height: 108px;
+    width: 100px;
+    height: 100px;
   }
 
-  svg {
+  &__dial > svg {
     width: 100%;
     height: 100%;
     display: block;
     transform: rotate(-90deg);
+    overflow: visible;
   }
 
   &__track,
@@ -4367,7 +4491,7 @@ $privacy-warn: #fde68a;
   }
 
   &__track {
-    stroke: rgba(255, 255, 255, 0.12);
+    stroke: rgba(255, 255, 255, 0.1);
   }
 
   &__value {
@@ -4376,8 +4500,18 @@ $privacy-warn: #fde68a;
     transition: stroke 0.35s ease;
   }
 
+  &.is-ahead &__value {
+    stroke: $budget-ahead;
+  }
+
   &.is-over &__value {
-    stroke: #ff8f8f;
+    stroke: $budget-over;
+  }
+
+  &__pace {
+    stroke: rgba(255, 255, 255, 0.8);
+    stroke-width: 1.6;
+    stroke-linecap: round;
   }
 
   &__pct {
@@ -4388,15 +4522,21 @@ $privacy-warn: #fde68a;
     justify-content: center;
     font-size: 1rem;
     font-weight: 700;
+    font-variant-numeric: tabular-nums;
     pointer-events: none;
   }
 
+  &.is-over &__pct {
+    color: $budget-over;
+  }
+
   &__label {
-    margin-top: 0.35rem;
+    margin-top: 0.4rem;
+    max-width: 100%;
     font-size: 0.78rem;
+    font-weight: 500;
     line-height: 1.2;
-    color: rgba(255, 255, 255, 0.75);
-    max-width: 124px;
+    color: rgba(255, 255, 255, 0.85);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -4418,12 +4558,13 @@ $privacy-warn: #fde68a;
     font-size: 0.75rem;
     font-weight: 500;
     line-height: 1.3;
-    padding: 0.4rem 0.6rem;
+    padding: 0.45rem 0.65rem;
     border-radius: $border-radius-sm;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
     z-index: 6;
     pointer-events: none;
     white-space: nowrap;
+    font-variant-numeric: tabular-nums;
     animation: budget-tip-in 0.15s ease;
 
     strong {
@@ -4431,12 +4572,22 @@ $privacy-warn: #fde68a;
     }
   }
 
-  @media (max-width: 640px) {
-    width: 88px;
+  &__tip-left {
+    color: rgba(255, 255, 255, 0.6);
+  }
 
+  &.is-ahead &__tip-left {
+    color: $budget-ahead;
+  }
+
+  &.is-over &__tip-left {
+    color: $budget-over;
+  }
+
+  @media (max-width: 640px) {
     &__dial {
-      width: 76px;
-      height: 76px;
+      width: 72px;
+      height: 72px;
     }
 
     &__pct {
@@ -4444,7 +4595,6 @@ $privacy-warn: #fde68a;
     }
 
     &__label {
-      max-width: 88px;
       font-size: 0.68rem;
     }
   }
@@ -4452,7 +4602,8 @@ $privacy-warn: #fde68a;
 
 @media (prefers-reduced-motion: reduce) {
   .budget-card__panel,
-  .budget-card__toggle svg,
+  .budget-card__chevron,
+  .budget-card__bar-fill,
   .budget-ring,
   .budget-ring__value,
   .budget-segment button {

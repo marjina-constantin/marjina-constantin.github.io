@@ -6,14 +6,17 @@ import {
   BudgetRing,
   BudgetWindow,
   budgetChoices,
+  budgetHostMonth,
+  budgetStatus,
   budgetUnlockLabel,
   buildBudgetBaseline,
   buildBudgets,
-  calendarMonthLabel,
   countCompleteExpenseMonths,
-  latestMonthLabel,
   monthKeyLabel,
+  monthPace,
+  summarizeBudgets,
 } from '../../budgets/model';
+import { monthNames } from '../../utils/constants';
 import { formatNumber } from '../../utils/utils';
 
 const prefersReducedMotion = () =>
@@ -47,25 +50,43 @@ const useAnimatedRatio = (ratio: number) => {
   return value;
 };
 
+const RADIUS = 28;
+const CENTER = 36;
+
+const paceTick = (pace: number) => {
+  const angle = 2 * Math.PI * pace;
+  const point = (r: number) => ({
+    x: CENTER + r * Math.cos(angle),
+    y: CENTER + r * Math.sin(angle),
+  });
+  const inner = point(RADIUS - 5);
+  const outer = point(RADIUS + 5);
+  return { x1: inner.x, y1: inner.y, x2: outer.x, y2: outer.y };
+};
+
+const remainingText = (left: number) =>
+  left >= 0 ? `${formatNumber(left)} left` : `${formatNumber(-left)} over`;
+
 const Ring: React.FC<{
   ring: BudgetRing;
+  pace: number;
   tip: boolean;
   onShowTip: (id: string, hold: boolean) => void;
   onHideTip: (id: string) => void;
-}> = ({ ring, tip, onShowTip, onHideTip }) => {
-  const radius = 28;
-  const circumference = 2 * Math.PI * radius;
+}> = ({ ring, pace, tip, onShowTip, onHideTip }) => {
+  const circumference = 2 * Math.PI * RADIUS;
   const animated = useAnimatedRatio(Math.max(0, ring.ratio));
   const shown = Math.min(animated, 1);
-  const over = animated > 1.001;
+  const status = budgetStatus(animated, pace);
   const percent = Math.round(animated * 100);
+  const showPace = pace < 1;
 
   return (
     <button
       type="button"
-      className={`budget-ring${over ? ' is-over' : ''}`}
+      className={`budget-ring is-${status}`}
       data-ring-id={ring.id}
-      aria-label={`${ring.label}: ${formatNumber(ring.spent)} of ${formatNumber(ring.budget)} average, ${percent}%`}
+      aria-label={`${ring.label}: ${formatNumber(ring.spent)} of ${formatNumber(ring.budget)} average, ${percent}%, ${remainingText(ring.left)}`}
       onPointerDown={(event) => {
         if (event.pointerType === 'mouse') onShowTip(ring.id, false);
       }}
@@ -85,21 +106,25 @@ const Ring: React.FC<{
     >
       <span className="budget-ring__dial">
         <svg viewBox="0 0 72 72" aria-hidden>
-          <circle className="budget-ring__track" cx="36" cy="36" r={radius} />
+          <circle className="budget-ring__track" cx={CENTER} cy={CENTER} r={RADIUS} />
           <circle
             className="budget-ring__value"
-            cx="36"
-            cy="36"
-            r={radius}
+            cx={CENTER}
+            cy={CENTER}
+            r={RADIUS}
             strokeDasharray={circumference}
             strokeDashoffset={circumference * (1 - shown)}
           />
+          {showPace && <line className="budget-ring__pace" {...paceTick(pace)} />}
         </svg>
         <span className="budget-ring__pct">{percent}%</span>
         {tip && (
           <span className="budget-ring__tip" role="status">
             <strong>{ring.label}</strong>
-            {formatNumber(ring.spent)} of {formatNumber(ring.budget)}
+            <span>
+              {formatNumber(ring.spent)} of {formatNumber(ring.budget)}
+            </span>
+            <span className="budget-ring__tip-left">{remainingText(ring.left)}</span>
           </span>
         )}
       </span>
@@ -108,17 +133,24 @@ const Ring: React.FC<{
   );
 };
 
-const BudgetRings: React.FC<{ monthLabel?: string; monthLabels: string[] }> = ({
-  monthLabel,
-  monthLabels,
-}) => {
-  const todayLabel = calendarMonthLabel(new Date());
-  const latest = latestMonthLabel(monthLabels);
-  const visible =
-    monthLabel === todayLabel || (monthLabel === latest && !monthLabels.includes(todayLabel));
+const SummaryBar: React.FC<{ ratio: number; pace: number }> = ({ ratio, pace }) => {
+  const animated = useAnimatedRatio(ratio);
+  const status = budgetStatus(animated, pace);
+  return (
+    <div className={`budget-card__bar is-${status}`} aria-hidden>
+      <span className="budget-card__bar-fill" style={{ width: `${Math.min(animated, 1) * 100}%` }} />
+      {pace < 1 && <span className="budget-card__bar-pace" style={{ left: `${pace * 100}%` }} />}
+    </div>
+  );
+};
+
+const BudgetRings: React.FC<{ monthLabel?: string }> = ({ monthLabel }) => {
   const { data } = useDataFetcher();
+  const hostMonth = budgetHostMonth(Object.keys(data.groupedData || {}), new Date());
+  const visible = !data.filtered && !!monthLabel && monthLabel === hostMonth;
   const items = useMemo(() => getAiItems(data.raw || []), [data.raw]);
   const today = localToday();
+  const pace = monthPace(today);
   const completeMonths = useMemo(
     () => countCompleteExpenseMonths(items, today),
     [items, today]
@@ -131,29 +163,35 @@ const BudgetRings: React.FC<{ monthLabel?: string; monthLabels: string[] }> = ({
     [items, today, windowSize, visible, options.length]
   );
   const rings = useMemo(() => (baseline ? buildBudgets(baseline) : []), [baseline]);
+  const summary = useMemo(() => summarizeBudgets(rings), [rings]);
   const [open, setOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const [tipId, setTipId] = useState<string | null>(null);
   const tipTimer = useRef<number | null>(null);
   const ringsRef = useRef<HTMLDivElement>(null);
-  const positions = useRef<Map<string, DOMRect>>(new Map());
+  const positions = useRef<Map<string, { x: number; y: number }>>(new Map());
   const shown = showAll ? rings : rings.slice(0, 8);
   const orderKey = shown.map((ring) => ring.id).join('|');
 
   useLayoutEffect(() => {
     const root = ringsRef.current;
-    if (!root || !open) return;
+    if (!root || !open) {
+      positions.current = new Map();
+      return;
+    }
+    const origin = root.getBoundingClientRect();
     const nodes = [...root.querySelectorAll<HTMLElement>('[data-ring-id]')];
-    const next = new Map<string, DOMRect>();
+    const next = new Map<string, { x: number; y: number }>();
     const animate = !prefersReducedMotion();
     for (const node of nodes) {
       const id = node.dataset.ringId || '';
       const rect = node.getBoundingClientRect();
+      const position = { x: rect.left - origin.left, y: rect.top - origin.top };
       const previous = positions.current.get(id);
-      next.set(id, rect);
+      next.set(id, position);
       if (!animate || !previous) continue;
-      const dx = previous.left - rect.left;
-      const dy = previous.top - rect.top;
+      const dx = previous.x - position.x;
+      const dy = previous.y - position.y;
       if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) continue;
       node.animate(
         [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'translate(0, 0)' }],
@@ -184,6 +222,7 @@ const BudgetRings: React.FC<{ monthLabel?: string; monthLabels: string[] }> = ({
 
   if (!visible) return null;
 
+  const currentMonthName = monthNames[Number(today.slice(5, 7)) - 1];
   const monthCount = baseline?.months.length || windowSize;
   const sourceMonth = baseline?.months[baseline.months.length - 1];
   const note =
@@ -198,10 +237,11 @@ const BudgetRings: React.FC<{ monthLabel?: string; monthLabels: string[] }> = ({
     : hasCurrentExpenses
       ? `Not enough history yet. Monthly budgets unlock on ${budgetUnlockLabel(today)}, after this month closes.`
       : `Not enough history yet. Add expenses this month - monthly budgets unlock on ${budgetUnlockLabel(today)}, after the month closes.`;
+  const unbudgeted = baseline?.unbudgeted || [];
 
   return (
     <section className="budget-home">
-      <div className="budget-card">
+      <div className={`budget-card${open ? ' is-open' : ''}`}>
         <button
           type="button"
           className="budget-card__toggle"
@@ -209,9 +249,26 @@ const BudgetRings: React.FC<{ monthLabel?: string; monthLabels: string[] }> = ({
           aria-controls="monthly-budgets-panel"
           onClick={() => setOpen((value) => !value)}
         >
-          <span>Monthly budgets</span>
-          <ChevronDown size={18} className={open ? 'is-open' : ''} aria-hidden />
+          <span className="budget-card__heading">
+            <span className="budget-card__title">{currentMonthName} budgets</span>
+            {rings.length > 0 ? (
+              <span className="budget-card__meta">
+                <span>
+                  <strong>{formatNumber(summary.spent)}</strong> of {formatNumber(summary.budget)}
+                </span>
+                {summary.over > 0 && (
+                  <span className="budget-card__chip is-over">{summary.over} over</span>
+                )}
+              </span>
+            ) : (
+              <span className="budget-card__meta">
+                {options.length ? 'No suggestions yet' : `Unlocks ${budgetUnlockLabel(today)}`}
+              </span>
+            )}
+          </span>
+          <ChevronDown size={18} className={`budget-card__chevron${open ? ' is-open' : ''}`} aria-hidden />
         </button>
+        {rings.length > 0 && <SummaryBar ratio={summary.ratio} pace={pace} />}
         <div id="monthly-budgets-panel" className={`budget-card__panel${open ? ' is-open' : ''}`}>
           <div className="budget-card__panel-inner">
             {rings.length === 0 ? (
@@ -219,26 +276,37 @@ const BudgetRings: React.FC<{ monthLabel?: string; monthLabels: string[] }> = ({
             ) : (
               <>
                 <div className="budget-card__tools">
-                  <p className="budget-card__note">{note}</p>
-                  <div className="budget-segment" role="group" aria-label="Months in the average">
-                    {options.map((value) => (
-                      <button
-                        key={value}
-                        type="button"
-                        className={value === windowSize ? 'is-on' : ''}
-                        aria-pressed={value === windowSize}
-                        onClick={() => setPicked(value)}
-                      >
-                        {value === 1 ? '1 mo' : `${value} mo`}
-                      </button>
-                    ))}
-                  </div>
+                  <p className="budget-card__note">
+                    {note}
+                    {pace < 1 && (
+                      <span className="budget-card__legend">
+                        <span className="budget-card__legend-tick" aria-hidden />
+                        Today's mark at a steady pace
+                      </span>
+                    )}
+                  </p>
+                  {options.length > 1 && (
+                    <div className="budget-segment" role="group" aria-label="Months in the average">
+                      {options.map((value) => (
+                        <button
+                          key={value}
+                          type="button"
+                          className={value === windowSize ? 'is-on' : ''}
+                          aria-pressed={value === windowSize}
+                          onClick={() => setPicked(value)}
+                        >
+                          {value} mo
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="budget-rings" ref={ringsRef}>
                   {shown.map((ring) => (
                     <Ring
                       key={ring.id}
                       ring={ring}
+                      pace={pace}
                       tip={tipId === ring.id}
                       onShowTip={showTip}
                       onHideTip={hideTip}
@@ -253,6 +321,14 @@ const BudgetRings: React.FC<{ monthLabel?: string; monthLabels: string[] }> = ({
                   >
                     {showAll ? 'Show fewer' : `Show all (${rings.length})`}
                   </button>
+                )}
+                {unbudgeted.length > 0 && (
+                  <p className="budget-card__extra">
+                    No history yet:{' '}
+                    {unbudgeted
+                      .map((entry) => `${entry.label} ${formatNumber(entry.spent)}`)
+                      .join(', ')}
+                  </p>
                 )}
               </>
             )}
