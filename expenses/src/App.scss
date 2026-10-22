@@ -2077,6 +2077,30 @@ input[type="date"] {
   }
 }
 
+.error-boundary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 100vh;
+  padding: 2rem 1.25rem;
+  box-sizing: border-box;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.92);
+
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0 0 0.5rem;
+    color: rgba(255, 255, 255, 0.62);
+  }
+}
+
 // =============================================================================
 // SYNC INDICATORS
 // =============================================================================
@@ -2138,6 +2162,23 @@ input[type="date"] {
     background: rgba(248, 113, 113, 0.15);
     border: 1px solid rgba(248, 113, 113, 0.4);
     color: #fecaca;
+  }
+
+  &--blocked {
+    background: rgba(251, 146, 60, 0.15);
+    border: 1px solid rgba(251, 146, 60, 0.4);
+    color: #fed7aa;
+  }
+
+  &__retry {
+    margin-left: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border: 1px solid currentColor;
+    border-radius: $border-radius-md;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
   }
 
   svg {

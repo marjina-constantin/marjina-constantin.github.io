@@ -32,6 +32,7 @@ export interface PendingOperation {
   timestamp: number; // When the operation was created
   lastAttempt?: number; // Last sync attempt timestamp
   retryCount?: number;
+  uid?: string; // Account that queued the operation
 }
 
 export interface SyncMetadata {
@@ -308,6 +309,19 @@ export async function getOfflineQueue(): Promise<PendingOperation[]> {
     console.error('Error getting offline queue:', error);
     return [];
   }
+}
+
+// The queue survives logout, so only the account that queued an operation may send it.
+// Operations queued before they carried a uid are claimed by the first account that reads them.
+export async function getUserOfflineQueue(uid: string): Promise<PendingOperation[]> {
+  const queue = await getOfflineQueue();
+  for (const operation of queue) {
+    if (!operation.uid) {
+      operation.uid = uid;
+      await updateQueueOperation(operation);
+    }
+  }
+  return queue.filter((operation) => operation.uid === uid);
 }
 
 export async function removeFromOfflineQueue(operationId: string): Promise<void> {

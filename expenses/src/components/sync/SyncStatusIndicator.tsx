@@ -1,14 +1,23 @@
 import React from 'react';
-import { WifiOff, RefreshCw, CheckCircle2, Clock3, AlertTriangle } from 'lucide-react';
+import { WifiOff, RefreshCw, CheckCircle2, Clock3, AlertTriangle, PauseCircle } from 'lucide-react';
 import { useSyncStatus } from '../../context/syncStatus';
-import { useAuthState, useData } from '../../context';
+import { useAuthDispatch, useAuthState, useData } from '../../context';
 import { AuthState, DataState } from '../../types/types';
+import { SyncBlockedReason } from '../../utils/syncCallbacks';
+import { fetchData } from '../../utils/utils';
 
+const blockedLabels: Record<SyncBlockedReason, string> = {
+  'server-unreachable': 'server not responding',
+  'status-unknown': "couldn't check your account",
+  transition: 'encryption change in progress',
+  'key-needed': 'encryption key needed',
+};
 
 const SyncStatusIndicator: React.FC = () => {
-  const { isOnline, isSyncing, syncSuccess, pendingCount } = useSyncStatus();
-  const { userIsLoggedIn } = useAuthState() as AuthState;
-  const { data } = useData() as DataState;
+  const { isOnline, isSyncing, syncSuccess, pendingCount, blockedReason } = useSyncStatus();
+  const { userIsLoggedIn, token } = useAuthState() as AuthState;
+  const dispatch = useAuthDispatch();
+  const { data, dataDispatch } = useData() as DataState;
 
   if (!userIsLoggedIn) {
     return null;
@@ -16,9 +25,14 @@ const SyncStatusIndicator: React.FC = () => {
   const failedCount =
     data?.raw?.filter((item) => item.failed).length || 0;
 
+  const retry = () => {
+    fetchData(token, dataDispatch, dispatch, data.category, data.textFilter);
+  };
+
   let icon: React.ReactNode;
   let label = '';
   let modifier = '';
+  let canRetry = false;
 
   if (!isOnline) {
     icon = <WifiOff size={16} />;
@@ -35,6 +49,11 @@ const SyncStatusIndicator: React.FC = () => {
         ? `Syncing ${pendingCount} item${pendingCount === 1 ? '' : 's'}`
         : 'Syncing...';
     modifier = 'syncing';
+  } else if (pendingCount > 0 && blockedReason) {
+    icon = <PauseCircle size={16} />;
+    label = `${pendingCount} pending • ${blockedLabels[blockedReason]}`;
+    modifier = 'blocked';
+    canRetry = blockedReason === 'server-unreachable' || blockedReason === 'status-unknown';
   } else if (pendingCount > 0) {
     icon = <Clock3 size={16} />;
     label = `${pendingCount} item${pendingCount === 1 ? '' : 's'} pending`;
@@ -52,9 +71,13 @@ const SyncStatusIndicator: React.FC = () => {
     <div className={`sync-status-indicator sync-status-indicator--${modifier}`}>
       {icon}
       {label && <span>{label}</span>}
+      {canRetry && (
+        <button type="button" className="sync-status-indicator__retry" onClick={retry}>
+          Retry
+        </button>
+      )}
     </div>
   );
 };
 
 export default SyncStatusIndicator;
-

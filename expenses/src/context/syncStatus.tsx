@@ -7,8 +7,9 @@ import React, {
   ReactNode,
   useRef,
 } from 'react';
-import { getOfflineQueue } from '../utils/indexedDB';
-import { registerSyncCallbacks } from '../utils/syncCallbacks';
+import { getUserOfflineQueue } from '../utils/indexedDB';
+import { registerSyncCallbacks, SyncBlockedReason } from '../utils/syncCallbacks';
+import { getSession } from '../crypto/encryptionState';
 
 interface SyncStatusContextType {
   isOnline: boolean;
@@ -18,6 +19,7 @@ interface SyncStatusContextType {
   status: 'offline' | 'pending' | 'syncing' | 'synced';
   pendingCount: number;
   pendingItemIds: Set<string>;
+  blockedReason: SyncBlockedReason | null;
   startSyncing: () => void;
   finishSyncing: (success: boolean) => void;
   markItemSynced: (itemId: string) => void;
@@ -48,6 +50,7 @@ export function SyncStatusProvider({ children }: SyncStatusProviderProps) {
   const [syncedItems, setSyncedItems] = useState<Set<string>>(new Set());
   const [pendingCount, setPendingCount] = useState(0);
   const [pendingItemIds, setPendingItemIds] = useState<Set<string>>(new Set());
+  const [blockedReason, setBlockedReason] = useState<SyncBlockedReason | null>(null);
   const [status, setStatus] = useState<'offline' | 'pending' | 'syncing' | 'synced'>(
     isOnlineStatus ? 'synced' : 'offline'
   );
@@ -130,13 +133,17 @@ export function SyncStatusProvider({ children }: SyncStatusProviderProps) {
   }, []);
 
   const refreshQueueState = useCallback(async () => {
-    const queue = await getOfflineQueue();
+    const session = getSession();
+    const queue = session ? await getUserOfflineQueue(session.uid) : [];
     const ids = queue
       .map((operation) => operation.itemId)
       .filter((id): id is string => Boolean(id));
 
     setPendingCount(queue.length);
     setPendingItemIds(new Set(ids));
+    if (queue.length === 0) {
+      setBlockedReason(null);
+    }
 
     setStatus(() => {
       if (typeof navigator !== 'undefined' && !navigator.onLine) {
@@ -159,6 +166,7 @@ export function SyncStatusProvider({ children }: SyncStatusProviderProps) {
       onSyncFinish: finishSyncing,
       onItemSynced: markItemSynced,
       onQueueUpdated: refreshQueueState,
+      onSyncBlocked: setBlockedReason,
     });
 
     return () => {
@@ -179,6 +187,7 @@ export function SyncStatusProvider({ children }: SyncStatusProviderProps) {
         status,
         pendingCount,
         pendingItemIds,
+        blockedReason,
         startSyncing,
         finishSyncing,
         markItemSynced,

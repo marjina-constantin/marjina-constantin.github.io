@@ -11,7 +11,7 @@ import {
 import { TransactionOrIncomeItem } from '../types/types';
 import { isOnline, generateTempId, scheduleBackgroundSync } from './syncService';
 import { ROOT_URL } from './constants';
-import { isWriteBlocked, writeBlockedMessage } from '../crypto/encryptionState';
+import { getSession, isWriteBlocked, writeBlockedMessage } from '../crypto/encryptionState';
 
 // Convert form data to TransactionOrIncomeItem format
 function convertFormDataToItem(
@@ -81,6 +81,7 @@ export async function addItemOffline(
       url: `${ROOT_URL}/node?_format=json`,
       method: 'POST',
       timestamp: Date.now(),
+      uid: getSession()?.uid,
     };
 
     await addToOfflineQueue(operation);
@@ -148,6 +149,7 @@ export async function updateItemOffline(
         url: `${ROOT_URL}/node/${itemId}?_format=json`,
         method: 'PATCH',
         timestamp: Date.now(),
+        uid: getSession()?.uid,
       };
 
       await addToOfflineQueue(operation);
@@ -197,6 +199,7 @@ export async function deleteItemOffline(
         url: `${ROOT_URL}/node/${itemId}?_format=json`,
         method: 'DELETE',
         timestamp: Date.now(),
+        uid: getSession()?.uid,
       };
 
       await addToOfflineQueue(operation);

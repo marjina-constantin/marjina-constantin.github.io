@@ -1,6 +1,6 @@
 import {
   addToOfflineQueue,
-  getOfflineQueue,
+  getUserOfflineQueue,
   removeFromOfflineQueue,
   updateQueueOperation,
   addItemToDB,
@@ -16,12 +16,19 @@ import {
 } from './indexedDB';
 import { TransactionOrIncomeItem } from '../types/types';
 import { processData, dispatchProcessedData } from './dataProcessing';
-import { notifyItemSynced, notifySyncFinish, notifySyncStart } from './syncCallbacks';
+import {
+  notifyItemSynced,
+  notifySyncBlocked,
+  notifySyncFinish,
+  notifySyncStart,
+  SyncBlockedReason,
+} from './syncCallbacks';
 import { checkAndHandleAuthError } from './authErrorHandler';
 import { ROOT_URL } from './constants';
 import { decodeServerItem, encodeNodeBody } from '../crypto/nodeCodec';
 import {
   getEncryptionSnapshot,
+  getSession,
   isMigrationActive,
   refreshStatus,
   setCorruptCount,
@@ -32,6 +39,14 @@ export class AuthenticationError extends Error {
   constructor(message: string = 'Authentication failed') {
     super(message);
     this.name = 'AuthenticationError';
+  }
+}
+
+// Network failure or 5xx: the request may succeed later without any change on the device.
+class ServerUnavailableError extends Error {
+  constructor(message: string = 'Server unavailable') {
+    super(message);
+    this.name = 'ServerUnavailableError';
   }
 }
 const SYNC_YIELD_BATCH = 5;
@@ -171,12 +186,17 @@ async function fetchServerItem(
     }),
   };
 
-  const response = await fetch(
-    `${ROOT_URL}/node/${itemId}?_format=json`,
-    fetchOptions
-  );
+  let response: Response;
+  try {
+    response = await fetch(`${ROOT_URL}/node/${itemId}?_format=json`, fetchOptions);
+  } catch {
+    throw new ServerUnavailableError();
+  }
 
   if (!response.ok) {
+    if (response.status >= 500) {
+      throw new ServerUnavailableError(`HTTP ${response.status}: ${response.statusText}`);
+    }
     if (response.status === 404) {
       // Item doesn't exist on server (might have been deleted)
       return null;
@@ -205,7 +225,7 @@ async function syncOperation(
   operation: PendingOperation,
   token: string,
   body: any
-): Promise<{ success: boolean; data?: any; newId?: string }> {
+): Promise<{ success: boolean; data?: any; newId?: string; unavailable?: boolean }> {
   try {
     const fetchOptions: RequestInit = {
       method: operation.method,
@@ -220,9 +240,19 @@ async function syncOperation(
       fetchOptions.body = JSON.stringify(body);
     }
 
-    const response = await fetch(operation.url, fetchOptions);
+    let response: Response;
+    try {
+      response = await fetch(operation.url, fetchOptions);
+    } catch (error) {
+      console.error('Error syncing operation:', error);
+      return { success: false, unavailable: true };
+    }
 
     if (!response.ok) {
+      if (response.status >= 500) {
+        console.error(`Error syncing operation: HTTP ${response.status}`);
+        return { success: false, unavailable: true };
+      }
       // Treat missing remote resource for delete as success (already removed)
       if (operation.type === 'delete' && response.status === 404) {
         return { success: true };
@@ -282,11 +312,17 @@ async function processPendingOperations(
     return;
   }
   if (isMigrationActive()) {
+    notifySyncBlocked('transition');
+    return;
+  }
+  const session = getSession();
+  if (!session) {
     return;
   }
 
-  const queue = await getOfflineQueue();
+  const queue = await getUserOfflineQueue(session.uid);
   if (queue.length === 0) {
+    notifySyncBlocked(null);
     return;
   }
 
@@ -298,6 +334,7 @@ async function processPendingOperations(
 
   let processedAny = false;
   let encounteredError = false;
+  let blockedReason: SyncBlockedReason | null = null;
 
   try {
     // Sort by timestamp to process in order
@@ -315,27 +352,20 @@ async function processPendingOperations(
           if (encoded.kind === 'hold') {
             // Keep this and every later operation queued, in order, without counting a retry.
             console.log(`Sync paused (${encoded.reason})`);
+            blockedReason = encoded.reason;
             break;
           }
           body = encoded.body;
         }
 
-        // Pre-check for update operations: compare with server version
+        // Pre-check for update operations: compare with server version.
+        // The edit time comes from the operation: the local copy may be gone (logout)
+        // or already replaced by a newer server version during a pull.
         if (operation.type === 'update' && operation.itemId) {
-          const localItem = await getItemFromDB(operation.itemId);
-          if (!localItem) {
-            console.warn(`Local item ${operation.itemId} not found, skipping update`);
-            await removeFromOfflineQueue(operation.id);
-            processedAny = true;
-            continue;
-          }
-
-          // Fetch current server version
           const serverItem = await fetchServerItem(operation.itemId, token);
 
           if (serverItem) {
-            // Compare timestamps: use updated field, fallback to created
-            const localUpdated = localItem.updated || localItem.cr || 0;
+            const localUpdated = operation.timestamp;
             const serverUpdated = serverItem.updated || serverItem.cr || 0;
 
             if (serverUpdated > localUpdated) {
@@ -410,6 +440,9 @@ async function processPendingOperations(
           await removeFromOfflineQueue(operation.id);
         } else {
           encounteredError = true;
+          if (result.unavailable) {
+            blockedReason = 'server-unreachable';
+          }
           const updatedOperation = {
             ...operation,
             lastAttempt: Date.now(),
@@ -437,6 +470,9 @@ async function processPendingOperations(
         if (error instanceof AuthenticationError) {
           throw error;
         }
+        if (error instanceof ServerUnavailableError) {
+          blockedReason = 'server-unreachable';
+        }
         console.error(`Error processing operation ${operation.id}:`, error);
       }
 
@@ -454,6 +490,7 @@ async function processPendingOperations(
     }
     throw error;
   } finally {
+    notifySyncBlocked(blockedReason);
     notifySyncFinish(processedAny && !encounteredError);
   }
 }
@@ -619,7 +656,8 @@ async function resolveConflicts(
   const merged: TransactionOrIncomeItem[] = [];
 
   // Inspect pending queue to understand local-only items
-  const queue = await getOfflineQueue();
+  const session = getSession();
+  const queue = session ? await getUserOfflineQueue(session.uid) : [];
   const pendingDeletes = new Set(
     queue.filter(op => op.type === 'delete').map(op => op.itemId)
   );

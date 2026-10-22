@@ -2,7 +2,15 @@ import './App.scss';
 import { applyChartTheme } from './utils/chartTheme';
 
 applyChartTheme();
-import { AuthProvider, NotificationProvider, SyncStatusProvider, useAuthState, useData, useAuthDispatch } from './context';
+import {
+  AuthProvider,
+  NotificationProvider,
+  SyncStatusProvider,
+  useAuthState,
+  useData,
+  useAuthDispatch,
+  useSyncStatus,
+} from './context';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import AppRoute from './components/layout/AppRoute';
 import React, { useEffect, useRef } from 'react';
@@ -15,6 +23,7 @@ import { initializeAuthErrorHandler } from './utils/authErrorHandler';
 import { refreshStatus, useEncryptionState } from './crypto/encryptionState';
 import KeyNeededScreen from './components/privacy/KeyNeededScreen';
 import MigrationProgress from './components/privacy/MigrationProgress';
+import ErrorBoundary from './components/ui/ErrorBoundary';
 
 // A locked account without the key on this device shows the key screen instead of the pages.
 const EncryptionGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -38,6 +47,7 @@ const SyncSetup: React.FC = () => {
   const { token } = useAuthState() as AuthState;
   const { data, dataDispatch } = useData();
   const dispatch = useAuthDispatch();
+  const { refreshQueueState } = useSyncStatus();
   const filtersRef = useRef({
     category: data?.category || '',
     textFilter: data?.textFilter || '',
@@ -55,6 +65,11 @@ const SyncSetup: React.FC = () => {
     };
   }, [data?.category, data?.textFilter]);
 
+  // The queue is per account, so the pending counts change with the logged-in user.
+  useEffect(() => {
+    refreshQueueState();
+  }, [token, refreshQueueState]);
+
   useEffect(() => {
     if (token) {
       // Setup network listener for auto-sync when coming online
@@ -68,35 +83,37 @@ const SyncSetup: React.FC = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <NotificationProvider>
-        <SyncStatusProvider>
-          <Router>
-            <SyncSetup />
-            <SyncStatusIndicator />
-            <MigrationProgress />
-            <Navbar />
+    <ErrorBoundary>
+      <AuthProvider>
+        <NotificationProvider>
+          <SyncStatusProvider>
+            <Router>
+              <SyncSetup />
+              <SyncStatusIndicator />
+              <MigrationProgress />
+              <Navbar />
 
-            <EncryptionGate>
-              <Routes>
-                {routes.map((route) => (
-                  <Route
-                    key={route.path}
-                    path={route.path}
-                    element={
-                      <AppRoute
-                        component={route.component}
-                        isPrivate={route.isPrivate}
-                      />
-                    }
-                  />
-                ))}
-              </Routes>
-            </EncryptionGate>
-          </Router>
-        </SyncStatusProvider>
-      </NotificationProvider>
-    </AuthProvider>
+              <EncryptionGate>
+                <Routes>
+                  {routes.map((route) => (
+                    <Route
+                      key={route.path}
+                      path={route.path}
+                      element={
+                        <AppRoute
+                          component={route.component}
+                          isPrivate={route.isPrivate}
+                        />
+                      }
+                    />
+                  ))}
+                </Routes>
+              </EncryptionGate>
+            </Router>
+          </SyncStatusProvider>
+        </NotificationProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

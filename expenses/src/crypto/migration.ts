@@ -6,7 +6,7 @@
 //   unlock:  payload -> payload + plain -> verify -> plain only
 import { useSyncExternalStore } from 'react';
 import { ROOT_URL } from '../utils/constants';
-import { getExpensesFromDB, getOfflineQueue } from '../utils/indexedDB';
+import { getExpensesFromDB, getUserOfflineQueue } from '../utils/indexedDB';
 import { aadFor, decryptPayload, encryptPayload, PlainPayload, samePlain } from './cipher';
 import {
   EncryptionStatus,
@@ -665,7 +665,7 @@ export const runPreflight = async (flush: () => Promise<void>): Promise<Prefligh
       // Reported by the queue check below.
     }
   }
-  const queue = await getOfflineQueue();
+  const queue = session ? await getUserOfflineQueue(session.uid) : [];
   checks.push({
     id: 'queue',
     label: 'All your changes are synced',

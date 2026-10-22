@@ -5,6 +5,9 @@ import { clearAiLocalData } from '../ai/storage';
 import { clearChatSession } from '../ai/chatSession';
 import { applyLoginStatus, resetEncryptionState } from '../crypto/encryptionState';
 
+const SERVER_UNAVAILABLE_MESSAGE =
+  "Couldn't reach the server. Check your connection and try again in a few minutes.";
+
 export async function loginUser(dispatch: any, loginPayload: LoginPayload) {
   const requestOptions = {
     method: 'POST',
@@ -18,18 +21,26 @@ export async function loginUser(dispatch: any, loginPayload: LoginPayload) {
       `${ROOT_URL}/user/login/google?_format=json`,
       requestOptions
     );
-    const data: UserData = await response.json();
+    // An outage returns an HTML error page, so the body may not be JSON.
+    const data: UserData | null = await response.json().catch(() => null);
 
-    if (data.current_user) {
+    if (data?.current_user) {
       localStorage.setItem('currentUser', JSON.stringify(data));
       applyLoginStatus(data.current_user.encryption_status);
       dispatch({ type: 'LOGIN_SUCCESS', payload: data });
       return data;
     }
 
-    dispatch({ type: 'LOGIN_ERROR', error: data.errors[0] });
-  } catch (error) {
-    dispatch({ type: 'LOGIN_ERROR', error: error });
+    const serverError = data?.errors?.[0];
+    dispatch({
+      type: 'LOGIN_ERROR',
+      error:
+        typeof serverError === 'string' && serverError
+          ? serverError
+          : SERVER_UNAVAILABLE_MESSAGE,
+    });
+  } catch {
+    dispatch({ type: 'LOGIN_ERROR', error: SERVER_UNAVAILABLE_MESSAGE });
   }
 }
 
