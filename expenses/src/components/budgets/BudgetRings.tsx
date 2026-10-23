@@ -15,6 +15,7 @@ import {
   monthKeyLabel,
   monthPace,
   summarizeBudgets,
+  windowLabel,
 } from '../../budgets/model';
 import { monthNames } from '../../utils/constants';
 import { formatNumber } from '../../utils/utils';
@@ -229,7 +230,7 @@ const BudgetRings: React.FC<{ monthLabel?: string }> = ({ monthLabel }) => {
     if (tipTimer.current) window.clearTimeout(tipTimer.current);
     setTipId(id);
     if (!hold) return;
-    tipTimer.current = window.setTimeout(() => setTipId(null), 2500);
+    tipTimer.current = window.setTimeout(() => setTipId(null), 10000);
   };
 
   const hideTip = (id: string) => {
@@ -240,12 +241,14 @@ const BudgetRings: React.FC<{ monthLabel?: string }> = ({ monthLabel }) => {
   if (!visible) return null;
 
   const currentMonthName = monthNames[Number(today.slice(5, 7)) - 1];
-  const monthCount = baseline?.months.length || windowSize;
+  const monthCount = baseline?.months.length || completeMonths;
   const sourceMonth = baseline?.months[baseline.months.length - 1];
   const note =
     completeMonths < 3 && sourceMonth
       ? `${monthKeyLabel(today.slice(0, 7))} is based on ${monthKeyLabel(sourceMonth)}, your last completed month.`
-      : `Average of your last ${monthCount} completed ${monthCount === 1 ? 'month' : 'months'}.`;
+      : windowSize === 'all'
+        ? `Average of all ${monthCount} completed ${monthCount === 1 ? 'month' : 'months'}.`
+        : `Average of your last ${monthCount} completed ${monthCount === 1 ? 'month' : 'months'}.`;
   const hasCurrentExpenses = items.some(
     (item) => item.kind === 'expense' && item.month === today.slice(0, 7)
   );
@@ -303,7 +306,18 @@ const BudgetRings: React.FC<{ monthLabel?: string }> = ({ monthLabel }) => {
                     )}
                   </p>
                   {options.length > 1 && (
-                    <div className="budget-segment" role="group" aria-label="Months in the average">
+                    <div
+                      className="budget-segment"
+                      role="group"
+                      aria-label="Months in the average"
+                      style={
+                        {
+                          '--count': options.length,
+                          '--index': Math.max(0, options.indexOf(windowSize)),
+                        } as React.CSSProperties
+                      }
+                    >
+                      <span className="budget-segment__thumb" aria-hidden />
                       {options.map((value) => (
                         <button
                           key={value}
@@ -312,7 +326,7 @@ const BudgetRings: React.FC<{ monthLabel?: string }> = ({ monthLabel }) => {
                           aria-pressed={value === windowSize}
                           onClick={() => setPicked(value)}
                         >
-                          {value} mo
+                          {windowLabel(value)}
                         </button>
                       ))}
                     </div>

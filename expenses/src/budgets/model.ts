@@ -1,7 +1,7 @@
 import { AiItem, categoryLabel, round } from '../ai/data';
 import { monthNames } from '../utils/constants';
 
-export type BudgetWindow = 1 | 3 | 6 | 12;
+export type BudgetWindow = 1 | 3 | 6 | 12 | 'all';
 
 export const monthKeyLabel = (key: string) => {
   const [year, month] = key.split('-').map(Number);
@@ -48,12 +48,15 @@ export const budgetStatus = (ratio: number, pace: number): BudgetStatus => {
 export const budgetChoices = (
   completeMonths: number
 ): { options: BudgetWindow[]; defaultWindow: BudgetWindow } => {
-  if (completeMonths >= 12) return { options: [3, 6, 12], defaultWindow: 12 };
-  if (completeMonths >= 6) return { options: [3, 6], defaultWindow: 6 };
-  if (completeMonths >= 3) return { options: [3], defaultWindow: 3 };
-  if (completeMonths >= 1) return { options: [1], defaultWindow: 1 };
+  if (completeMonths >= 12) return { options: [3, 6, 12, 'all'], defaultWindow: 12 };
+  if (completeMonths >= 6) return { options: [3, 6, 'all'], defaultWindow: 6 };
+  if (completeMonths >= 3) return { options: [3, 'all'], defaultWindow: 3 };
+  if (completeMonths >= 1) return { options: [1, 'all'], defaultWindow: 1 };
   return { options: [], defaultWindow: 1 };
 };
+
+export const windowLabel = (value: BudgetWindow) =>
+  value === 'all' ? 'All' : `${value}`;
 
 /** First day of the month after `today` (YYYY-MM-DD), e.g. "November 1, 2026". */
 export const budgetUnlockLabel = (today: string) => {
@@ -118,7 +121,8 @@ export const buildBudgetBaseline = (
   today: string,
   windowSize: BudgetWindow
 ): BudgetBaseline | null => {
-  const months = expenseMonthsBefore(items, today).slice(-windowSize);
+  const history = expenseMonthsBefore(items, today);
+  const months = windowSize === 'all' ? history : history.slice(-windowSize);
   if (!months.length) return null;
   const monthSet = new Set(months);
   const [year, month] = today.split('-').map(Number);
