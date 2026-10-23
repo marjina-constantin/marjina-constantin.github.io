@@ -5,7 +5,9 @@ import {
   useData,
   useNotification,
 } from '../../context';
-import { notificationType, incomeSuggestions } from '../../utils/constants';
+import { notificationType } from '../../utils/constants';
+import { INCOME_TAG_KEY, activeTags } from '../../tags/catalog';
+import { useTagCatalog } from '../../tags/store';
 import { AuthState, DataState, TransactionOrIncomeItem } from '../../types/types';
 import { ButtonSpinner } from '../ui/LoadingSpinner';
 import { addItemOffline, updateItemOffline } from '../../utils/offlineAPI';
@@ -40,6 +42,8 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
     formType === 'add' ? initialState : values
   );
   const { token } = useAuthState() as AuthState;
+  const catalog = useTagCatalog();
+  const incomeTags = activeTags(catalog, INCOME_TAG_KEY);
   
   // Track selected tags for highlighting
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -190,8 +194,9 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
           value={formState.field_description}
           onChange={handleChange}
         />
+        {incomeTags.length > 0 && (
         <div className="filters__tags">
-          {incomeSuggestions.map((tag) => {
+          {incomeTags.map((tag) => {
             const isSelected = selectedTags.includes(tag) || hasTag(formState.field_description, tag);
             return (
               <button
@@ -206,6 +211,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({
             );
           })}
         </div>
+        )}
         <button type="submit" disabled={isSubmitting} className="button w-100">
           {isSubmitting ? (
             <ButtonSpinner />

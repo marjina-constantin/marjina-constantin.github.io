@@ -916,10 +916,11 @@ input[type="date"] {
 
   &__tags {
     display: flex;
+    flex: 1 0 100%;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
   }
 
   &__tag {
@@ -3136,6 +3137,137 @@ input[type="date"] {
     align-items: center;
     padding: 0 1.5rem;
     text-decoration: none;
+  }
+}
+
+.tag-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.9rem;
+  border-radius: $border-radius-md;
+  background: rgba(255, 255, 255, 0.03);
+  text-align: left;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--accent-color);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  &__modes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem;
+    padding: 0.25rem;
+    border-radius: $border-radius-md;
+    background: rgba(255, 255, 255, 0.04);
+
+    button {
+      height: 34px;
+      border: 1px solid transparent;
+      border-radius: $border-radius-sm;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.85rem;
+
+      &.is-active {
+        border-color: var(--accent-color);
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        font-weight: 600;
+      }
+    }
+  }
+
+  &__hint,
+  &__error {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.45;
+  }
+
+  &__hint {
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  &__error {
+    color: #fca5a5;
+  }
+
+  &__select {
+    width: 100%;
+    height: 40px;
+    padding: 0 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: $border-radius-md;
+    background: rgba(255, 255, 255, 0.07);
+    color: #fff;
+    font-size: 0.875rem;
+
+    option {
+      background: var(--bg-color);
+      color: #fff;
+    }
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.28rem 0.4rem 0.28rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: 0.8rem;
+
+    button {
+      display: flex;
+      padding: 0.15rem;
+      border: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.55);
+    }
+  }
+
+  &__add {
+    display: flex;
+    gap: 0.45rem;
+
+    input {
+      flex: 1;
+      min-width: 0;
+      height: 40px;
+      padding: 0 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: $border-radius-md;
+      background: rgba(255, 255, 255, 0.07);
+      color: #fff;
+      font-size: 16px;
+
+      &:focus {
+        outline: none;
+        border-color: var(--accent-color);
+      }
+    }
+
+    .button-secondary {
+      flex: 0 0 auto;
+    }
+  }
+
+  > .button,
+  > .button-secondary {
+    width: 100%;
   }
 }
 

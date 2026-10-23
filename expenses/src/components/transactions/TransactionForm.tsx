@@ -5,7 +5,9 @@ import {
   useData,
   useNotification,
 } from '../../context';
-import { categories, suggestions } from '../../utils/constants';
+import { categories } from '../../utils/constants';
+import { activeTags } from '../../tags/catalog';
+import { useTagCatalog } from '../../tags/store';
 import { notificationType } from '../../utils/constants';
 import { AuthState, DataState, TransactionOrIncomeItem } from '../../types/types';
 import { ButtonSpinner } from '../ui/LoadingSpinner';
@@ -37,6 +39,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     formType === 'add' ? initialState : values
   );
   const { token } = useAuthState() as AuthState;
+  const catalog = useTagCatalog();
+  const suggestionData = activeTags(catalog, formState.field_category || '');
   const handleChange = (
     event: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -48,9 +52,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       [event.target.name]: value,
     });
     if (event.target.name === 'field_category') {
-      // @ts-expect-error TBC
-      setSuggestionData(suggestions[value]);
-      // Reset selected tags when category changes
       setSelectedTags([]);
     }
   };
@@ -77,7 +78,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             showNotification('Expense added.', notificationType.SUCCESS);
             setIsSubmitting(false);
             setFormState(initialState);
-            setSuggestionData([]);
             setSelectedTags([]);
             // Refresh data to show new item
             setTimeout(() => {
@@ -117,7 +117,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
             showNotification('Expense updated.', notificationType.SUCCESS);
             setIsSubmitting(false);
             setFormState(initialState);
-            setSuggestionData([]);
             setSelectedTags([]);
             // Refresh data to show updated item
             setTimeout(() => {
@@ -151,10 +150,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     .toISOString()
     .split('T')[0];
 
-  const [suggestionData, setSuggestionData] = useState<string[]>(
-    // @ts-expect-error TBC
-    suggestions[formState.field_category]
-  );
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   
   // Initialize selected tags when editing based on existing hashtags

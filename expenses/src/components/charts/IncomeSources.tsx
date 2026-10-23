@@ -3,7 +3,9 @@ import { useAuthState, useData } from '../../context';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { AuthState, DataState, TransactionOrIncomeItem } from '../../types/types';
-import { monthNames, incomeSuggestions } from '../../utils/constants';
+import { monthNames } from '../../utils/constants';
+import { INCOME_TAG_KEY, activeTags } from '../../tags/catalog';
+import { useTagCatalog } from '../../tags/store';
 import { hasTag } from '../../utils/utils';
 
 // Map income suggestions to user-friendly labels
@@ -23,6 +25,8 @@ const incomeSourceLabels: Record<string, string> = {
 export default function IncomeSources() {
   const { data } = useData() as DataState;
   const { currency } = useAuthState() as AuthState;
+  const catalog = useTagCatalog();
+  const incomeTags = activeTags(catalog, INCOME_TAG_KEY);
   
   // Use filtered income data if available, otherwise use all income data
   const incomeData = data.filteredIncomeData !== null 
@@ -40,7 +44,7 @@ export default function IncomeSources() {
 
     // Initialize totals for pie chart
     const sourceTotals: Record<string, number> = {};
-    incomeSuggestions.forEach(tag => {
+    incomeTags.forEach(tag => {
       const label = incomeSourceLabels[tag] || tag;
       sourceTotals[label] = 0;
     });
@@ -60,7 +64,7 @@ export default function IncomeSources() {
       
       if (!monthlyData[month]) {
         monthlyData[month] = {};
-        incomeSuggestions.forEach(tag => {
+        incomeTags.forEach(tag => {
           const label = incomeSourceLabels[tag] || tag;
           monthlyData[month][label] = 0;
         });
@@ -69,7 +73,7 @@ export default function IncomeSources() {
 
       // Check which source tag this item has
       let foundTag = false;
-      for (const tag of incomeSuggestions) {
+      for (const tag of incomeTags) {
         if (item.dsc && hasTag(item.dsc, tag)) {
           const label = incomeSourceLabels[tag] || tag;
           sourceTotals[label] += amount;
@@ -87,7 +91,7 @@ export default function IncomeSources() {
     });
 
     // Prepare pie chart data
-    const pieData = incomeSuggestions
+    const pieData = incomeTags
       .map(tag => {
         const label = incomeSourceLabels[tag] || tag;
         return {
@@ -124,7 +128,7 @@ export default function IncomeSources() {
     // Only Salary and Interest should be visible by default
     const visibleByDefault = ['Salary', 'Interest'];
     
-    const lineSeries = incomeSuggestions
+    const lineSeries = incomeTags
       .map(tag => {
         const label = incomeSourceLabels[tag] || tag;
         const seriesData = sortedMonths.map(month => 
@@ -165,7 +169,7 @@ export default function IncomeSources() {
       lineSeries,
       months: sortedMonths,
     };
-  }, [incomeData]);
+  }, [incomeData, incomeTags]);
 
   const pieOptions = {
     chart: {
@@ -237,7 +241,15 @@ export default function IncomeSources() {
     return (
       <div>
         <h3>Income Sources</h3>
-        <p>No income data available. Add income entries with tags like #salary, #freelance, #bonus, #interest, or #refund.</p>
+        <p>
+          No income data available.
+          {incomeTags.length
+            ? ` Add income entries with tags like ${incomeTags
+                .slice(0, 4)
+                .map((tag) => `#${tag}`)
+                .join(', ')}.`
+            : ''}
+        </p>
       </div>
     );
   }

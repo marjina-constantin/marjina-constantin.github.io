@@ -1,11 +1,14 @@
 import React, { useRef, useState, useCallback } from 'react';
-import { incomeSuggestions } from '../../utils/constants';
+import { INCOME_TAG_KEY, activeTags } from '../../tags/catalog';
+import { useTagCatalog } from '../../tags/store';
 import { useData } from '../../context';
 import { Search, X } from 'lucide-react';
 import { DataState } from '../../types/types';
 
 function IncomeFilters() {
   const { data, dataDispatch } = useData() as DataState;
+  const catalog = useTagCatalog();
+  const incomeTags = activeTags(catalog, INCOME_TAG_KEY);
 
   const [state, setState] = useState({
     textFilter: data.incomeTextFilter || '',
@@ -129,9 +132,9 @@ function IncomeFilters() {
           </button>
         )}
       </div>
-      {(isFocused || state.textFilter || state.selectedTags.length > 0) && (
+      {incomeTags.length > 0 && (isFocused || state.textFilter || state.selectedTags.length > 0) && (
         <div className="filters__tags" ref={tagsContainerRef}>
-          {incomeSuggestions.map((tag) => {
+          {incomeTags.map((tag) => {
             const isSelected = state.selectedTags.includes(tag);
             return (
               <button

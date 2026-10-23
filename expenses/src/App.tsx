@@ -21,6 +21,7 @@ import { setupNetworkListener } from './utils/syncService';
 import { AuthState } from './types/types';
 import { initializeAuthErrorHandler } from './utils/authErrorHandler';
 import { refreshStatus, useEncryptionState } from './crypto/encryptionState';
+import { refreshTagCatalog } from './tags/store';
 import KeyNeededScreen from './components/privacy/KeyNeededScreen';
 import MigrationProgress from './components/privacy/MigrationProgress';
 import ErrorBoundary from './components/ui/ErrorBoundary';
@@ -33,6 +34,7 @@ const EncryptionGate: React.FC<{ children: React.ReactNode }> = ({ children }) =
   useEffect(() => {
     if (token) {
       refreshStatus(true);
+      refreshTagCatalog();
     }
   }, [token]);
 

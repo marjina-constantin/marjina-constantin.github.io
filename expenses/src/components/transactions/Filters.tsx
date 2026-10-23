@@ -1,11 +1,14 @@
 import React, { useLayoutEffect, useRef, useState, useCallback, useEffect } from 'react';
 import { categories } from '../../utils/constants';
+import { activeTags } from '../../tags/catalog';
+import { useTagCatalog } from '../../tags/store';
 import { useData } from '../../context';
 import { Search, X } from 'lucide-react';
 import { DataState } from '../../types/types';
 
 function Filters() {
   const { data, dataDispatch } = useData() as DataState;
+  const catalog = useTagCatalog();
 
   const [state, setState] = useState({
     category: data.category ?? '',
@@ -102,6 +105,21 @@ function Filters() {
     debouncedDispatch();
   }, [debouncedDispatch]);
 
+  const handleTagClick = useCallback((tag: string) => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+      debounceTimeoutRef.current = null;
+    }
+    const next = stateRef.current.textFilter.toLowerCase() === tag.toLowerCase() ? '' : tag;
+    setState((prev) => ({ ...prev, textFilter: next }));
+    if (next) setShowTextFilter(true);
+    dataDispatch({
+      type: 'FILTER_DATA',
+      category: stateRef.current.category,
+      textFilter: next,
+    });
+  }, [dataDispatch]);
+
   const handleClearFilters = useCallback(() => {
     // Cancel any pending debounce
     if (debounceTimeoutRef.current) {
@@ -190,6 +208,24 @@ function Filters() {
         <button onClick={handleClearFilters} className="filters__clear-button">
           Clear Filters
         </button>
+      )}
+      {state.category && activeTags(catalog, state.category).length > 0 && (
+        <div className="filters__tags">
+          {activeTags(catalog, state.category).map((tag) => {
+            const isSelected = state.textFilter.toLowerCase() === tag.toLowerCase();
+            return (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => handleTagClick(tag)}
+                onMouseDown={(event) => event.preventDefault()}
+                className={`filters__tag ${isSelected ? 'filters__tag--selected' : ''}`}
+              >
+                #{tag}
+              </button>
+            );
+          })}
+        </div>
       )}
     </div>
   );

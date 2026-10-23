@@ -4,6 +4,7 @@ import { ROOT_URL } from '../utils/constants';
 import { clearAiLocalData } from '../ai/storage';
 import { clearChatSession } from '../ai/chatSession';
 import { applyLoginStatus, resetEncryptionState } from '../crypto/encryptionState';
+import { resetTagsOnLogout } from '../tags/catalog';
 
 const SERVER_UNAVAILABLE_MESSAGE =
   "Couldn't reach the server. Check your connection and try again in a few minutes.";
@@ -49,6 +50,7 @@ export async function logout(dispatch: any, dataDispatch: any) {
   await dataDispatch({ type: 'REMOVE_DATA' });
   localStorage.removeItem('currentUser');
   localStorage.removeItem('token');
+  resetTagsOnLogout();
   resetEncryptionState();
   clearAiLocalData();
   clearChatSession();
