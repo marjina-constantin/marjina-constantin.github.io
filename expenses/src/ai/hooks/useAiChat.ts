@@ -13,7 +13,7 @@ import {
 } from '../chatSession';
 import { buildDataSummary } from '../context/summary';
 import { getAiItems } from '../data';
-import { buildChatSystemInstruction } from '../prompts';
+import { buildChatSystemInstruction, splitFollowUps } from '../prompts';
 import { getShareDescriptions, recordAiUsage } from '../storage';
 import { toolDeclarations } from '../tools/definitions';
 import { TOOL_LABELS, executeTool } from '../tools/executors';
@@ -104,7 +104,7 @@ export function useAiChat(apiKey: string) {
             signal: controller.signal,
             onText: (text) =>
               patchMessage(assistantId, {
-                text: previousText ? `${previousText}\n\n${text}` : text,
+                text: splitFollowUps(previousText ? `${previousText}\n\n${text}` : text).answer,
                 activity: undefined,
               }),
           });
@@ -142,30 +142,33 @@ export function useAiChat(apiKey: string) {
           });
         }
 
-        if (!previousText) {
+        const { answer, followUps } = splitFollowUps(previousText);
+        if (!answer) {
           throw new AiError('unknown', 'Empty response');
         }
 
         chatSession.history = [
           ...chatSession.history,
           userTurn,
-          { role: 'model', parts: [{ text: previousText }] },
+          { role: 'model', parts: [{ text: answer }] },
         ];
         patchMessage(assistantId, {
-          text: previousText,
+          text: answer,
           status: 'done',
           activity: undefined,
           tokens,
           model,
           ...(charts.length && { charts }),
+          ...(followUps.length && { followUps }),
         });
       } catch (error) {
         const stopped = controller.signal.aborted;
         const errorText = describeAiError(error);
         const failedModel =
           (error instanceof AiError && error.model) || preferModel || model || AI_MODELS.chat[0];
+        const partial = splitFollowUps(previousText).answer;
         patchMessage(assistantId, {
-          text: stopped || !previousText ? previousText || errorText : `${previousText}\n\n_${errorText}_`,
+          text: stopped || !partial ? partial || errorText : `${partial}\n\n_${errorText}_`,
           status: stopped ? 'stopped' : 'error',
           activity: undefined,
           tokens: tokens || undefined,

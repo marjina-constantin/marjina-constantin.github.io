@@ -13,6 +13,8 @@ export interface ChatMessage {
   /** Model that failed this turn, used to offer retry with the next one. */
   failedModel?: string;
   charts?: ChatChart[];
+  /** Short next questions the model attached to this answer. */
+  followUps?: string[];
 }
 
 /** Messages kept on the device; older ones are dropped. */
@@ -30,6 +32,16 @@ export const markInterrupted = (messages: ChatMessage[]): ChatMessage[] =>
         }
       : m
   );
+
+const sanitizeFollowUps = (value: unknown): string[] | undefined => {
+  if (!Array.isArray(value)) return undefined;
+  const questions = value
+    .filter((item): item is string => typeof item === 'string')
+    .map((item) => item.trim())
+    .filter((item) => item.length >= 8 && item.length <= 140)
+    .slice(0, 3);
+  return questions.length ? questions : undefined;
+};
 
 const sanitizeCharts = (charts: unknown): ChatChart[] | undefined => {
   if (!Array.isArray(charts)) return undefined;
@@ -49,6 +61,7 @@ const load = (): { messages: ChatMessage[]; history: GeminiContent[] } => {
         stored.messages.map((message: ChatMessage) => ({
           ...message,
           charts: sanitizeCharts(message.charts),
+          followUps: sanitizeFollowUps(message.followUps),
         }))
       ),
       history: stored.history,

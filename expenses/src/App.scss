@@ -2779,11 +2779,23 @@ input[type="date"] {
   }
 }
 
-.ai-chips {
+.ai-chips,
+.ai-followups {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 0.5rem;
+}
+
+.ai-chips {
+  justify-content: center;
+}
+
+.ai-followups {
+  margin-top: 0.75rem;
+
+  .ai-chip {
+    font-size: 0.8rem;
+  }
 }
 
 .ai-chip {

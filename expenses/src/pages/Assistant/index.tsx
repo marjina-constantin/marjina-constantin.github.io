@@ -55,8 +55,9 @@ const AssistantMessage: React.FC<{
   message: ChatMessage;
   onRetry?: () => void;
   onRetryAlt?: () => void;
+  onFollowUp?: (question: string) => void;
   altModel?: string | null;
-}> = ({ message, onRetry, onRetryAlt, altModel }) => {
+}> = ({ message, onRetry, onRetryAlt, onFollowUp, altModel }) => {
   const [copied, setCopied] = useState(false);
   const copy = () => {
     navigator.clipboard?.writeText(message.text).then(() => {
@@ -116,6 +117,20 @@ const AssistantMessage: React.FC<{
             )}
           </div>
         )}
+        {message.status === 'done' && !!message.followUps?.length && onFollowUp && (
+          <div className="ai-followups">
+            {message.followUps.map((question) => (
+              <button
+                key={question}
+                type="button"
+                className="ai-chip"
+                onClick={() => onFollowUp(question)}
+              >
+                {question}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -159,11 +174,13 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
   const online = useOnline();
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const lastText = messages[messages.length - 1]?.text;
-  const lastCharts = messages[messages.length - 1]?.charts?.length;
+  const lastMessage = messages[messages.length - 1];
+  const lastText = lastMessage?.text;
+  const lastCharts = lastMessage?.charts?.length;
+  const lastFollowUps = lastMessage?.followUps?.length;
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, [messages.length, lastText, lastCharts, showSuggestions]);
+  }, [messages.length, lastText, lastCharts, lastFollowUps, showSuggestions]);
 
   useEffect(() => {
     const el = inputRef.current;
@@ -278,6 +295,7 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
               online &&
               !busy;
             const altModel = canRetry ? nextChatModel(message.failedModel) : null;
+            const latest = index === messages.length - 1;
             return message.role === 'user' ? (
               <div key={message.id} className="ai-message ai-message--user">
                 <div className="ai-message__body">{message.text}</div>
@@ -286,6 +304,7 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
               <AssistantMessage
                 key={message.id}
                 message={message}
+                onFollowUp={latest && !busy ? submit : undefined}
                 onRetry={canRetry ? () => retry(message.id) : undefined}
                 onRetryAlt={
                   altModel ? () => retry(message.id, altModel) : undefined
