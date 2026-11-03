@@ -258,6 +258,9 @@ export default function IncomeSources() {
     <div>
       <div style={{ marginBottom: '2rem' }}>
         <HighchartsReact highcharts={Highcharts} options={pieOptions} />
+        <p className="chart-caption">
+          Sources come from the tags in your income descriptions.
+        </p>
       </div>
       <div>
         <HighchartsReact highcharts={Highcharts} options={lineOptions} />

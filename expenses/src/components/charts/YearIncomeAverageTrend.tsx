@@ -253,6 +253,9 @@ export default function YearIncomeAverageTrend() {
           </tbody>
         </table>
       </div>
+      <p className="chart-caption">
+        Tap an amount to see the change from the previous year.
+      </p>
     </>
   );
 }

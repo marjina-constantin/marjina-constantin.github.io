@@ -106,6 +106,11 @@ export default function DailyAverageTrend() {
   };
 
   return (
-    <HighchartsReact highcharts={Highcharts} options={dailyAverageOptions} />
+    <>
+      <HighchartsReact highcharts={Highcharts} options={dailyAverageOptions} />
+      <p className="chart-caption">
+        Your average per day up to each date, not what you spent that day.
+      </p>
+    </>
   );
 }

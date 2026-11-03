@@ -73,5 +73,12 @@ export default function SavingsHistory() {
     series: series,
   };
 
-  return <HighchartsReact highcharts={Highcharts} options={savingsOptions} />;
+  return (
+    <>
+      <HighchartsReact highcharts={Highcharts} options={savingsOptions} />
+      <p className="chart-caption">
+        How much of your total income you have kept so far. Below 0% means you spent more than you earned.
+      </p>
+    </>
+  );
 }

@@ -89,5 +89,12 @@ export default function MonthlyTotals() {
     ],
   };
 
-  return <HighchartsReact highcharts={Highcharts} options={allTimeOptions} />;
+  return (
+    <>
+      <HighchartsReact highcharts={Highcharts} options={allTimeOptions} />
+      <p className="chart-caption">
+        The dotted line is your monthly average. Tap Income in the legend to compare.
+      </p>
+    </>
+  );
 }

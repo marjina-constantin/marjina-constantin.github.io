@@ -1557,6 +1557,22 @@ input[type="date"] {
   }
 }
 
+.chart-caption {
+  margin: 1rem 0 0;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.85rem;
+  line-height: 1.45;
+
+  p + p {
+    margin-top: 0.4rem;
+  }
+
+  strong {
+    color: rgba(255, 255, 255, 0.82);
+    font-weight: 600;
+  }
+}
+
 .average-spending {
   margin-top: 25px;
 }

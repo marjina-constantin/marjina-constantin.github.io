@@ -43,14 +43,19 @@ export default function LastTwoMonthsAverage() {
     : timeDiff / (1000 * 3600 * 24);
 
   return (
-    <span
-      onClick={cyclePeriod}
-      style={{
-        cursor: 'pointer',
-      }}
-    >
-      Average spending for the last {daysPeriod} days:{' '}
-      {formatNumber(periodTotal / Math.ceil(daysDiff))} {currency} / day
-    </span>
+    <div>
+      <span
+        onClick={cyclePeriod}
+        style={{
+          cursor: 'pointer',
+        }}
+      >
+        Average spending for the last {daysPeriod} days:{' '}
+        {formatNumber(periodTotal / Math.ceil(daysDiff))} {currency} / day
+      </span>
+      <p className="chart-caption">
+        Tap to change the period.
+      </p>
+    </div>
   );
 }
