@@ -141,12 +141,15 @@ export interface SuggestedPrompt {
   personal: boolean;
 }
 
+/** Temporary. Set to true to show the data-based prompts again. */
+const SHOW_PERSONAL_PROMPTS = false;
+
 /**
  * Up to 3 data-based prompts (the most unusual ones are favoured, with some
  * randomness so "More ideas" shows others), then random generic ones.
  */
 export const pickSuggestedPrompts = (dataPrompts: DataPrompt[] = [], count = 6): SuggestedPrompt[] => {
-  const personal = dataPrompts
+  const personal = (SHOW_PERSONAL_PROMPTS ? dataPrompts : [])
     .map((prompt) => ({ prompt, score: prompt.priority + Math.random() * 2 }))
     .sort((a, b) => b.score - a.score)
     .slice(0, 3)
