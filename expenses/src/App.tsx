@@ -24,6 +24,7 @@ import { refreshStatus, useEncryptionState } from './crypto/encryptionState';
 import { refreshTagCatalog } from './tags/store';
 import KeyNeededScreen from './components/privacy/KeyNeededScreen';
 import MigrationProgress from './components/privacy/MigrationProgress';
+import BiometricLockGate from './components/privacy/BiometricLockGate';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 
 // A locked account without the key on this device shows the key screen instead of the pages.
@@ -83,6 +84,43 @@ const SyncSetup: React.FC = () => {
   return null;
 };
 
+const AppShell: React.FC = () => {
+  const { token, userDetails } = useAuthState() as AuthState;
+  const userId = String(userDetails?.current_user?.uid ?? '');
+
+  const shell = (
+    <>
+      <SyncSetup />
+      <SyncStatusIndicator />
+      <MigrationProgress />
+      <Navbar />
+
+      <EncryptionGate>
+        <Routes>
+          {routes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={
+                <AppRoute
+                  component={route.component}
+                  isPrivate={route.isPrivate}
+                />
+              }
+            />
+          ))}
+        </Routes>
+      </EncryptionGate>
+    </>
+  );
+
+  if (!token || !userId) {
+    return shell;
+  }
+
+  return <BiometricLockGate userId={userId}>{shell}</BiometricLockGate>;
+};
+
 function App() {
   return (
     <ErrorBoundary>
@@ -90,27 +128,7 @@ function App() {
         <NotificationProvider>
           <SyncStatusProvider>
             <Router>
-              <SyncSetup />
-              <SyncStatusIndicator />
-              <MigrationProgress />
-              <Navbar />
-
-              <EncryptionGate>
-                <Routes>
-                  {routes.map((route) => (
-                    <Route
-                      key={route.path}
-                      path={route.path}
-                      element={
-                        <AppRoute
-                          component={route.component}
-                          isPrivate={route.isPrivate}
-                        />
-                      }
-                    />
-                  ))}
-                </Routes>
-              </EncryptionGate>
+              <AppShell />
             </Router>
           </SyncStatusProvider>
         </NotificationProvider>

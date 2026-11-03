@@ -13,6 +13,7 @@ import { fetchRequest } from '../../utils/utils';
 import { notificationType, themeList } from '../../utils/constants';
 import { AuthState } from '../../types/types';
 import AiSettings from '../../components/ai/AiSettings';
+import BiometricSettings from '../../components/privacy/BiometricSettings';
 import PrivacySettings from '../../components/privacy/PrivacySettings';
 import TagSettings from '../../components/profile/TagSettings';
 
@@ -131,6 +132,10 @@ const Profile = () => {
         </div>
         <TagSettings />
         <PrivacySettings />
+        <BiometricSettings
+          userId={String(userDetails?.current_user?.uid ?? '')}
+          displayName={String(userDetails?.current_user?.name ?? '')}
+        />
         <AiSettings />
         <button className="button logout" onClick={handleLogout}>
           Logout

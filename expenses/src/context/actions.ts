@@ -5,6 +5,10 @@ import { clearAiLocalData } from '../ai/storage';
 import { clearChatSession } from '../ai/chatSession';
 import { applyLoginStatus, resetEncryptionState } from '../crypto/encryptionState';
 import { resetTagsOnLogout } from '../tags/catalog';
+import {
+  clearUnlockOnLogout,
+  markUnlocked,
+} from '../components/privacy/biometricLock';
 
 const SERVER_UNAVAILABLE_MESSAGE =
   "Couldn't reach the server. Check your connection and try again in a few minutes.";
@@ -28,6 +32,8 @@ export async function loginUser(dispatch: any, loginPayload: LoginPayload) {
     if (data?.current_user) {
       localStorage.setItem('currentUser', JSON.stringify(data));
       applyLoginStatus(data.current_user.encryption_status);
+      const uid = String(data.current_user.uid ?? '');
+      if (uid) markUnlocked(uid);
       dispatch({ type: 'LOGIN_SUCCESS', payload: data });
       return data;
     }
@@ -46,6 +52,17 @@ export async function loginUser(dispatch: any, loginPayload: LoginPayload) {
 }
 
 export async function logout(dispatch: any, dataDispatch: any) {
+  try {
+    const stored = localStorage.getItem('currentUser');
+    if (stored) {
+      const parsed = JSON.parse(stored) as UserData | null;
+      const uid = String(parsed?.current_user?.uid ?? '');
+      if (uid) clearUnlockOnLogout(uid);
+    }
+  } catch {
+    // Ignore corrupt stored user; logout still proceeds.
+  }
+
   await dispatch({ type: 'LOGOUT' });
   await dataDispatch({ type: 'REMOVE_DATA' });
   localStorage.removeItem('currentUser');
