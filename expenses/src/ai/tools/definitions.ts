@@ -21,6 +21,20 @@ const filterProperties = {
   maxAmount: { type: 'number' },
 };
 
+const budgetProperties = {
+  month: { type: 'string', description: 'YYYY-MM. Default current month.' },
+  window: {
+    type: 'string',
+    enum: ['1', '3', '6', '12', 'all'],
+    description: 'Completed months the budget averages, as on Home. Default matches Home.',
+  },
+  categories: {
+    type: 'array',
+    items: { type: 'string' },
+    description: 'Category ids from CATEGORIES.',
+  },
+};
+
 export const toolDeclarations: GeminiFunctionDeclaration[] = [
   {
     name: 'aggregate',
@@ -75,6 +89,51 @@ export const toolDeclarations: GeminiFunctionDeclaration[] = [
         kind: { type: 'string', enum: ['expense', 'income'] },
       },
       required: ['aFrom', 'aTo', 'bFrom', 'bTo'],
+    },
+  },
+  {
+    name: 'get_budget_status',
+    description:
+      'Budgets as on Home: per category spent vs budget (average of completed months), left and ok/ahead/over vs the month pace.',
+    parameters: { type: 'object', properties: budgetProperties },
+  },
+  {
+    name: 'compare_budget_vs_spend',
+    description:
+      'Categories over budget and those with the most left. For the current month, also the projected month-end overspend at the current pace.',
+    parameters: {
+      type: 'object',
+      properties: {
+        ...budgetProperties,
+        limit: { type: 'integer', description: 'Max categories with money left, default 20.' },
+      },
+    },
+  },
+  {
+    name: 'detect_spend_spikes',
+    description:
+      'Categories well above their average of previous months and single expenses far above the category median.',
+    parameters: {
+      type: 'object',
+      properties: {
+        month: { type: 'string', description: 'YYYY-MM. Default current month.' },
+        lookbackMonths: { type: 'integer', description: 'Previous months compared, default 12.' },
+        minRatio: { type: 'number', description: 'Multiple of the average that counts as a spike, default 1.5.' },
+        limit: { type: 'integer', description: 'Max rows per list, default 10.' },
+      },
+    },
+  },
+  {
+    name: 'get_savings_rate_trend',
+    description:
+      'Monthly savings rate ((income - expenses) / income), its average and whether it is improving or worsening.',
+    parameters: {
+      type: 'object',
+      properties: {
+        from: { type: 'string', description: 'Start month YYYY-MM.' },
+        to: { type: 'string', description: 'End month YYYY-MM. Default current month.' },
+        months: { type: 'integer', description: 'Months back from to when from is omitted, default 12.' },
+      },
     },
   },
   {

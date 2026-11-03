@@ -8,7 +8,14 @@ export const SUGGESTED_PROMPTS = [
   'Care au fost cele mai mari 5 cheltuieli luna aceasta?',
   'Sunt pe drumul cel bun să economisesc luna aceasta?',
   'Ce cheltuieli neobișnuite am avut luna aceasta?',
-  'Compară luna aceasta cu aceeași lună de anul trecut',
+  'Compară luna aceasta cu aceeași lună de anul trecut, pe categorii',
+  'Cât am cheltuit în ultimele 30 de zile față de cele 30 de dinainte?',
+
+  // Budgets
+  'Sunt în buget luna aceasta? Cât mi-a rămas pe fiecare categorie?',
+  'La ce categorii am depășit bugetul și cât mi-a rămas la celelalte?',
+  'La ce categorii voi depăși bugetul până la sfârșitul lunii, în ritmul actual?',
+  'La ce categorie mă încadrez cel mai bine în buget luna aceasta?',
 
   // Saving
   'Unde pot economisi 2000 luna viitoare?',
@@ -19,17 +26,21 @@ export const SUGGESTED_PROMPTS = [
   'Câți bani aș economisi pe an dacă reduc mâncarea în oraș la jumătate?',
   'Ce rată de economisire am avut în fiecare an?',
   'În ce luni am cheltuit mai mult decât am câștigat?',
+  'Ce procent din cheltuieli merge pe nevoi de bază (locuință, utilități, mâncare, transport) și cât pe rest?',
+  'Câte ore de muncă mă costă, în medie, fiecare categorie pe lună?',
 
   // Trends
   'Care a fost cea mai scumpă lună și de ce?',
   'Care a fost cea mai ieftină lună din ultimii 2 ani?',
   'Cum au evoluat cheltuielile mele lunare în ultimii 5 ani?',
   'Ce categorii cresc constant de la an la an?',
+  'Ce categorie a scăzut cel mai mult față de anul trecut?',
+  'În ce lună a anului cheltui, de obicei, cel mai mult?',
   'Cheltuiesc mai mult vara sau iarna?',
   'Cât de mult au crescut costurile la utilități în timp?',
   'Cum s-a schimbat media zilnică a cheltuielilor de-a lungul anilor?',
   'Care e trendul cheltuielilor mele în ultimele 6 luni?',
-  'Arată-mi un grafic cu cheltuielile lunare din ultimele 12 luni',
+  'Arată-mi un grafic cu cheltuielile mele lunare pe ultimele 12 luni',
   'Fă un grafic pe categorii pentru anul acesta',
 
   // Categories
@@ -42,18 +53,23 @@ export const SUGGESTED_PROMPTS = [
   'Cât am dat pe cadouri în fiecare an?',
   'Ce pondere au cheltuielile pe locuință din total?',
   'Cât am cheltuit pe distracție în ultimele 12 luni?',
+  'Cât am cheltuit pe utilități anul acesta față de anul trecut?',
+  'Împarte-mi cheltuielile pe categorii pentru ultimele 12 luni',
 
   // Habits
   'În ce zi a săptămânii cheltui cel mai mult?',
   'La ce magazine las cei mai mulți bani?',
   'Care sunt cele mai frecvente cheltuieli ale mele?',
   'Ce hashtag-uri mă costă cel mai mult?',
+  'Ce hashtag a crescut cel mai mult anul acesta?',
   'Cât cheltui de obicei într-un weekend?',
   'Câte tranzacții fac, în medie, pe lună?',
   'Care a fost cea mai mare cheltuială din istoric?',
   'Am cheltuieli care se repetă lunar cu aceeași sumă?',
 
   // Income
+  'Care e rata mea de economisire pe ultimele 12 luni și se îmbunătățește?',
+  'Cum au evoluat veniturile mele în ultimele 12 luni?',
   'Cum au evoluat veniturile mele pe ani?',
   'Care sunt principalele mele surse de venit?',
   'Ce procent din venit cheltui, în medie?',
@@ -77,6 +93,9 @@ export const SUGGESTED_PROMPTS = [
   'Dacă aș investi lunar ce cheltui pe distracție, cât aș avea în 5 ani?',
   'În cât timp aș strânge 50.000 cu ritmul actual de economisire?',
   'Ce s-ar întâmpla cu economiile mele dacă venitul scade cu 20%?',
+  'Câte luni aș putea trăi din economii dacă aș rămâne fără venit?',
+  'Cât aș economisi pe an dacă aș aduce fiecare categorie peste buget înapoi la medie?',
+  'Cum ar arăta totalul anului dacă păstrez media ultimelor 3 luni?',
 
   // Records
   'Care a fost cea mai lungă perioadă fără cheltuieli mari?',
@@ -98,7 +117,6 @@ export const SUGGESTED_PROMPTS = [
   // Behaviour
   'Cheltuiesc mai mult la început sau la sfârșit de lună?',
   'Cât de des fac cheltuieli impulsive, de sume mari, neplanificate?',
-  'Am luni în care cheltui mult mai mult după ce primesc venitul?',
 
   // Comparisons
   'Cum arată primul semestru față de al doilea, în fiecare an?',

@@ -1,5 +1,17 @@
 import { monthNames } from '../../utils/constants';
 import { extractHashtags } from '../../utils/utils';
+import {
+  BudgetRing,
+  BudgetWindow,
+  budgetChoices,
+  budgetStatus,
+  buildBudgetBaseline,
+  buildBudgets,
+  countCompleteExpenseMonths,
+  monthKeyLabel,
+  monthPace,
+  summarizeBudgets,
+} from '../../budgets/model';
 import { ChatChart, ChatChartType } from '../chart';
 import { AI_LIMITS } from '../config';
 import {
@@ -253,6 +265,205 @@ const comparePeriods = ({ items }: ToolContext, args: Args) => {
   };
 };
 
+const monthArg = (value: unknown) => String(value || localToday()).slice(0, 7);
+
+const median = (values: number[]) => {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+};
+
+/** Budget rings for a month, built exactly like the Home budgets. */
+const budgetFor = (items: AiItem[], args: Args) => {
+  const month = monthArg(args.month);
+  if (!/^\d{4}-\d{2}$/.test(month)) return { error: 'month must be YYYY-MM' };
+  const { options, defaultWindow } = budgetChoices(countCompleteExpenseMonths(items, month));
+  if (!options.length) return { error: 'Budgets need at least one completed month of expenses.' };
+  const requested = (args.window === 'all' ? 'all' : Number(args.window)) as BudgetWindow;
+  const windowSize = options.includes(requested) ? requested : defaultWindow;
+  const baseline = buildBudgetBaseline(items, month, windowSize);
+  if (!baseline) return { error: 'No budget for this month.' };
+  const today = localToday();
+  const isCurrent = today.slice(0, 7) === month;
+  const cats = Array.isArray(args.categories) ? args.categories.map(String) : null;
+  return {
+    month,
+    windowSize,
+    baseline,
+    rings: buildBudgets(baseline).filter((ring) => !cats || cats.includes(ring.id)),
+    isCurrent,
+    pace: isCurrent ? monthPace(today) : 1,
+  };
+};
+
+const ringKey = (ring: BudgetRing) => `${ring.id}=${ring.label}`;
+
+const budgetOverview = ({ items }: ToolContext, args: Args) => {
+  const budget = budgetFor(items, args);
+  if ('error' in budget) return budget;
+  const { month, windowSize, baseline, rings, isCurrent, pace } = budget;
+  const summary = summarizeBudgets(rings);
+  return {
+    month: monthKeyLabel(month),
+    window: windowSize,
+    baselineMonths: baseline.months.join(', '),
+    ...(isCurrent && { monthPace: round(pace, 3) }),
+    spent: summary.spent,
+    budget: summary.budget,
+    left: round(summary.budget - summary.spent),
+    status: budgetStatus(summary.ratio, pace),
+    overCategories: summary.over,
+    columns: 'category|spent|budget|left|used%|status',
+    rows: rings
+      .map((r) => `${ringKey(r)}|${r.spent}|${r.budget}|${r.left}|${round(r.ratio * 100, 1)}|${budgetStatus(r.ratio, pace)}`)
+      .join('\n'),
+    unbudgetedColumns: 'category|spent',
+    unbudgeted: baseline.unbudgeted.map((u) => `${u.id}=${u.label}|${u.spent}`).join('\n'),
+  };
+};
+
+const budgetVsSpend = ({ items }: ToolContext, args: Args) => {
+  const budget = budgetFor(items, args);
+  if ('error' in budget) return budget;
+  const { month, windowSize, rings, isCurrent, pace } = budget;
+  const summary = summarizeBudgets(rings);
+  const over = rings
+    .filter((r) => r.ratio > 1.001)
+    .sort((a, b) => b.spent - b.budget - (a.spent - a.budget));
+  const left = rings
+    .filter((r) => r.left > 0)
+    .sort((a, b) => b.left - a.left)
+    .slice(0, clampLimit(args.limit, 20, 60));
+  const row = (r: BudgetRing) => `${ringKey(r)}|${r.spent}|${r.budget}|${r.left}`;
+  const projected = rings
+    .map((r) => ({ ring: r, month: round(r.spent / pace) }))
+    .filter((p) => p.month > p.ring.budget * 1.001)
+    .sort((a, b) => b.month - b.ring.budget - (a.month - a.ring.budget));
+  return {
+    month: monthKeyLabel(month),
+    window: windowSize,
+    spent: summary.spent,
+    budget: summary.budget,
+    overspend: round(over.reduce((sum, r) => sum + r.spent - r.budget, 0)),
+    columns: 'category|spent|budget|left',
+    over: over.map(row).join('\n'),
+    mostLeft: left.map(row).join('\n'),
+    ...(isCurrent && {
+      monthPace: round(pace, 3),
+      projectedSpent: round(summary.spent / pace),
+      projectedColumns: 'category|projectedMonth|budget|projectedOver',
+      projectedOver: projected
+        .map((p) => `${ringKey(p.ring)}|${p.month}|${p.ring.budget}|${round(p.month - p.ring.budget)}`)
+        .join('\n'),
+    }),
+  };
+};
+
+const spendSpikes = ({ items, shareDescriptions }: ToolContext, args: Args) => {
+  const month = monthArg(args.month);
+  if (!/^\d{4}-\d{2}$/.test(month)) return { error: 'month must be YYYY-MM' };
+  const lookback = clampLimit(args.lookbackMonths, 12, 36);
+  const minRatio = typeof args.minRatio === 'number' && args.minRatio > 1 ? args.minRatio : 1.5;
+  const limit = clampLimit(args.limit, 10, 40);
+  const from = shiftMonth(month, -lookback);
+  const expenses = items.filter((i) => i.kind === 'expense');
+  const current = expenses.filter((i) => i.month === month);
+  if (!current.length) return { month: monthKeyLabel(month), note: 'No expenses in this month.' };
+
+  const history = expenses.filter((i) => i.month >= from && i.month < month);
+  const historyMonths = new Set(history.map((i) => i.month)).size;
+  const pastByCat = new Map<string, number[]>();
+  for (const i of history) {
+    const amounts = pastByCat.get(i.cat) || [];
+    amounts.push(i.amount);
+    pastByCat.set(i.cat, amounts);
+  }
+  const nowByCat = new Map<string, number>();
+  for (const i of current) nowByCat.set(i.cat, (nowByCat.get(i.cat) || 0) + i.amount);
+
+  const categorySpikes = [...nowByCat.entries()]
+    .map(([cat, spent]) => {
+      const avg = historyMonths ? (pastByCat.get(cat) || []).reduce((a, b) => a + b, 0) / historyMonths : 0;
+      return { cat, spent, avg, ratio: avg > 0 ? spent / avg : 0 };
+    })
+    .filter((c) => c.avg > 0 && c.ratio >= minRatio && c.spent >= 50)
+    .sort((a, b) => b.ratio - a.ratio)
+    .slice(0, limit);
+
+  const expenseSpikes = current
+    .map((item) => {
+      const past = pastByCat.get(item.cat) || [];
+      const typical = past.length >= 5 ? median(past) : 0;
+      const max = past.reduce((a, b) => Math.max(a, b), 0);
+      return { item, typical, max, ratio: typical > 0 ? item.amount / typical : 0 };
+    })
+    .filter((e) => e.ratio >= Math.max(minRatio, 2.5) && e.item.amount >= e.max * 0.75)
+    .sort((a, b) => b.ratio - a.ratio)
+    .slice(0, limit);
+
+  const monthTotal = sumAmounts(current);
+  const avgMonth = historyMonths ? sumAmounts(history) / historyMonths : 0;
+  return {
+    month: monthKeyLabel(month),
+    previousMonths: historyMonths,
+    monthTotal,
+    avgMonthTotal: round(avgMonth),
+    monthVsAvg: avgMonth > 0 ? round(monthTotal / avgMonth, 2) : null,
+    categoryColumns: 'category|spent|avgPrevMonths|ratio',
+    categorySpikes: categorySpikes
+      .map((c) => `${c.cat}=${categoryLabel(c.cat)}|${round(c.spent)}|${round(c.avg)}|${round(c.ratio, 2)}`)
+      .join('\n'),
+    expenseColumns: 'date|amount|category|description|categoryMedian|ratio',
+    expenseSpikes: expenseSpikes
+      .map((e) => `${formatLabeledRow(e.item, shareDescriptions)}|${round(e.typical)}|${round(e.ratio, 2)}`)
+      .join('\n'),
+  };
+};
+
+const savingsTrend = ({ items }: ToolContext, args: Args) => {
+  const to = monthArg(args.to);
+  const from = args.from ? String(args.from).slice(0, 7) : shiftMonth(to, 1 - clampLimit(args.months, 12, 36));
+  if (!/^\d{4}-\d{2}$/.test(from) || !/^\d{4}-\d{2}$/.test(to) || from > to) {
+    return { error: 'from and to must be YYYY-MM, with from <= to' };
+  }
+
+  const totals = new Map<string, { income: number; spent: number }>();
+  for (const i of items) {
+    if (i.month < from || i.month > to) continue;
+    const month = totals.get(i.month) || { income: 0, spent: 0 };
+    month[i.kind === 'income' ? 'income' : 'spent'] += i.amount;
+    totals.set(i.month, month);
+  }
+  const rows: { month: string; income: number; spent: number; rate: number | null }[] = [];
+  for (let month = from; month <= to && rows.length < 48; month = shiftMonth(month, 1)) {
+    const { income, spent } = totals.get(month) || { income: 0, spent: 0 };
+    rows.push({ month, income, spent, rate: income > 0 ? ((income - spent) / income) * 100 : null });
+  }
+
+  const rated = rows.filter((r): r is typeof r & { rate: number } => r.rate !== null);
+  const average = (list: typeof rated) =>
+    list.length ? round(list.reduce((sum, r) => sum + r.rate, 0) / list.length, 1) : null;
+  const half = Math.floor(rated.length / 2);
+  const earlier = average(rated.slice(0, half));
+  const later = average(rated.slice(half));
+  const delta = earlier !== null && later !== null ? later - earlier : null;
+  const byRate = [...rated].sort((a, b) => b.rate - a.rate);
+  return {
+    from,
+    to,
+    averageRatePct: average(rated),
+    earlierHalfPct: earlier,
+    laterHalfPct: later,
+    trend: delta === null ? 'n/a' : Math.abs(delta) < 1 ? 'flat' : delta > 0 ? 'improving' : 'worsening',
+    bestMonth: byRate.length ? monthKeyLabel(byRate[0].month) : null,
+    worstMonth: byRate.length ? monthKeyLabel(byRate[byRate.length - 1].month) : null,
+    columns: 'month|income|spent|saved|rate%',
+    rows: rows
+      .map((r) => `${r.month}|${round(r.income)}|${round(r.spent)}|${round(r.income - r.spent)}|${r.rate === null ? 'n/a' : round(r.rate, 1)}`)
+      .join('\n'),
+  };
+};
+
 const CHART_TYPES: ChatChartType[] = ['column', 'line', 'pie'];
 const CHART_GROUPS = ['month', 'year', 'category', 'hashtag', 'weekday'];
 
@@ -436,6 +647,10 @@ const executors: Record<string, (ctx: ToolContext, args: Args) => Record<string,
   aggregate,
   get_month_summary: monthSummary,
   compare_periods: comparePeriods,
+  get_budget_status: budgetOverview,
+  compare_budget_vs_spend: budgetVsSpend,
+  detect_spend_spikes: spendSpikes,
+  get_savings_rate_trend: savingsTrend,
   show_chart: showChart,
 };
 
@@ -454,5 +669,9 @@ export const TOOL_LABELS: Record<string, string> = {
   aggregate: 'Calculating totals',
   get_month_summary: 'Summarizing the month',
   compare_periods: 'Comparing periods',
+  get_budget_status: 'Checking budgets',
+  compare_budget_vs_spend: 'Comparing budget and spend',
+  detect_spend_spikes: 'Looking for spending spikes',
+  get_savings_rate_trend: 'Tracking the savings rate',
   show_chart: 'Building a chart',
 };
