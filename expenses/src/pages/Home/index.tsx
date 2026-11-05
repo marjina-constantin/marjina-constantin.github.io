@@ -3,7 +3,6 @@ import { useNotification } from '../../context';
 import { deleteNode, fetchData } from '../../utils/utils';
 import Modal from '../../components/ui/Modal';
 import ConfirmDeleteModal from '../../components/ui/ConfirmDeleteModal';
-import PullToRefresh from '../../components/ui/PullToRefresh';
 import TransactionForm from '../../components/transactions/TransactionForm';
 import TransactionList from '../../components/transactions/TransactionList';
 import Filters from '../../components/transactions/Filters';
@@ -142,29 +141,17 @@ const Home = () => {
 
       {!loading && !noData && hasGroupedData && (
         <>
-          <PullToRefresh
-            onRefresh={() =>
-              fetchData(
-                token,
-                dataDispatch,
-                dispatch,
-                data.category as string,
-                data.textFilter as string
-              )
-            }
-          >
-            <TransactionList
-              transactions={items.groupedData[currentMonth]}
-              categoryLabels={categories}
-              onEdit={handleEdit}
-              onDelete={(id) => setShowDeleteModal(id)}
-              changedItems={data.changedItems}
-              handleClearChangedItem={handleClearChangedItem}
-              month={currentMonth}
-              total={items.totals[currentMonth]}
-              incomeTotals={items.incomeTotals}
-            />
-          </PullToRefresh>
+          <TransactionList
+            transactions={items.groupedData[currentMonth]}
+            categoryLabels={categories}
+            onEdit={handleEdit}
+            onDelete={(id) => setShowDeleteModal(id)}
+            changedItems={data.changedItems}
+            handleClearChangedItem={handleClearChangedItem}
+            month={currentMonth}
+            total={items.totals[currentMonth]}
+            incomeTotals={items.incomeTotals}
+          />
           <div className="pager-navigation">
             <button
               disabled={!months[currentMonthIndex + 1]}
