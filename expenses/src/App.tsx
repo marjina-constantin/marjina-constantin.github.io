@@ -13,6 +13,7 @@ import {
 } from './context';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import AppRoute from './components/layout/AppRoute';
+import AppPullToRefresh from './components/layout/AppPullToRefresh';
 import React, { useEffect, useRef } from 'react';
 import routes from './config/routes';
 import Navbar from './components/layout/Navbar';
@@ -121,22 +122,24 @@ const AppShell: React.FC = () => {
       <MigrationProgress />
       <Navbar />
 
-      <EncryptionGate>
-        <Routes>
-          {routes.map((route) => (
-            <Route
-              key={route.path}
-              path={route.path}
-              element={
-                <AppRoute
-                  component={route.component}
-                  isPrivate={route.isPrivate}
-                />
-              }
-            />
-          ))}
-        </Routes>
-      </EncryptionGate>
+      <AppPullToRefresh>
+        <EncryptionGate>
+          <Routes>
+            {routes.map((route) => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={
+                  <AppRoute
+                    component={route.component}
+                    isPrivate={route.isPrivate}
+                  />
+                }
+              />
+            ))}
+          </Routes>
+        </EncryptionGate>
+      </AppPullToRefresh>
     </>
   );
 
