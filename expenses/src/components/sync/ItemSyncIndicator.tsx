@@ -1,5 +1,6 @@
 import React from 'react';
-import { CheckCircle2, Clock3, RefreshCw, WifiOff, AlertTriangle } from 'lucide-react';
+import { Clock3, RefreshCw, WifiOff, AlertTriangle } from 'lucide-react';
+import { SuccessTickIcon } from '../ui/Notification';
 
 import { useSyncStatus } from '../../context';
 
@@ -32,7 +33,7 @@ const ItemSyncIndicator: React.FC<ItemSyncIndicatorProps> = ({ itemId, failed })
       modifier = 'pending';
     }
   } else if (isRecentlySynced) {
-    icon = <CheckCircle2 size={14} />;
+    icon = <SuccessTickIcon size={15} />;
     modifier = 'success';
   }
 

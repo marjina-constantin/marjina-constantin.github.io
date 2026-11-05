@@ -26,6 +26,8 @@ interface SwipeActions {
   ) => void;
 }
 
+const RESISTANCE_RATIO = 0.35;
+
 const useSwipeActions = (): SwipeActions => {
   const [startX, setStartX] = useState<number | null>(null);
   const [startY, setStartY] = useState<number | null>(null);
@@ -69,29 +71,35 @@ const useSwipeActions = (): SwipeActions => {
     } else if (isSwiping) {
       document.body.style.overflow = 'hidden';
 
-      const diff = e.touches[0].clientX - (startX ?? 0);
+      const rawDiff = e.touches[0].clientX - (startX ?? 0);
       const itemElement = listRef.current?.querySelector(
         `[data-id="${swipedItemId}"]`
       ) as HTMLElement;
       if (itemElement) {
-        itemElement.style.transform = `translateX(${diff}px)`;
         const itemWidth = itemElement.getBoundingClientRect().width;
-        const absDiff = Math.abs(e.touches[0].clientX - (startX ?? 0));
+        const absDiff = Math.abs(rawDiff);
         const diffPercentage = Math.min((absDiff / itemWidth) * 100, 100);
-        
+
+        // Apply weighted 35% resistance ("Resist the pull") once past the initial threshold
+        const thresholdPx = itemWidth * 0.28;
+        const sign = rawDiff >= 0 ? 1 : -1;
+        const dampedAbs =
+          absDiff <= thresholdPx
+            ? absDiff * 0.65
+            : thresholdPx * 0.65 + (absDiff - thresholdPx) * RESISTANCE_RATIO;
+        const dampedDiff = sign * dampedAbs;
+
+        itemElement.style.transform = `translate3d(${dampedDiff}px, 0, 0) scale(1.015)`;
+        itemElement.classList.add('is-swiping');
+
+        const body = document.querySelector('body');
         if (diffPercentage > 40) {
-          const body = document.querySelector('body');
-          if (body) {
-            body.classList.add('action-active');
-          }
+          body?.classList.add('action-active');
         } else {
-          const body = document.querySelector('body');
-          if (body) {
-            body.classList.remove('action-active');
-          }
+          body?.classList.remove('action-active');
         }
 
-        const isSwipingRight = diff > 0;
+        const isSwipingRight = rawDiff > 0;
         setDeleteVisible(isSwipingRight);
         setEditVisible(!isSwipingRight);
       }
@@ -106,6 +114,7 @@ const useSwipeActions = (): SwipeActions => {
     onDelete: (id: string) => void
   ) => {
     document.body.style.overflow = '';
+    document.querySelector('body')?.classList.remove('action-active');
 
     const touch = e.changedTouches[0];
     if (touch && startX !== null) {
@@ -128,8 +137,10 @@ const useSwipeActions = (): SwipeActions => {
       }
 
       if (itemElement) {
-        itemElement.style.transition = 'all .3s ease';
-        itemElement.style.transform = 'translateX(0)';
+        itemElement.classList.remove('is-swiping');
+        itemElement.style.transition =
+          'transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        itemElement.style.transform = 'translate3d(0, 0, 0) scale(1)';
       }
 
       setStartX(null);

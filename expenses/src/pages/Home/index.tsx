@@ -3,6 +3,7 @@ import { useNotification } from '../../context';
 import { deleteNode, fetchData } from '../../utils/utils';
 import Modal from '../../components/ui/Modal';
 import ConfirmDeleteModal from '../../components/ui/ConfirmDeleteModal';
+import PullToRefresh from '../../components/ui/PullToRefresh';
 import TransactionForm from '../../components/transactions/TransactionForm';
 import TransactionList from '../../components/transactions/TransactionList';
 import Filters from '../../components/transactions/Filters';
@@ -140,7 +141,17 @@ const Home = () => {
       {loading && <PageLoader />}
 
       {!loading && !noData && hasGroupedData && (
-        <>
+        <PullToRefresh
+          onRefresh={() =>
+            fetchData(
+              token,
+              dataDispatch,
+              dispatch,
+              data.category as string,
+              data.textFilter as string
+            )
+          }
+        >
           <TransactionList
             transactions={items.groupedData[currentMonth]}
             categoryLabels={categories}
@@ -166,7 +177,7 @@ const Home = () => {
               <ChevronRight />
             </button>
           </div>
-        </>
+        </PullToRefresh>
       )}
     </div>
   );

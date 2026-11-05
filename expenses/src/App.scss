@@ -1,9 +1,9 @@
 // =============================================================================
-// VARIABLES
+// VARIABLES & MOTION / DARK-MODE TOKENS
 // =============================================================================
 
-$white: #fff;
-$dark: #000;
+$white: rgba(255, 255, 255, 0.87);
+$dark: #0c1424;
 
 // Border Radius System
 // Consistent border radius values across the application
@@ -12,87 +12,114 @@ $border-radius-sm: 8px; // Small elements (tags, small buttons)
 $border-radius-md: 12px; // Medium elements (buttons, inputs, modals) - most common
 $border-radius-lg: 16px; // Large elements (cards, containers)
 
+:root {
+  // Video 1 Motion System:
+  // 01 Button press: sink to 95%, then spring back
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  // 03 Rolling number & 04 Reorder S-curve
+  --ease-roll: cubic-bezier(0.22, 1, 0.36, 1);
+  // 05 Card expand: ease-out, fast first then slow (350ms)
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  // Video 2 Dark Mode System:
+  // 01 Background: deep navy, never pure black (#0C1424)
+  --bg-color: #0c1424;
+  // 02 Text: white at 87%, grey at 60% for details, 42% for muted
+  --text-primary: rgba(255, 255, 255, 0.87);
+  --text-secondary: rgba(255, 255, 255, 0.60);
+  --text-muted: rgba(255, 255, 255, 0.42);
+  // 04 Elevation: raised surfaces get lighter, not shadowed
+  --surface-1: color-mix(in srgb, var(--bg-color) 91%, #ffffff 9%);
+  --surface-2: color-mix(in srgb, var(--bg-color) 85%, #ffffff 15%);
+  --surface-3: color-mix(in srgb, var(--bg-color) 77%, #ffffff 23%);
+  --surface-border: rgba(255, 255, 255, 0.08);
+  --surface-border-strong: rgba(255, 255, 255, 0.14);
+  --surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  // 06 Glow: on dark, light does the work shadows did
+  --glow-accent: 0 0 22px -4px color-mix(in srgb, var(--accent-color, #38d9df) 42%, transparent);
+  --glow-accent-sm: 0 0 14px -3px color-mix(in srgb, var(--accent-color, #38d9df) 34%, transparent);
+}
+
 // =============================================================================
-// THEME COLOR MAP - WCAG 2.1 AA Compliant
-// All accent colors tested for 4.5:1+ contrast ratio on their backgrounds
+// THEME COLOR MAP - WCAG 2.1 AA+ Dark Mode Tuned (~8.6:1 contrast on #0C1424)
 // =============================================================================
 
 $color-map: (
   bondi-blue: (
-    accent-color: #00c4c9,
-    secondary-color: #3f4a5a,
-    bg-color: #111D29,
+    accent-color: #38d9df,
+    secondary-color: #1c2a42,
+    bg-color: #0c1424,
     text-color: $white,
-    tag-selected-text-color: #111827,
+    tag-selected-text-color: #0c1424,
   ),
   maximum-green-yellow: (
-    accent-color: #a8d44a,
-    secondary-color: #343352,
-    bg-color: #13122d,
+    accent-color: #b7e25c,
+    secondary-color: #1f2242,
+    bg-color: #0e1326,
     text-color: $dark,
-    tag-selected-text-color: #111827,
+    tag-selected-text-color: #0c1424,
   ),
   carrot-orange: (
-    accent-color: #f5a742,
-    secondary-color: #3f4a5a,
-    bg-color: #111D29,
+    accent-color: #f7b257,
+    secondary-color: #1c2a42,
+    bg-color: #0c1424,
     text-color: $white,
-    tag-selected-text-color: #111827,
+    tag-selected-text-color: #0c1424,
   ),
   saffron: (
-    accent-color: #f0cc4a,
-    secondary-color: #343352,
-    bg-color: #13122d,
+    accent-color: #f4d562,
+    secondary-color: #1f2242,
+    bg-color: #0e1326,
     text-color: $white,
-    tag-selected-text-color: #111827,
+    tag-selected-text-color: #0c1424,
   ),
-  cadetblue: (
-    accent-color: #7ec8ca,
-    secondary-color: #3f4a5a,
-    bg-color: #111827,
+  'cadetblue': (
+    accent-color: #88d3d5,
+    secondary-color: #1c2a42,
+    bg-color: #0c1424,
     text-color: $white,
-    tag-selected-text-color: #111827,
+    tag-selected-text-color: #0c1424,
   ),
   blue-pink-gradient: (
-    accent-color: #9d8dd6,
-    secondary-color: #343352,
-    bg-color: #13122d,
+    accent-color: #a99be2,
+    secondary-color: #1f2242,
+    bg-color: #0e1326,
     text-color: $white,
-    tag-selected-text-color: #ffffff,
+    tag-selected-text-color: rgba(255, 255, 255, 0.92),
     accent-gradient-color:
       linear-gradient(
         90deg,
-        rgba(130, 130, 255, 1) 0%,
-        rgba(255, 140, 252, 1) 100%
+        rgba(142, 142, 255, 1) 0%,
+        rgba(246, 152, 252, 1) 100%
       ),
   ),
   pearl-aqua: (
-    accent-color: #8fe0d9,
-    secondary-color: #343352,
-    bg-color: #13122d,
+    accent-color: #96e6df,
+    secondary-color: #1f2242,
+    bg-color: #0e1326,
     text-color: $white,
-    tag-selected-text-color: #111827,
+    tag-selected-text-color: #0c1424,
   ),
   cambridge-blue: (
-    accent-color: #b8d4b9,
-    secondary-color: #3f4a5a,
-    bg-color: #111827,
+    accent-color: #c0dcc1,
+    secondary-color: #1c2a42,
+    bg-color: #0c1424,
     text-color: $white,
-    tag-selected-text-color: #111827,
+    tag-selected-text-color: #0c1424,
   ),
   malachite-green: (
-    accent-color: #00DFA2,
-    secondary-color: #3f4a5a,
-    bg-color: #111827,
+    accent-color: #2ce6b0,
+    secondary-color: #1c2a42,
+    bg-color: #0c1424,
     text-color: $white,
-    tag-selected-text-color: #111827,
+    tag-selected-text-color: #0c1424,
   ),
   deep-space-indigo: (
-    accent-color: #8b91e0,
-    secondary-color: #3f4a5a,
-    bg-color: #111D29,
+    accent-color: #9ba1eb,
+    secondary-color: #1c2a42,
+    bg-color: #0c1424,
     text-color: $white,
-    tag-selected-text-color: #ffffff,
+    tag-selected-text-color: rgba(255, 255, 255, 0.92),
   ),
 );
 
@@ -104,10 +131,23 @@ $color-map: (
     --text-color: #{map-get($colors, text-color)};
     --tag-selected-text-color: #{map-get($colors, tag-selected-text-color)};
     --accent-gradient-color: #{map-get($colors, accent-gradient-color)};
+    --surface-1: color-mix(in srgb, #{map-get($colors, bg-color)} 91%, #ffffff 9%);
+    --surface-2: color-mix(in srgb, #{map-get($colors, bg-color)} 85%, #ffffff 15%);
+    --surface-3: color-mix(in srgb, #{map-get($colors, bg-color)} 77%, #ffffff 23%);
+    --glow-accent: 0 0 22px -4px color-mix(in srgb, #{map-get($colors, accent-color)} 42%, transparent);
+    --glow-accent-sm: 0 0 14px -3px color-mix(in srgb, #{map-get($colors, accent-color)} 34%, transparent);
   }
 
   body:has(.#{$class}) {
-    background: #{map-get($colors, bg-color)};
+    --bg-color: #{map-get($colors, bg-color)};
+    --accent-color: #{map-get($colors, accent-color)};
+    background-color: #{map-get($colors, bg-color)};
+    background-image: radial-gradient(
+      ellipse 85% 42% at 50% -8%,
+      color-mix(in srgb, #{map-get($colors, accent-color)} 12%, transparent),
+      transparent 70%
+    );
+    background-attachment: fixed;
   }
 }
 
@@ -126,8 +166,8 @@ body {
   width: 100%;
   height: 100%;
   text-align: center;
-  color: #fff;
-  background: #282a36;
+  color: var(--text-primary);
+  background-color: #0c1424;
   padding-bottom: calc(100px + env(safe-area-inset-bottom));
   overflow-x: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -141,6 +181,12 @@ body {
   }
 }
 
+// Video 2 #05: Dim vibrant images/photos slightly on dark mode (~85% brightness)
+img,
+video {
+  filter: brightness(0.86) contrast(1.03);
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -149,24 +195,38 @@ code {
 select,
 input,
 textarea {
-  background: var(--bg-color);
-  color: #fff;
+  background: var(--surface-1);
+  color: var(--text-primary);
   border: 1px solid var(--accent-color);
   // Prevent Safari auto-zoom on focus (16px minimum)
   font-size: 16px;
   line-height: 1.4;
 
   &::placeholder {
-    color: #fff;
+    color: var(--text-secondary);
   }
 }
 
 // =============================================================================
-// BUTTONS
+// BUTTONS (Video 1 #01: Sink to 95%, then spring back + Video 2 #06: Glow)
 // =============================================================================
 
 button:hover {
   cursor: pointer;
+}
+
+button:not(:disabled) {
+  transition:
+    transform 0.34s var(--ease-spring),
+    box-shadow 0.25s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  &:active {
+    transform: scale(0.95);
+    transition-duration: 0.08s;
+  }
 }
 
 input[type='submit'] {
@@ -174,12 +234,17 @@ input[type='submit'] {
 }
 
 .button {
-  font-weight: bold;
+  font-weight: 700;
   border: none;
-  min-height: 40px;
+  min-height: 42px;
   background: var(--accent-color);
   border-radius: $border-radius-md;
-  color: #282a36;
+  color: #0c1424;
+  box-shadow: var(--glow-accent-sm);
+
+  &:hover:not(:disabled) {
+    box-shadow: var(--glow-accent);
+  }
 
   body:has(.has-gradient-accent) & {
     background: var(--accent-gradient-color);
@@ -191,13 +256,18 @@ input[type='submit'] {
   }
 
   &-primary {
-    font-weight: bold;
+    font-weight: 700;
     border: none;
-    min-height: 40px;
+    min-height: 42px;
     background: var(--accent-color);
     border-radius: $border-radius-md;
-    color: #282a36;
+    color: #0c1424;
     width: 80%;
+    box-shadow: var(--glow-accent-sm);
+
+    &:hover:not(:disabled) {
+      box-shadow: var(--glow-accent);
+    }
 
     body:has(.has-gradient-accent) & {
       background: var(--accent-gradient-color);
@@ -207,20 +277,21 @@ input[type='submit'] {
 
   &-secondary {
     font-weight: 500;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--surface-border-strong);
     min-height: 40px;
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--surface-1);
+    box-shadow: var(--surface-highlight);
     border-radius: $border-radius-md;
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--text-primary);
     padding: 0.625rem 1.25rem;
     font-size: 0.875rem;
     cursor: pointer;
-    transition: all 0.2s ease;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--surface-2);
       border-color: var(--accent-color);
       color: var(--accent-color);
+      box-shadow: var(--glow-accent-sm);
     }
   }
 }
@@ -229,18 +300,18 @@ input[type='submit'] {
   background: none;
   border: 1px solid var(--accent-color);
   border-radius: $border-radius-md;
-  color: #fff;
+  color: var(--text-primary);
   font-weight: bold;
   min-height: 40px;
   padding: 10px 25px;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--surface-2);
     border-color: var(--accent-color);
     color: var(--accent-color);
+    box-shadow: var(--glow-accent-sm);
   }
 }
 
@@ -254,14 +325,16 @@ input[type='submit'] {
   right: 0;
   bottom: 0;
   padding-bottom: calc(4px + env(safe-area-inset-bottom));
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.35s var(--ease-out-expo);
   z-index: 99;
   touch-action: none;
-  background: rgba(26, 29, 46, 0.85);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.4);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: color-mix(in srgb, var(--surface-2) 86%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    0 -8px 28px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--surface-border);
 
   &.closed {
     height: 60px;
@@ -286,41 +359,58 @@ input[type='submit'] {
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
       a {
-        color: rgba(155, 164, 181, 0.85);
+        color: var(--text-secondary);
         font-size: 28px;
         height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition:
+          color 0.25s ease,
+          transform 0.34s var(--ease-spring);
         -webkit-tap-highlight-color: transparent;
+
+        &:active {
+          transform: scale(0.92);
+          transition-duration: 0.08s;
+        }
 
         &::after {
           content: '';
           position: absolute;
           top: 0;
           left: 50%;
-          transform: translateX(-50%);
-          width: 40px;
+          transform: translateX(-50%) scaleX(0.4);
+          width: 36px;
           height: 3px;
           background: var(--accent-color);
-          border-radius: 0 0 3px 3px;
+          border-radius: 0 0 4px 4px;
+          box-shadow: 0 2px 12px color-mix(in srgb, var(--accent-color) 75%, transparent);
           opacity: 0;
-          transition: opacity 0.3s ease;
+          transition:
+            opacity 0.28s var(--ease-out-expo),
+            transform 0.35s var(--ease-spring);
         }
 
         svg {
           margin: 0 auto;
-          transition: all 0.3s ease;
+          transition:
+            transform 0.34s var(--ease-spring),
+            filter 0.25s ease;
         }
 
         &:focus,
         &.active {
           color: var(--accent-color);
 
+          svg {
+            filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent-color) 45%, transparent));
+          }
+
           &::after {
             opacity: 1;
+            transform: translateX(-50%) scaleX(1);
           }
         }
       }
@@ -620,20 +710,22 @@ input[type="date"] {
 }
 
 // =============================================================================
-// MODAL
+// MODAL (Video 1 #05: Card expand — ease-out: fast first, then slow, 350ms
+//        + Video 2 #04: Raised surfaces get lighter)
 // =============================================================================
 
 .modal {
   &-window {
     position: fixed;
-    background: rgb(62, 63, 74, 0.35);
-    backdrop-filter: blur(10px);
+    background: rgba(6, 10, 20, 0.62);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
     z-index: 999;
-    transition: all 0.3s;
+    animation: modalBackdropFade 220ms var(--ease-out-expo) forwards;
 
     > div {
       max-width: 700px;
@@ -643,9 +735,15 @@ input[type="date"] {
       left: 50%;
       transform: translate(-50%, -50%);
       padding: 2em;
-      background: var(--bg-color);
-      border-radius: $border-radius-md;
+      background: var(--surface-2);
+      border: 1px solid var(--surface-border-strong);
+      box-shadow:
+        var(--surface-highlight),
+        0 24px 56px -12px rgba(0, 0, 0, 0.55),
+        0 0 36px -10px color-mix(in srgb, var(--accent-color) 20%, transparent);
+      border-radius: $border-radius-lg;
       outline: none;
+      animation: modalCardExpand 350ms var(--ease-out-expo) forwards;
 
       h2,
       h3 {
@@ -656,7 +754,7 @@ input[type="date"] {
         font-weight: 500;
         letter-spacing: 0.02em;
         line-height: 1.35;
-        color: rgba(255, 255, 255, 0.92);
+        color: var(--text-primary);
       }
 
       .add-transaction {
@@ -679,12 +777,12 @@ input[type="date"] {
     border: none;
     border-radius: $border-radius-sm;
     background: transparent;
-    color: rgba(255, 255, 255, 0.55);
+    color: var(--text-secondary);
     cursor: pointer;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
+      background: var(--surface-3);
+      color: var(--text-primary);
     }
   }
 }
@@ -698,7 +796,8 @@ input[type="date"] {
     margin-bottom: 1.25rem;
     padding: 0.9rem 1rem;
     border-radius: $border-radius-md;
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--surface-3);
+    border: 1px solid var(--surface-border);
   }
 
   &__date {
@@ -713,14 +812,14 @@ input[type="date"] {
   &__day {
     font-size: 1.3rem;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
     line-height: 1;
   }
 
   &__month {
     font-size: 0.7rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
     margin-top: 0.25rem;
     letter-spacing: 0.5px;
   }
@@ -728,7 +827,7 @@ input[type="date"] {
   &__year {
     font-size: 0.65rem;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.65);
+    color: var(--text-muted);
     margin-top: 0.125rem;
   }
 
@@ -736,14 +835,14 @@ input[type="date"] {
     min-width: 0;
     font-size: 0.95rem;
     line-height: 1.4;
-    color: #fff;
+    color: var(--text-primary);
     overflow-wrap: anywhere;
   }
 
   &__amount {
     font-size: 1.05rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-primary);
     white-space: nowrap;
   }
 
@@ -756,9 +855,10 @@ input[type="date"] {
     min-height: 42px;
     border: none;
     border-radius: $border-radius-md;
-    background: #8c4d47;
+    background: #9f524c;
     color: #f6ecea;
     font-weight: 600;
+    box-shadow: 0 0 18px -4px rgba(159, 82, 76, 0.45);
     cursor: pointer;
 
     &:disabled {
@@ -792,17 +892,17 @@ input[type="date"] {
     justify-content: center;
     width: 40px;
     height: 40px;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--surface-1);
+    border: 1px solid var(--surface-border-strong);
+    box-shadow: var(--surface-highlight);
     border-radius: $border-radius-md;
     color: var(--accent-color);
     cursor: pointer;
-    transition: all 0.2s ease;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--surface-2);
       border-color: var(--accent-color);
-      transform: scale(1.05);
+      box-shadow: var(--glow-accent-sm);
     }
   }
 
@@ -810,17 +910,23 @@ input[type="date"] {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--surface-1);
+    border: 1px solid var(--surface-border-strong);
+    box-shadow: var(--surface-highlight);
     border-radius: $border-radius-md;
     padding: 0 0.75rem;
     height: 40px;
     min-width: 200px;
-    transition: all 0.2s ease;
+    animation: searchExpand 350ms var(--ease-out-expo) forwards;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.25s ease;
 
     &:focus-within {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--surface-2);
       border-color: var(--accent-color);
+      box-shadow: var(--glow-accent-sm);
     }
   }
 
@@ -834,12 +940,12 @@ input[type="date"] {
     background: transparent;
     border: none;
     outline: none;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 1rem;
     min-width: 0;
 
     &::placeholder {
-      color: rgba(255, 255, 255, 0.65);
+      color: var(--text-secondary);
     }
   }
 
@@ -849,68 +955,74 @@ input[type="date"] {
     justify-content: center;
     background: transparent;
     border: none;
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--text-secondary);
     cursor: pointer;
     padding: 0;
     transition: color 0.2s ease;
 
     &:hover {
-      color: #fff;
+      color: var(--text-primary);
     }
   }
 
   &__select {
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--surface-1);
+    border: 1px solid var(--surface-border-strong);
+    box-shadow: var(--surface-highlight);
     border-radius: $border-radius-md;
     padding: 0 2.5rem 0 0.75rem;
     height: 40px;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 1rem;
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23dce3f0' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.75rem center;
     background-size: 12px;
-    transition: all 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.25s ease;
     min-width: 180px;
 
     &:hover {
-      background-color: rgba(255, 255, 255, 0.08);
+      background-color: var(--surface-2);
       border-color: var(--accent-color);
     }
 
     &:focus {
       outline: none;
-      background-color: rgba(255, 255, 255, 0.08);
+      background-color: var(--surface-2);
       border-color: var(--accent-color);
+      box-shadow: var(--glow-accent-sm);
     }
 
     option {
       background: var(--bg-color);
-      color: #fff;
+      color: var(--text-primary);
     }
   }
 
   &__clear-button {
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--surface-1);
+    border: 1px solid var(--surface-border-strong);
+    box-shadow: var(--surface-highlight);
     border-radius: $border-radius-md;
     padding: 0 1rem;
     height: 40px;
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--text-primary);
     font-size: 0.875rem;
     cursor: pointer;
-    transition: all 0.2s ease;
     white-space: nowrap;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--surface-2);
       border-color: var(--accent-color);
       color: var(--accent-color);
+      box-shadow: var(--glow-accent-sm);
     }
   }
 
@@ -924,33 +1036,33 @@ input[type="date"] {
   }
 
   &__tag {
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: var(--surface-1);
+    border: 1px solid var(--surface-border-strong);
     border-radius: $border-radius-sm;
     padding: 0.4rem 0.75rem;
-    color: rgba(255, 255, 255, 0.95);
+    color: var(--text-primary);
     font-size: 0.875rem;
     font-weight: 400;
     font-style: italic;
     cursor: pointer;
     white-space: nowrap;
-    animation: bubble-up 0.3s;
-    transition: all 0.2s ease;
+    animation: bubble-up 0.32s var(--ease-spring);
     -webkit-tap-highlight-color: transparent;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.15);
+      background: var(--surface-2);
       border-color: rgba(255, 255, 255, 0.25);
     }
 
     &--selected {
       border: 1px solid var(--accent-color);
-      background: rgba(255, 255, 255, 0.12);
+      background: color-mix(in srgb, var(--accent-color) 16%, var(--surface-2));
       color: var(--accent-color);
+      box-shadow: var(--glow-accent-sm);
       font-weight: 500;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.15);
+        background: color-mix(in srgb, var(--accent-color) 22%, var(--surface-2));
         border-color: var(--accent-color);
       }
     }
@@ -1131,11 +1243,16 @@ input[type="date"] {
       border: none;
       border-radius: $border-radius-md;
       background: var(--accent-color);
-      color: #282a36;
+      color: #0c1424;
       font-size: 0.95rem;
       font-weight: 600;
       line-height: 1.2;
+      box-shadow: var(--glow-accent-sm);
       cursor: pointer;
+
+      &:hover:not(:disabled) {
+        box-shadow: var(--glow-accent);
+      }
 
       body:has(.has-gradient-accent) & {
         background: var(--accent-gradient-color);
@@ -1245,12 +1362,14 @@ input[type="date"] {
       width: 100%;
       padding: 0.75rem 0.9rem;
       border-radius: $border-radius-md;
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--surface-1);
+      border: 1px solid var(--surface-border);
+      box-shadow: var(--surface-highlight);
       box-sizing: border-box;
 
       span {
         font-size: 0.875rem;
-        color: rgba(255, 255, 255, 0.85);
+        color: var(--text-secondary);
       }
 
       .currency-value {
@@ -1260,7 +1379,7 @@ input[type="date"] {
         gap: 0.45rem;
         margin-left: auto;
         min-height: 36px;
-        color: #fff;
+        color: var(--text-primary);
         font-size: 0.875rem;
         font-weight: 600;
         line-height: 1.2;
@@ -1270,7 +1389,7 @@ input[type="date"] {
           flex: 0 0 12px;
           width: 12px;
           height: 12px;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23dce3f0' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
           background-repeat: no-repeat;
           background-position: center;
           background-size: 12px;
@@ -1298,7 +1417,7 @@ input[type="date"] {
 
         option {
           background: var(--bg-color);
-          color: #fff;
+          color: var(--text-primary);
         }
       }
     }
@@ -1321,30 +1440,33 @@ input[type="date"] {
       align-items: center;
       gap: 0.5rem;
       padding: 0.75rem 0.5rem;
-      border: 2px solid transparent;
+      border: 1px solid var(--surface-border);
       border-radius: $border-radius-md;
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--surface-1);
+      box-shadow: var(--surface-highlight);
       cursor: pointer;
-      transition: border-color 0.15s ease, background 0.15s ease;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.06);
+        background: var(--surface-2);
+        border-color: var(--surface-border-strong);
       }
 
       &.active {
         border-color: var(--accent-color);
-        background: rgba(255, 255, 255, 0.06);
+        background: var(--surface-2);
+        box-shadow: var(--surface-highlight), var(--glow-accent-sm);
       }
 
       &__preview {
         width: 32px;
         height: 32px;
         border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
       }
 
       &__label {
         font-size: 0.75rem;
-        color: #ffffff;
+        color: var(--text-primary);
         line-height: 1.3;
         text-align: center;
       }
@@ -1423,8 +1545,132 @@ input[type="date"] {
 }
 
 // =============================================================================
-// STATS
+// STATS & ROLLING NUMBER (Video 1 #03: Digits roll 100ms apart
+//                         + Video 2 #04 Elevation & #06 Glow)
 // =============================================================================
+
+.rolling-number {
+  display: inline-flex;
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+
+  &__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  &__track {
+    display: inline-flex;
+    align-items: baseline;
+  }
+
+  &__sep {
+    display: inline-block;
+    line-height: 1.15;
+  }
+
+  &__col {
+    display: inline-block;
+    height: 1.15em;
+    overflow: hidden;
+    vertical-align: bottom;
+    position: relative;
+  }
+
+  &__reel {
+    display: flex;
+    flex-direction: column;
+    will-change: transform;
+    transition: transform 0.52s var(--ease-roll);
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  &__digit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 1.15em;
+    line-height: 1.15;
+  }
+}
+
+.pull-to-refresh {
+  position: relative;
+  width: 100%;
+
+  &__indicator {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 20;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--surface-3);
+    border: 1px solid var(--surface-border-strong);
+    box-shadow: var(--surface-highlight), 0 8px 20px rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    transition:
+      opacity 0.2s ease,
+      box-shadow 0.25s ease,
+      border-color 0.25s ease;
+
+    &.is-ready,
+    &.is-refreshing {
+      border-color: var(--accent-color);
+      box-shadow: var(--glow-accent);
+    }
+
+    &.is-refreshing .pull-to-refresh__ring {
+      animation: spin 0.85s linear infinite;
+    }
+  }
+
+  &__ring {
+    width: 24px;
+    height: 24px;
+    transform: rotate(-90deg);
+  }
+
+  &__track,
+  &__fill {
+    fill: none;
+    stroke-width: 2.5;
+  }
+
+  &__track {
+    stroke: rgba(255, 255, 255, 0.12);
+  }
+
+  &__fill {
+    stroke: var(--accent-color);
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.12s ease;
+  }
+
+  &__content {
+    will-change: transform;
+
+    &.is-releasing {
+      transition: transform 0.44s var(--ease-spring);
+    }
+  }
+}
 
 .stats-grid {
   display: grid;
@@ -1447,7 +1693,9 @@ input[type="date"] {
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--surface-highlight);
   border-radius: $border-radius-lg;
   padding: 1rem 0.75rem;
   display: flex;
@@ -1456,12 +1704,19 @@ input[type="date"] {
   justify-content: center;
   gap: 0.625rem;
   min-height: 100px;
-  transition: background 0.2s ease;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.34s var(--ease-spring),
+    box-shadow 0.25s ease;
   position: relative;
   overflow: hidden;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--surface-2);
+    border-color: var(--surface-border-strong);
+    transform: translateY(-2px);
+    box-shadow: var(--surface-highlight), var(--glow-accent-sm);
   }
 
   .stat-icon {
@@ -1469,6 +1724,7 @@ input[type="date"] {
     height: 48px;
     border-radius: 50%;
     background: color-mix(in srgb, var(--accent-color) 15%, transparent);
+    box-shadow: 0 0 18px -4px color-mix(in srgb, var(--accent-color) 35%, transparent);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1483,14 +1739,14 @@ input[type="date"] {
   .stat-value {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
     line-height: 1;
     z-index: 2;
   }
 
   .stat-label {
     font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.75);
+    color: var(--text-secondary);
     text-align: center;
     z-index: 2;
   }
@@ -1836,17 +2092,17 @@ input[type="date"] {
     margin-bottom: 0.75rem;
 
     .sort-button {
-      background: rgba(255, 255, 255, 0.07);
-      border: none;
+      background: var(--surface-1);
+      border: 1px solid var(--surface-border);
+      box-shadow: var(--surface-highlight);
       border-radius: $border-radius-sm;
       padding: 0.5rem 1rem;
-      color: rgba(255, 255, 255, 0.75);
+      color: var(--text-secondary);
       font-size: 0.875rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      transition: all 0.2s ease;
 
       svg {
         font-size: 0.875rem;
@@ -1854,28 +2110,37 @@ input[type="date"] {
       }
 
       &:hover {
-        background: rgba(255, 255, 255, 0.08);
-        color: rgba(255, 255, 255, 0.8);
+        background: var(--surface-2);
+        border-color: var(--surface-border-strong);
+        color: var(--text-primary);
       }
 
       &.active {
-        background: color-mix(in srgb, var(--accent-color) 20%, transparent);
+        background: color-mix(in srgb, var(--accent-color) 18%, var(--surface-2));
+        border-color: color-mix(in srgb, var(--accent-color) 45%, transparent);
+        box-shadow: var(--glow-accent-sm);
         color: var(--accent-color);
         font-weight: 500;
       }
     }
   }
 
-  // Transaction List Item
+  // Transaction List Item (Video 1 #04: Lift on drag/swipe + Video 2 #04 Elevation)
   .transaction-list-item {
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--surface-1);
+    border: 1px solid var(--surface-border);
+    box-shadow: var(--surface-highlight);
     border-radius: $border-radius-lg;
     padding: 1rem;
     padding-right: 1.5rem;
     display: flex;
     align-items: flex-start;
     gap: 1rem;
-    transition: all 0.2s ease;
+    transition:
+      background 0.22s ease,
+      border-color 0.22s ease,
+      box-shadow 0.25s ease,
+      transform 0.34s var(--ease-spring);
     position: relative;
     z-index: 1;
     width: 100%;
@@ -1887,7 +2152,15 @@ input[type="date"] {
     -webkit-overflow-scrolling: touch;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--surface-2);
+      border-color: var(--surface-border-strong);
+    }
+
+    &.is-swiping {
+      background: var(--surface-2);
+      border-color: var(--surface-border-strong);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.38), var(--glow-accent-sm);
+      z-index: 4;
     }
 
     .transaction-date-box {
@@ -1901,14 +2174,14 @@ input[type="date"] {
       .date-day {
         font-size: 1.3rem;
         font-weight: 700;
-        color: #ffffff;
+        color: var(--text-primary);
         line-height: 1;
       }
 
       .date-month {
         font-size: 0.7rem;
         font-weight: 600;
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--text-secondary);
         margin-top: 0.25rem;
         letter-spacing: 0.5px;
       }
@@ -1916,7 +2189,7 @@ input[type="date"] {
       .date-year {
         font-size: 0.65rem;
         font-weight: 500;
-        color: rgba(255, 255, 255, 0.65);
+        color: var(--text-muted);
         margin-top: 0.125rem;
       }
     }
@@ -1930,15 +2203,14 @@ input[type="date"] {
       height: 2.5rem;
       min-width: 2.5rem;
       background: var(--category-tint, rgba(255, 255, 255, 0.1));
-      border: 1px solid transparent;
+      border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: $border-radius-md;
       padding: 0;
       flex-shrink: 0;
-      color: rgba(255, 255, 255, 0.9);
+      color: var(--text-primary);
       cursor: pointer;
       font: inherit;
       -webkit-tap-highlight-color: transparent;
-      transition: border-color 0.2s ease, transform 0.15s ease;
 
       &:hover,
       &:focus-visible {
@@ -1959,17 +2231,17 @@ input[type="date"] {
       top: 50%;
       transform: translateY(-50%);
       white-space: nowrap;
-      background: rgba(17, 24, 39, 0.95);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      color: #fff;
+      background: var(--surface-3);
+      border: 1px solid var(--surface-border-strong);
+      color: var(--text-primary);
       font-size: 0.75rem;
       font-weight: 500;
       padding: 0.3rem 0.55rem;
       border-radius: $border-radius-sm;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.38);
       z-index: 5;
       pointer-events: none;
-      animation: category-tip-in 0.15s ease;
+      animation: category-tip-in 0.18s var(--ease-out-expo);
     }
 
     .transaction-content {
@@ -1979,7 +2251,7 @@ input[type="date"] {
       .transaction-name {
         font-size: 1rem;
         font-weight: 500;
-        color: #ffffff;
+        color: var(--text-primary);
         line-height: 1.4;
         word-wrap: break-word;
         overflow-wrap: break-word;
@@ -1989,7 +2261,8 @@ input[type="date"] {
     .transaction-price {
       font-size: 1.125rem;
       font-weight: 700;
-      color: #ffffff;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
       white-space: nowrap;
       padding-right: 0.5rem;
       flex-shrink: 0;
@@ -2256,8 +2529,35 @@ input[type="date"] {
 }
 
 // =============================================================================
-// NOTIFICATION
+// NOTIFICATION (Video 1 #06: Success tick — circle first, then tick, 470ms)
 // =============================================================================
+
+.success-tick-svg {
+  display: block;
+  overflow: visible;
+
+  &__circle {
+    stroke-dasharray: 62;
+    stroke-dashoffset: 62;
+    transform-origin: center;
+    transform: rotate(-90deg);
+    animation: successCircleDraw 250ms var(--ease-roll) forwards;
+  }
+
+  &__check {
+    stroke-dasharray: 18;
+    stroke-dashoffset: 18;
+    animation: successTickDraw 240ms var(--ease-roll) 230ms forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__circle,
+    &__check {
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+  }
+}
 
 .notification {
   position: fixed;
@@ -2270,11 +2570,16 @@ input[type="date"] {
   gap: 0.65rem;
   width: max-content;
   max-width: calc(100% - 2rem);
-  padding: 0.55rem 0.75rem 0.55rem 0.55rem;
+  padding: 0.55rem 0.85rem 0.55rem 0.55rem;
   border-radius: $border-radius-md;
-  background: #2a3444;
-  color: #f4f6f8;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  background: var(--surface-3);
+  border: 1px solid var(--surface-border-strong);
+  color: var(--text-primary);
+  box-shadow:
+    var(--surface-highlight),
+    0 12px 32px rgba(0, 0, 0, 0.42),
+    0 0 22px -6px rgba(47, 106, 79, 0.55);
+  animation: notificationEnter 350ms var(--ease-out-expo) forwards;
 
   &__icon {
     display: flex;
@@ -2285,6 +2590,7 @@ input[type="date"] {
     flex-shrink: 0;
     border-radius: $border-radius-sm;
     background: #2f6a4f;
+    box-shadow: 0 0 14px -2px rgba(52, 211, 153, 0.45);
 
     svg {
       color: #f3f7f4;
@@ -2298,8 +2604,14 @@ input[type="date"] {
   }
 
   &.error {
+    box-shadow:
+      var(--surface-highlight),
+      0 12px 32px rgba(0, 0, 0, 0.42),
+      0 0 22px -6px rgba(159, 82, 76, 0.55);
+
     .notification__icon {
       background: #8c4d47;
+      box-shadow: 0 0 14px -2px rgba(248, 113, 113, 0.4);
 
       svg {
         color: #f6ecea;
@@ -2389,37 +2701,42 @@ input[type="date"] {
   justify-content: center;
   align-items: center;
   z-index: 90;
-  background: linear-gradient(180deg, transparent 0%, rgba(26, 29, 46, 0.6) 50%);
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--bg-color) 65%, transparent) 60%);
+  pointer-events: none;
 
   button {
+    pointer-events: auto;
     width: 2.5rem;
     height: 2.5rem;
     border-radius: $border-radius-md;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--surface-border-strong);
     padding: 0;
     margin: 0 12px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(40, 42, 54, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    color: rgba(255, 255, 255, 0.7);
+    background: color-mix(in srgb, var(--surface-2) 85%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: var(--surface-highlight), 0 4px 16px rgba(0, 0, 0, 0.32);
+    color: var(--text-primary);
     cursor: pointer;
 
     &:hover:not(:disabled) {
       border-color: var(--accent-color);
-      background: rgba(40, 42, 54, 0.9);
+      background: var(--surface-3);
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      box-shadow: var(--glow-accent);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.95);
     }
 
     &:focus {
       outline: none;
       border-color: var(--accent-color);
-      box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb, 0, 168, 173), 0.2);
+      box-shadow: var(--glow-accent-sm);
     }
 
     &:disabled {
@@ -2498,6 +2815,66 @@ input[type="date"] {
 // =============================================================================
 // KEYFRAME ANIMATIONS
 // =============================================================================
+
+@keyframes modalBackdropFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalCardExpand {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -47%) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes searchExpand {
+  from {
+    opacity: 0;
+    transform: scaleX(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes successCircleDraw {
+  from {
+    stroke-dashoffset: 62;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes successTickDraw {
+  from {
+    stroke-dashoffset: 18;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes notificationEnter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
 
 @keyframes fadeInScale {
   0% {
@@ -3042,16 +3419,23 @@ input[type="date"] {
   align-items: flex-end;
   gap: 0.4rem;
   padding: 0.4rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--surface-border-strong);
   border-radius: $border-radius-lg;
-  background: rgba(26, 29, 46, 0.92);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
-  transition: border-color 0.2s ease;
+  background: color-mix(in srgb, var(--surface-2) 92%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    var(--surface-highlight),
+    0 8px 28px rgba(0, 0, 0, 0.38);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
 
   &:focus-within {
     border-color: var(--accent-color);
+    box-shadow:
+      var(--surface-highlight),
+      var(--glow-accent);
   }
 
   textarea {
@@ -3087,10 +3471,12 @@ input[type="date"] {
 
   &__send {
     background: var(--accent-color);
-    color: #282a36;
+    color: #0c1424;
+    box-shadow: var(--glow-accent-sm);
 
     &:disabled {
       opacity: 0.35;
+      box-shadow: none;
       cursor: default;
     }
   }
@@ -3174,7 +3560,9 @@ input[type="date"] {
   gap: 0.65rem;
   padding: 0.9rem;
   border-radius: $border-radius-md;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--surface-highlight);
   text-align: left;
 
   &__title {
@@ -3305,7 +3693,9 @@ input[type="date"] {
   gap: 0.65rem;
   padding: 0.9rem;
   border-radius: $border-radius-md;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--surface-highlight);
   text-align: left;
 
   &__title {
@@ -3473,7 +3863,9 @@ $privacy-warn: #fde68a;
   gap: 0.65rem;
   padding: 0.9rem;
   border-radius: $border-radius-md;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--surface-highlight);
   text-align: left;
 
   &__title {
@@ -4356,7 +4748,9 @@ $privacy-warn: #fde68a;
   gap: 0.65rem;
   padding: 0.9rem;
   border-radius: $border-radius-md;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--surface-highlight);
   text-align: left;
 
   &__title {
@@ -4591,10 +4985,21 @@ $budget-over: #ff8f8f;
 }
 
 .budget-card {
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--surface-highlight);
   border-radius: $border-radius-lg;
   padding: 0.9rem 1rem 1rem;
+  transition:
+    background 0.35s var(--ease-out-expo),
+    border-color 0.35s var(--ease-out-expo),
+    box-shadow 0.35s var(--ease-out-expo);
+
+  &.is-open {
+    background: var(--surface-2);
+    border-color: var(--surface-border-strong);
+    box-shadow: var(--surface-highlight), var(--glow-accent-sm);
+  }
 
   &__toggle {
     display: flex;
@@ -4603,7 +5008,7 @@ $budget-over: #ff8f8f;
     width: 100%;
     border: none;
     background: transparent;
-    color: #fff;
+    color: var(--text-primary);
     padding: 0;
     font: inherit;
     text-align: left;
@@ -4641,11 +5046,11 @@ $budget-over: #ff8f8f;
     flex-wrap: wrap;
     gap: 0.4rem;
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.62);
+    color: var(--text-secondary);
     font-variant-numeric: tabular-nums;
 
     strong {
-      color: #fff;
+      color: var(--text-primary);
       font-weight: 600;
     }
   }
@@ -4666,8 +5071,8 @@ $budget-over: #ff8f8f;
 
   &__chevron {
     flex-shrink: 0;
-    color: rgba(255, 255, 255, 0.55);
-    transition: transform 0.28s ease;
+    color: var(--text-secondary);
+    transition: transform 0.35s var(--ease-out-expo);
 
     &.is-open {
       transform: rotate(180deg);
@@ -4686,15 +5091,18 @@ $budget-over: #ff8f8f;
       inset: 0 auto 0 0;
       border-radius: inherit;
       background: $budget-ok;
+      box-shadow: 0 0 12px -2px rgba(110, 231, 183, 0.45);
       transition: background 0.35s ease;
     }
 
     &.is-ahead &-fill {
       background: $budget-ahead;
+      box-shadow: 0 0 12px -2px rgba(251, 191, 106, 0.45);
     }
 
     &.is-over &-fill {
       background: $budget-over;
+      box-shadow: 0 0 12px -2px rgba(255, 143, 143, 0.5);
     }
 
     &-pace {
@@ -4711,7 +5119,7 @@ $budget-over: #ff8f8f;
   &__panel {
     display: grid;
     grid-template-rows: 0fr;
-    transition: grid-template-rows 0.32s ease;
+    transition: grid-template-rows 0.35s var(--ease-out-expo);
 
     &.is-open {
       grid-template-rows: 1fr;

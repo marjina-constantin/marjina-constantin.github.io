@@ -9,6 +9,7 @@ import { monthNames } from '../../utils/constants';
 import useSwipeActions from '../../hooks/useSwipeActions';
 import { useListSort } from '../../hooks/useListSort';
 import { useListItems } from '../../hooks/useListItems';
+import { useFlipList } from '../../hooks/useFlipList';
 import ItemSyncIndicator from '../sync/ItemSyncIndicator';
 import HashtagText from '../ui/HashtagText';
 import BudgetRings from '../budgets/BudgetRings';
@@ -44,6 +45,8 @@ const TransactionList: React.FC<TransactionListProps> = ({
 
   const allItems = useListItems(transactions, changedItems, handleClearChangedItem, 'transaction');
   const { sortField, sortDirection, handleSort, sortedItems } = useListSort(allItems);
+  const orderKey = useMemo(() => sortedItems.map((i) => i.id).join('|'), [sortedItems]);
+  useFlipList(listRef, orderKey, `${sortField}:${sortDirection}`);
 
   useEffect(() => {
     return () => {
@@ -119,7 +122,11 @@ const TransactionList: React.FC<TransactionListProps> = ({
           const tipVisible = categoryTipId === transaction.id;
 
           return (
-            <div key={transaction.id} className={`transaction-item-wrapper ${changeType || ''}`}>
+            <div
+              key={transaction.id}
+              data-flip-id={transaction.id}
+              className={`transaction-item-wrapper ${changeType || ''}`}
+            >
               {/* Swipe Actions */}
               <div
                 className={`swipe-actions-background ${

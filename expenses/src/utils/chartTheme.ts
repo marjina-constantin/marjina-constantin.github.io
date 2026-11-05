@@ -1,14 +1,14 @@
 import Highcharts from 'highcharts';
 
 const label = {
-  color: 'rgba(255, 255, 255, 0.7)',
+  color: 'rgba(255, 255, 255, 0.60)',
   fontFamily: 'inherit',
 };
 
 const axis = {
-  gridLineColor: 'rgba(255, 255, 255, 0.08)',
-  lineColor: 'rgba(255, 255, 255, 0.12)',
-  tickColor: 'rgba(255, 255, 255, 0.12)',
+  gridLineColor: 'rgba(255, 255, 255, 0.06)',
+  lineColor: 'rgba(255, 255, 255, 0.10)',
+  tickColor: 'rgba(255, 255, 255, 0.10)',
   labels: { style: label },
   title: { style: label },
 };
@@ -40,7 +40,7 @@ export function applyChartTheme() {
     ],
     title: {
       style: {
-        color: 'rgba(255, 255, 255, 0.92)',
+        color: 'rgba(255, 255, 255, 0.87)',
         fontSize: '1.05rem',
         fontWeight: '600',
         fontFamily: 'inherit',
@@ -48,7 +48,7 @@ export function applyChartTheme() {
     },
     subtitle: {
       style: {
-        color: 'rgba(255, 255, 255, 0.7)',
+        color: 'rgba(255, 255, 255, 0.60)',
         fontFamily: 'inherit',
       },
     },
@@ -56,23 +56,25 @@ export function applyChartTheme() {
     yAxis: axis,
     legend: {
       itemStyle: {
-        color: 'rgba(255, 255, 255, 0.85)',
+        color: 'rgba(255, 255, 255, 0.80)',
         fontFamily: 'inherit',
         fontWeight: '500',
       },
       itemHoverStyle: {
-        color: '#ffffff',
+        color: 'rgba(255, 255, 255, 0.95)',
       },
       itemHiddenStyle: {
         color: 'rgba(255, 255, 255, 0.35)',
       },
     },
     tooltip: {
-      backgroundColor: '#2a3444',
-      borderWidth: 0,
+      backgroundColor: '#192338',
+      borderWidth: 1,
+      borderColor: 'rgba(255, 255, 255, 0.10)',
+      borderRadius: 10,
       shadow: false,
       style: {
-        color: '#f4f6f8',
+        color: 'rgba(255, 255, 255, 0.87)',
         fontSize: '14px',
         fontFamily: 'inherit',
       },

@@ -4,6 +4,7 @@ import { deleteNode, fetchData } from '../../utils/utils';
 import { useNotification } from '../../context';
 import Modal from '../../components/ui/Modal';
 import ConfirmDeleteModal from '../../components/ui/ConfirmDeleteModal';
+import PullToRefresh from '../../components/ui/PullToRefresh';
 import IncomeList from '../../components/income/IncomeList';
 import IncomeFilters from '../../components/income/IncomeFilters';
 import StatCard from '../../components/ui/StatCard';
@@ -136,7 +137,7 @@ const Income = () => {
       {!noData && <IncomeFilters />}
 
       {!noData && (
-        <div>
+        <PullToRefresh onRefresh={() => fetchData(token, dataDispatch, dispatch)}>
           {hasIncomeData && (
             <div className="stats-grid">
               <StatCard icon={<ArrowUpCircle />} value={totalIncome} label="Total Income" />
@@ -173,7 +174,7 @@ const Income = () => {
               </button>
             </div>
           )}
-        </div>
+        </PullToRefresh>
       )}
 
       {hasIncomeData && (

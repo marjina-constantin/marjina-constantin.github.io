@@ -1,68 +1,70 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { formatNumber } from '../../utils/utils';
-
-const BASE_DURATION = 300;
-const MAX_DURATION = 300;
-
-const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
 interface NumberDisplayProps {
   number: number;
 }
 
+const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+/**
+ * Rolling odometer number display ("Roll, don't jump"):
+ * Each digit column rolls vertically into place on an S-curve,
+ * staggered 100ms apart from left to right.
+ */
 const NumberDisplay: React.FC<NumberDisplayProps> = ({ number }) => {
-  const [displayedNumber, setDisplayedNumber] = useState(0);
-  const animationFrameRef = useRef<number | null>(null);
-  const displayedValueRef = useRef(displayedNumber);
-  displayedValueRef.current = displayedNumber;
+  const formatted = formatNumber(Math.round(number));
+  const [armed, setArmed] = useState(false);
 
   useEffect(() => {
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-      animationFrameRef.current = null;
-    }
+    const raf = requestAnimationFrame(() => {
+      setArmed(true);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
-    const startValue = displayedValueRef.current;
-    const diff = number - startValue;
+  const chars = Array.from(formatted);
+  let digitOrder = 0;
 
-    if (diff === 0) {
-      return;
-    }
+  return (
+    <div className="rolling-number" aria-label={formatted}>
+      <span className="rolling-number__sr">{formatted}</span>
+      <span className="rolling-number__track" aria-hidden="true">
+        {chars.map((char, idx) => {
+          const isDigit = char >= '0' && char <= '9';
+          if (!isDigit) {
+            return (
+              <span key={`sep-${idx}`} className="rolling-number__sep">
+                {char}
+              </span>
+            );
+          }
 
-    const duration = Math.min(
-      MAX_DURATION,
-      BASE_DURATION + Math.log10(Math.abs(diff) + 1) * 250
-    );
-    const startTime = performance.now();
+          const digitValue = Number(char);
+          const staggerIndex = digitOrder++;
+          const targetDigit = armed ? digitValue : 0;
 
-    const tick = (currentTime: number) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easedProgress = easeOutCubic(progress);
-      const nextValue = startValue + diff * easedProgress;
-      const roundedValue =
-        progress < 1 ? Math.round(nextValue) : Math.round(number);
-
-      setDisplayedNumber(roundedValue);
-
-      if (progress < 1) {
-        animationFrameRef.current = requestAnimationFrame(tick);
-      } else {
-        animationFrameRef.current = null;
-      }
-    };
-
-    animationFrameRef.current = requestAnimationFrame(tick);
-
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-        animationFrameRef.current = null;
-      }
-    };
-  }, [number]);
-
-  return <div>{formatNumber(displayedNumber)}</div>;
+          return (
+            <span key={`col-${idx}-${ chars.length }`} className="rolling-number__col">
+              <span
+                className="rolling-number__reel"
+                style={{
+                  transform: `translateY(-${targetDigit * 10}%)`,
+                  transitionDelay: `${staggerIndex * 100}ms`,
+                }}
+              >
+                {DIGITS.map((d) => (
+                  <span key={d} className="rolling-number__digit">
+                    {d}
+                  </span>
+                ))}
+              </span>
+            </span>
+          );
+        })}
+      </span>
+    </div>
+  );
 };
 
 export default NumberDisplay;

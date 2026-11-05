@@ -7,6 +7,7 @@ import SortControls from '../ui/SortControls';
 import useSwipeActions from '../../hooks/useSwipeActions';
 import { useListSort } from '../../hooks/useListSort';
 import { useListItems } from '../../hooks/useListItems';
+import { useFlipList } from '../../hooks/useFlipList';
 import ItemSyncIndicator from '../sync/ItemSyncIndicator';
 import HashtagText from '../ui/HashtagText';
 
@@ -31,6 +32,8 @@ const IncomeList: React.FC<IncomeListProps> = ({
 
   const allItems = useListItems(transactions, changedItems, handleClearChangedItem, 'incomes');
   const { sortField, sortDirection, handleSort, sortedItems } = useListSort(allItems);
+  const orderKey = sortedItems.map((i) => i.id).join('|');
+  useFlipList(listRef, orderKey, `${sortField}:${sortDirection}`);
 
   return (
     <div className="transaction-list-component income-list" ref={listRef}>
@@ -49,7 +52,11 @@ const IncomeList: React.FC<IncomeListProps> = ({
         const isThisItemSwiped = swipedItemId === transaction.id;
 
         return (
-          <div key={transaction.id} className={`transaction-item-wrapper ${changeType || ''}`}>
+          <div
+            key={transaction.id}
+            data-flip-id={transaction.id}
+            className={`transaction-item-wrapper ${changeType || ''}`}
+          >
             {/* Swipe Actions */}
             <div
               className={`swipe-actions-background ${
