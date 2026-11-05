@@ -32,9 +32,9 @@ $border-radius-lg: 16px; // Large elements (cards, containers)
   --surface-1: color-mix(in srgb, var(--bg-color) 91%, #ffffff 9%);
   --surface-2: color-mix(in srgb, var(--bg-color) 85%, #ffffff 15%);
   --surface-3: color-mix(in srgb, var(--bg-color) 77%, #ffffff 23%);
-  --surface-border: rgba(255, 255, 255, 0.08);
-  --surface-border-strong: rgba(255, 255, 255, 0.14);
-  --surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  --surface-border: rgba(255, 255, 255, 0.045);
+  --surface-border-strong: rgba(255, 255, 255, 0.08);
+  --surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.035);
   // 06 Glow: on dark, light does the work shadows did
   --glow-accent: 0 0 22px -4px color-mix(in srgb, var(--accent-color, #38d9df) 42%, transparent);
   --glow-accent-sm: 0 0 14px -3px color-mix(in srgb, var(--accent-color, #38d9df) 34%, transparent);
@@ -459,7 +459,7 @@ input[type='submit'] {
     min-height: 40px;
     width: 100%;
     margin-bottom: 20px;
-    border-bottom: 1px solid #6d7781;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
     font-weight: bold;
     transition: all 0.3s ease-in-out;
     color: #ccc;
@@ -749,7 +749,7 @@ input[type="date"] {
       transform: translate(-50%, -50%);
       padding: 2em;
       background: var(--bg-color);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.045);
       border-radius: $border-radius-md;
       outline: none;
       animation: modalCardExpand 350ms var(--ease-out-expo) forwards;
@@ -1053,8 +1053,8 @@ input[type="date"] {
   }
 
   &__tag {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: $border-radius-sm;
     padding: 0.4rem 0.75rem;
     color: var(--text-primary);
@@ -1067,13 +1067,13 @@ input[type="date"] {
 
     @media (hover: hover) {
       &:hover {
-        background: rgba(255, 255, 255, 0.12);
-        border-color: rgba(255, 255, 255, 0.22);
+        background: rgba(255, 255, 255, 0.11);
+        border-color: rgba(255, 255, 255, 0.14);
       }
     }
 
     &--selected {
-      border: 1px solid var(--accent-color);
+      border: 1px solid color-mix(in srgb, var(--accent-color) 70%, transparent);
       background: rgba(255, 255, 255, 0.1);
       color: var(--accent-color);
       font-weight: 500;
@@ -1513,7 +1513,7 @@ input[type="date"] {
     padding: 1.75rem 0 2rem;
 
     & + & {
-      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
     }
 
     .heading {
@@ -3201,7 +3201,7 @@ input[type="date"] {
 
 .ai-chip {
   padding: 0.55rem 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--surface-border-strong);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.07);
   color: rgba(255, 255, 255, 0.88);
@@ -3448,7 +3448,7 @@ input[type="date"] {
   align-items: flex-end;
   gap: 0.4rem;
   padding: 0.4rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--surface-border-strong);
   border-radius: $border-radius-lg;
   background: rgba(26, 29, 46, 0.92);
   backdrop-filter: blur(15px);
