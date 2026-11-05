@@ -134,7 +134,10 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, children }) =>
         className={`pull-to-refresh__content${isReleasing ? ' is-releasing' : ''}`}
         style={
           pullOffset > 0
-            ? { transform: `translate3d(0, ${pullOffset}px, 0)` }
+            ? {
+                transform: `translate3d(0, ${pullOffset}px, 0)`,
+                willChange: 'transform',
+              }
             : undefined
         }
       >

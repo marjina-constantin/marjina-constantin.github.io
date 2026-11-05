@@ -141,28 +141,30 @@ const Home = () => {
       {loading && <PageLoader />}
 
       {!loading && !noData && hasGroupedData && (
-        <PullToRefresh
-          onRefresh={() =>
-            fetchData(
-              token,
-              dataDispatch,
-              dispatch,
-              data.category as string,
-              data.textFilter as string
-            )
-          }
-        >
-          <TransactionList
-            transactions={items.groupedData[currentMonth]}
-            categoryLabels={categories}
-            onEdit={handleEdit}
-            onDelete={(id) => setShowDeleteModal(id)}
-            changedItems={data.changedItems}
-            handleClearChangedItem={handleClearChangedItem}
-            month={currentMonth}
-            total={items.totals[currentMonth]}
-            incomeTotals={items.incomeTotals}
-          />
+        <>
+          <PullToRefresh
+            onRefresh={() =>
+              fetchData(
+                token,
+                dataDispatch,
+                dispatch,
+                data.category as string,
+                data.textFilter as string
+              )
+            }
+          >
+            <TransactionList
+              transactions={items.groupedData[currentMonth]}
+              categoryLabels={categories}
+              onEdit={handleEdit}
+              onDelete={(id) => setShowDeleteModal(id)}
+              changedItems={data.changedItems}
+              handleClearChangedItem={handleClearChangedItem}
+              month={currentMonth}
+              total={items.totals[currentMonth]}
+              incomeTotals={items.incomeTotals}
+            />
+          </PullToRefresh>
           <div className="pager-navigation">
             <button
               disabled={!months[currentMonthIndex + 1]}
@@ -177,7 +179,7 @@ const Home = () => {
               <ChevronRight />
             </button>
           </div>
-        </PullToRefresh>
+        </>
       )}
     </div>
   );

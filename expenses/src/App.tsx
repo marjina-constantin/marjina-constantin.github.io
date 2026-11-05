@@ -62,6 +62,32 @@ const SyncSetup: React.FC = () => {
   }, [dispatch, dataDispatch]);
 
   useEffect(() => {
+    const onPointerDown = (event: PointerEvent) => {
+      const target = (event.target as Element | null)?.closest?.(
+        'button:not(:disabled), .navbar a, .currency-row, [role="button"]'
+      ) as HTMLElement | null;
+      if (!target || target.classList.contains('modal-close')) return;
+      target.classList.remove('is-pressing');
+      // Force reflow so rapid taps always replay the sink-and-spring animation
+      void target.offsetWidth;
+      target.classList.add('is-pressing');
+    };
+
+    const onAnimationEnd = (event: AnimationEvent) => {
+      if (event.animationName === 'buttonSinkSpring') {
+        (event.target as HTMLElement | null)?.classList.remove('is-pressing');
+      }
+    };
+
+    document.addEventListener('pointerdown', onPointerDown, { passive: true });
+    document.addEventListener('animationend', onAnimationEnd);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('animationend', onAnimationEnd);
+    };
+  }, []);
+
+  useEffect(() => {
     filtersRef.current = {
       category: (data && data.category) || '',
       textFilter: (data && data.textFilter) || '',
