@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface PullToRefreshProps {
   onRefresh: () => void | Promise<void>;
@@ -8,86 +8,149 @@ interface PullToRefreshProps {
 const RESISTANCE = 0.35; // Finger moves 100% -> list moves 35%
 const TRIGGER_DISTANCE = 54; // Damped px required to trigger refresh
 const MAX_PULL = 96;
+const TOP_SLOP = 4;
+
+const scrollTop = () =>
+  window.scrollY ||
+  document.documentElement.scrollTop ||
+  document.body.scrollTop ||
+  0;
 
 const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, children }) => {
-  const startYRef = useRef<number | null>(null);
-  const startXRef = useRef<number | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const onRefreshRef = useRef(onRefresh);
+  onRefreshRef.current = onRefresh;
+
   const pullingRef = useRef(false);
+  const pullOffsetRef = useRef(0);
+  const refreshingRef = useRef(false);
+
   const [pullOffset, setPullOffset] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isReleasing, setIsReleasing] = useState(false);
 
-  const handleTouchStart = useCallback(
-    (e: React.TouchEvent<HTMLDivElement>) => {
-      if (isRefreshing) return;
-      if (window.scrollY > 4) {
-        startYRef.current = null;
+  const setOffset = (value: number) => {
+    pullOffsetRef.current = value;
+    setPullOffset(value);
+  };
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    let tracking = false;
+    let startY = 0;
+    let startX = 0;
+
+    const nestedScrolled = (target: EventTarget | null) => {
+      let node = target instanceof Element ? target : null;
+      while (node && node !== root) {
+        const overflowY = window.getComputedStyle(node).overflowY;
+        if (/(auto|scroll)/.test(overflowY) && node.scrollTop > TOP_SLOP) return true;
+        node = node.parentElement;
+      }
+      return false;
+    };
+
+    const onTouchStart = (event: TouchEvent) => {
+      if (
+        refreshingRef.current ||
+        event.touches.length !== 1 ||
+        scrollTop() > TOP_SLOP ||
+        nestedScrolled(event.target)
+      ) {
+        tracking = false;
         return;
       }
-      const touch = e.touches[0];
+      const touch = event.touches[0];
       if (!touch) return;
-      startYRef.current = touch.clientY;
-      startXRef.current = touch.clientX;
+      tracking = true;
+      startY = touch.clientY;
+      startX = touch.clientX;
       pullingRef.current = false;
       setIsReleasing(false);
-    },
-    [isRefreshing]
-  );
+    };
 
-  const handleTouchMove = useCallback(
-    (e: React.TouchEvent<HTMLDivElement>) => {
-      if (isRefreshing || startYRef.current === null || startXRef.current === null) {
+    const onTouchMove = (event: TouchEvent) => {
+      if (!tracking || refreshingRef.current) return;
+      if (event.touches.length !== 1) {
+        tracking = false;
+        if (pullingRef.current) {
+          pullingRef.current = false;
+          setOffset(0);
+        }
         return;
       }
-      const touch = e.touches[0];
+
+      const touch = event.touches[0];
       if (!touch) return;
 
-      const deltaY = touch.clientY - startYRef.current;
-      const deltaX = Math.abs(touch.clientX - startXRef.current);
+      const deltaY = touch.clientY - startY;
+      const deltaX = Math.abs(touch.clientX - startX);
 
       if (!pullingRef.current) {
-        if (deltaY < 8 || deltaX > deltaY || window.scrollY > 4) {
-          if (deltaY < -4 || deltaX > 16) {
-            startYRef.current = null;
-          }
+        // Horizontal row swipes and upward scrolling stay with the browser.
+        if (deltaX > deltaY || deltaY <= 0) {
+          if (deltaY < -4 || deltaX > 12) tracking = false;
           return;
         }
+        if (scrollTop() > TOP_SLOP) {
+          tracking = false;
+          return;
+        }
+        // React's onTouchMove is passive, so preventDefault there is ignored
+        // and Chrome/Safari still run their own pull-to-refresh on top.
+        if (event.cancelable) event.preventDefault();
+        if (deltaY < 8) return;
         pullingRef.current = true;
+      } else if (event.cancelable) {
+        event.preventDefault();
       }
 
       if (deltaY <= 0) {
-        setPullOffset(0);
+        setOffset(0);
         return;
       }
 
-      const damped = Math.min(MAX_PULL, deltaY * RESISTANCE);
-      setPullOffset(damped);
-    },
-    [isRefreshing]
-  );
+      setOffset(Math.min(MAX_PULL, deltaY * RESISTANCE));
+    };
 
-  const handleTouchEnd = useCallback(() => {
-    if (!pullingRef.current) {
-      startYRef.current = null;
-      return;
-    }
-    pullingRef.current = false;
-    startYRef.current = null;
-    setIsReleasing(true);
+    const onTouchEnd = () => {
+      if (!tracking && !pullingRef.current) return;
+      tracking = false;
 
-    if (pullOffset >= TRIGGER_DISTANCE && !isRefreshing) {
-      setIsRefreshing(true);
-      setPullOffset(42);
-      Promise.resolve(onRefresh()).finally(() => {
-        setTimeout(() => {
-          setIsRefreshing(false);
-          setPullOffset(0);
-        }, 420);
-      });
-    } else {
-      setPullOffset(0);
-    }
-  }, [pullOffset, isRefreshing, onRefresh]);
+      if (!pullingRef.current) return;
+      pullingRef.current = false;
+      setIsReleasing(true);
+
+      if (pullOffsetRef.current >= TRIGGER_DISTANCE && !refreshingRef.current) {
+        refreshingRef.current = true;
+        setIsRefreshing(true);
+        setOffset(42);
+        Promise.resolve(onRefreshRef.current()).finally(() => {
+          window.setTimeout(() => {
+            refreshingRef.current = false;
+            setIsRefreshing(false);
+            setOffset(0);
+          }, 420);
+        });
+      } else {
+        setOffset(0);
+      }
+    };
+
+    root.addEventListener('touchstart', onTouchStart, { passive: true });
+    root.addEventListener('touchmove', onTouchMove, { passive: false });
+    root.addEventListener('touchend', onTouchEnd);
+    root.addEventListener('touchcancel', onTouchEnd);
+
+    return () => {
+      root.removeEventListener('touchstart', onTouchStart);
+      root.removeEventListener('touchmove', onTouchMove);
+      root.removeEventListener('touchend', onTouchEnd);
+      root.removeEventListener('touchcancel', onTouchEnd);
+    };
+  }, []);
 
   const progress = Math.min(1, pullOffset / TRIGGER_DISTANCE);
   const ready = progress >= 1;
@@ -95,12 +158,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, children }) =>
   const circumference = 2 * Math.PI * radius;
 
   return (
-    <div
-      className="pull-to-refresh"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
+    <div ref={rootRef} className="pull-to-refresh">
       <div
         className={`pull-to-refresh__indicator${
           pullOffset > 4 || isRefreshing ? ' is-visible' : ''
