@@ -20,6 +20,8 @@ $border-radius-lg: 16px; // Large elements (cards, containers)
   --ease-roll: cubic-bezier(0.22, 1, 0.36, 1);
   // 05 Card expand: ease-out, fast first then slow (350ms)
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  // Modal collapse: ease-in, slow first then accelerate off (220ms)
+  --ease-in-soft: cubic-bezier(0.4, 0, 1, 1);
 
   // Video 2 Dark Mode System:
   // 01 Background: deep navy, never pure black (#0C1424)
@@ -724,7 +726,7 @@ input[type="date"] {
 }
 
 // =============================================================================
-// MODAL (Video 1 #05: Card expand — ease-out: fast first, then slow, 350ms)
+// MODAL (Video 1 #05: Card expand 350ms ease-out / collapse 220ms ease-in)
 // =============================================================================
 
 .modal {
@@ -739,6 +741,15 @@ input[type="date"] {
     left: 0;
     z-index: 999;
     animation: modalBackdropFade 220ms var(--ease-out-expo) forwards;
+
+    &.is-closing {
+      animation: modalBackdropFadeOut 220ms var(--ease-in-soft) forwards;
+      pointer-events: none;
+
+      > div {
+        animation: modalCardCollapse 220ms var(--ease-in-soft) forwards;
+      }
+    }
 
     > div {
       max-width: 700px;
@@ -793,6 +804,13 @@ input[type="date"] {
       background: rgba(255, 255, 255, 0.08);
       color: var(--text-primary);
     }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-window,
+  .modal-window > div {
+    animation: none;
   }
 }
 
@@ -2857,6 +2875,26 @@ input[type="date"] {
   to {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes modalBackdropFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modalCardCollapse {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -47%) scale(0.92);
   }
 }
 
