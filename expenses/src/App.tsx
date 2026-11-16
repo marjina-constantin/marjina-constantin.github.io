@@ -68,8 +68,10 @@ const SyncSetup: React.FC = () => {
         'button:not(:disabled), .navbar a, .currency-row, [role="button"]'
       ) as HTMLElement | null;
       if (!target || target.classList.contains('modal-close')) return;
-      // Budgets and the category icon stay flat — no press-depth sink
-      if (target.closest('.budget-home, .transaction-category-box')) return;
+      // Category icon and budget chrome stay flat; rings keep the sink-and-spring press
+      if (target.closest('.transaction-category-box')) return;
+      if (target.closest('.profile-section__header')) return;
+      if (target.closest('.budget-home') && !target.closest('.budget-ring')) return;
       target.classList.remove('is-pressing');
       // Force reflow so rapid taps always replay the sink-and-spring animation
       void target.offsetWidth;

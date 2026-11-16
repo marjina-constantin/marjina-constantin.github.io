@@ -2,7 +2,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuthState, useData } from '../../context';
 import { AuthState } from '../../types/types';
 import { ChatChart, isChatChart } from '../chart';
-import { AiError, GeminiContent, GeminiRequest, describeAiError, streamGenerate } from '../client';
+import {
+  AiError,
+  GeminiContent,
+  GeminiRequest,
+  StreamDebugEvent,
+  describeAiError,
+  streamGenerate,
+} from '../client';
 import { AI_LIMITS, AI_MODELS } from '../config';
 import {
   ChatMessage,
@@ -13,16 +20,95 @@ import {
 } from '../chatSession';
 import { buildDataSummary } from '../context/summary';
 import { getAiItems } from '../data';
+import {
+  createDebugTrace,
+  finishDebugTrace,
+  formatDebugBytes,
+  formatDebugMs,
+  formatDebugUsage,
+  isAiDebugEnabled,
+  pushDebugStep,
+  snapshotRequest,
+  snapshotResponse,
+  snapshotTrace,
+} from '../debug';
 import { buildChatSystemInstruction, splitFollowUps } from '../prompts';
-import { getShareDescriptions, recordAiUsage } from '../storage';
+import { getAiLanguage, getShareDescriptions, recordAiUsage } from '../storage';
 import { toolDeclarations } from '../tools/definitions';
 import { TOOL_LABELS, executeTool } from '../tools/executors';
+import { summarizeToolCall } from '../toolSummary';
 
 const newId = () => `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
 /** Keeps the last N user+model pairs. Past turns are already text-only. */
 const trimHistory = (history: GeminiContent[]) =>
   history.slice(-AI_LIMITS.maxHistoryTurns * 2);
+
+const logStreamDebug = (
+  event: StreamDebugEvent,
+  addDebug: (step: Parameters<typeof pushDebugStep>[1]) => void
+) => {
+  switch (event.type) {
+    case 'skipped':
+      addDebug({
+        kind: 'warn',
+        title: `Skipped ${event.model}`,
+        subtitle:
+          event.reason === 'cooldown'
+            ? `On cooldown${event.until ? ` until ${new Date(event.until).toLocaleTimeString()}` : ''}`
+            : 'Not available for this key',
+        data: { model: event.model, reason: event.reason, until: event.until },
+      });
+      return;
+    case 'attempt': {
+      const payload = snapshotRequest(event.model, event.url, event.request);
+      addDebug({
+        kind: 'request',
+        title: event.model,
+        subtitle: `${formatDebugBytes(payload)} · ${event.request.contents.length} turn${
+          event.request.contents.length === 1 ? '' : 's'
+        }`,
+        data: payload,
+      });
+      return;
+    }
+    case 'http_error':
+      addDebug({
+        kind: 'error',
+        title: `HTTP ${event.status} · ${event.model}`,
+        subtitle: event.error.message,
+        durationMs: event.durationMs,
+        data: {
+          model: event.model,
+          status: event.status,
+          kind: event.error.kind,
+          message: event.error.message,
+          daily: event.error.daily,
+          retryAfterSeconds: event.error.retryAfterSeconds,
+          quota: event.error.quota,
+        },
+      });
+      return;
+    case 'success': {
+      const payload = snapshotResponse(event.result, event.chunkCount);
+      const calls = event.result.functionCalls.length;
+      addDebug({
+        kind: 'response',
+        title: event.model,
+        subtitle: [
+          event.result.finishReason,
+          calls ? `${calls} tool call${calls === 1 ? '' : 's'}` : event.result.text ? 'text' : 'empty',
+          `${event.chunkCount} chunk${event.chunkCount === 1 ? '' : 's'}`,
+          formatDebugUsage(event.result.usage),
+        ]
+          .filter(Boolean)
+          .join(' · '),
+        durationMs: event.durationMs,
+        data: payload,
+      });
+    }
+  }
+};
 
 export function useAiChat(apiKey: string) {
   const { data } = useData();
@@ -63,10 +149,21 @@ export function useAiChat(apiKey: string) {
       if (!trimmed || busy || !apiKey) return;
 
       const assistantId = newId();
+      const trace = isAiDebugEnabled() ? createDebugTrace() : null;
+      const publishDebug = () => {
+        if (trace) patchMessage(assistantId, { debug: snapshotTrace(trace) });
+      };
       setMessages((prev) => [
         ...prev,
         { id: newId(), role: 'user', text: trimmed, status: 'done' },
-        { id: assistantId, role: 'assistant', text: '', status: 'streaming', activity: 'Thinking' },
+        {
+          id: assistantId,
+          role: 'assistant',
+          text: '',
+          status: 'streaming',
+          activity: 'Thinking',
+          ...(trace && { debug: snapshotTrace(trace) }),
+        },
       ]);
       setBusy(true);
 
@@ -82,6 +179,31 @@ export function useAiChat(apiKey: string) {
       let model: string | undefined;
       const charts: ChatChart[] = [];
 
+      const addDebug = (step: Parameters<typeof pushDebugStep>[1]) => {
+        if (!trace) return;
+        pushDebugStep(trace, step);
+        publishDebug();
+      };
+
+      addDebug({
+        kind: 'info',
+        title: 'Turn started',
+        subtitle: `${items.length.toLocaleString()} items · ~${Math.round(summary.length / 4).toLocaleString()} summary tokens`,
+        data: {
+          question: trimmed,
+          language: getAiLanguage(),
+          shareDescriptions,
+          currency,
+          itemCount: items.length,
+          historyTurns: Math.floor(chatSession.history.length / 2),
+          summaryChars: summary.length,
+          summaryTokensEstimate: Math.round(summary.length / 4),
+          preferModel: preferModel || null,
+          maxToolRounds: AI_LIMITS.maxToolRounds,
+          maxOutputTokens: AI_LIMITS.chatMaxOutputTokens,
+        },
+      });
+
       try {
         for (let round = 0; round <= AI_LIMITS.maxToolRounds; round++) {
           const forceAnswer = round === AI_LIMITS.maxToolRounds;
@@ -96,6 +218,20 @@ export function useAiChat(apiKey: string) {
             },
           };
 
+          if (forceAnswer) {
+            addDebug({
+              kind: 'warn',
+              title: 'Forcing an answer',
+              subtitle: `Reached ${AI_LIMITS.maxToolRounds} tool rounds`,
+            });
+          }
+
+          addDebug({
+            kind: 'info',
+            title: `Round ${round + 1}`,
+            subtitle: forceAnswer ? 'Model must answer without tools' : 'Model may call tools',
+          });
+
           const result = await streamGenerate({
             apiKey,
             tier: 'chat',
@@ -107,6 +243,7 @@ export function useAiChat(apiKey: string) {
                 text: splitFollowUps(previousText ? `${previousText}\n\n${text}` : text).answer,
                 activity: undefined,
               }),
+            onDebug: (event) => logStreamDebug(event, addDebug),
           });
 
           const stepTokens = result.usage.totalTokenCount || 0;
@@ -126,7 +263,21 @@ export function useAiChat(apiKey: string) {
           contents.push({
             role: 'user',
             parts: result.functionCalls.map((call) => {
+              const started = Date.now();
               const { _chart, ...response } = executeTool(call.name, call.args, toolContext);
+              addDebug({
+                kind: 'tool',
+                title: call.name,
+                subtitle: TOOL_LABELS[call.name] || 'Working',
+                summary: summarizeToolCall(call.name, call.args, response, currency),
+                durationMs: Date.now() - started,
+                data: {
+                  id: call.id || null,
+                  arguments: call.args || {},
+                  result: response,
+                  chart: isChatChart(_chart) ? _chart : undefined,
+                },
+              });
               if (isChatChart(_chart)) {
                 charts.push(_chart);
                 patchMessage(assistantId, { charts: [...charts] });
@@ -152,6 +303,26 @@ export function useAiChat(apiKey: string) {
           userTurn,
           { role: 'model', parts: [{ text: answer }] },
         ];
+        if (trace) {
+          addDebug({
+            kind: 'info',
+            title: 'Turn finished',
+            subtitle: [
+              formatDebugMs(Date.now() - trace.startedAt),
+              tokens ? `${tokens.toLocaleString()} tokens` : '',
+              model || '',
+            ]
+              .filter(Boolean)
+              .join(' · '),
+            data: {
+              answer,
+              followUps,
+              tokens,
+              model,
+              chartCount: charts.length,
+            },
+          });
+        }
         patchMessage(assistantId, {
           text: answer,
           status: 'done',
@@ -160,6 +331,7 @@ export function useAiChat(apiKey: string) {
           model,
           ...(charts.length && { charts }),
           ...(followUps.length && { followUps }),
+          ...(trace && { debug: finishDebugTrace(trace) }),
         });
       } catch (error) {
         const stopped = controller.signal.aborted;
@@ -167,12 +339,31 @@ export function useAiChat(apiKey: string) {
         const failedModel =
           (error instanceof AiError && error.model) || preferModel || model || AI_MODELS.chat[0];
         const partial = splitFollowUps(previousText).answer;
+        if (trace) {
+          addDebug({
+            kind: stopped ? 'warn' : 'error',
+            title: stopped ? 'Stopped' : 'Turn failed',
+            subtitle: errorText,
+            data:
+              error instanceof AiError
+                ? {
+                    kind: error.kind,
+                    message: error.message,
+                    model: error.model,
+                    daily: error.daily,
+                    retryAfterSeconds: error.retryAfterSeconds,
+                    quota: error.quota,
+                  }
+                : { message: (error as Error)?.message || String(error) },
+          });
+        }
         patchMessage(assistantId, {
           text: stopped || !partial ? partial || errorText : `${partial}\n\n_${errorText}_`,
           status: stopped ? 'stopped' : 'error',
           activity: undefined,
           tokens: tokens || undefined,
           failedModel: stopped ? undefined : failedModel,
+          ...(trace && { debug: finishDebugTrace(trace) }),
         });
       } finally {
         abortRef.current = null;

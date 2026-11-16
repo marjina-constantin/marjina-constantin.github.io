@@ -98,18 +98,6 @@ export const toolDeclarations: GeminiFunctionDeclaration[] = [
     parameters: { type: 'object', properties: budgetProperties },
   },
   {
-    name: 'compare_budget_vs_spend',
-    description:
-      'Categories over budget and those with the most left. For the current month, also the projected month-end overspend at the current pace.',
-    parameters: {
-      type: 'object',
-      properties: {
-        ...budgetProperties,
-        limit: { type: 'integer', description: 'Max categories with money left, default 20.' },
-      },
-    },
-  },
-  {
     name: 'detect_spend_spikes',
     description:
       'Categories well above their average of previous months and single expenses far above the category median.',

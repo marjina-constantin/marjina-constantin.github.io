@@ -5,6 +5,7 @@ import { notificationType } from '../../utils/constants';
 import { useAiApiKey } from '../../ai/hooks/useAiApiKey';
 import { maskApiKey } from '../../ai/apiKey';
 import { describeAiError, testApiKey } from '../../ai/client';
+import { isAiDebugEnabled, setAiDebugEnabled } from '../../ai/debug';
 import {
   getAiLanguage,
   effectiveCooldownUntil,
@@ -16,6 +17,7 @@ import {
 } from '../../ai/storage';
 import { AI_LANGUAGES, AI_MODELS, modelLabel } from '../../ai/config';
 import { ButtonSpinner } from '../ui/LoadingSpinner';
+import ProfileSection, { ProfileSwitch } from '../profile/ProfileSection';
 
 const AiSettings = () => {
   const showNotification = useNotification();
@@ -26,6 +28,7 @@ const AiSettings = () => {
   const [busy, setBusy] = useState(false);
   const [share, setShare] = useState(getShareDescriptions);
   const [language, setLanguage] = useState(getAiLanguage);
+  const [debug, setDebug] = useState(isAiDebugEnabled);
   const usage = getAiUsage();
   const limitLog = getModelLimitLog();
   const limitedModels = AI_MODELS.chat
@@ -77,141 +80,173 @@ const AiSettings = () => {
     setBusy(false);
   };
 
-  const toggleShare = () => {
-    setShareDescriptions(!share);
-    setShare(!share);
-  };
+  const summary = [
+    status === 'loading' ? 'Loading…' : apiKey ? 'Key saved' : 'No API key',
+    language,
+    debug ? 'Debug on' : '',
+  ]
+    .filter(Boolean)
+    .join(' · ');
 
   return (
-    <div className="ai-settings">
-      <div className="ai-settings__title">
-        <Sparkles size={16} />
-        <span>AI assistant</span>
-      </div>
-
-      {status === 'loading' ? (
-        <div className="ai-settings__row">
-          <span>Gemini API key</span>
-          <ButtonSpinner />
-        </div>
-      ) : apiKey && !editing ? (
-        <>
+    <ProfileSection id="ai" icon={<Sparkles size={16} />} title="AI assistant" summary={summary}>
+      <div className="ai-settings">
+        {status === 'loading' ? (
           <div className="ai-settings__row">
             <span>Gemini API key</span>
-            <code className="ai-settings__key">{maskApiKey(apiKey)}</code>
+            <ButtonSpinner />
           </div>
-          <div className="ai-settings__actions">
-            <button type="button" className="button-secondary" onClick={handleTest} disabled={busy}>
-              Test
-            </button>
-            <button type="button" className="button-secondary" onClick={() => setEditing(true)} disabled={busy}>
-              Change
-            </button>
-            <button type="button" className="button-secondary" onClick={handleRemove} disabled={busy}>
-              Remove
-            </button>
-          </div>
-        </>
-      ) : (
-        <form className="ai-settings__form" onSubmit={handleSave}>
-          <div className="ai-settings__input">
-            <input
-              type={reveal ? 'text' : 'password'}
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              placeholder="Paste your Gemini API key"
-              autoComplete="off"
-              spellCheck={false}
-              aria-label="Gemini API key"
-            />
-            <button
-              type="button"
-              onClick={() => setReveal(!reveal)}
-              aria-label={reveal ? 'Hide key' : 'Show key'}
-            >
-              {reveal ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
-          </div>
-          <div className="ai-settings__actions">
-            <button type="submit" className="button" disabled={busy || !draft.trim()}>
-              {busy ? <ButtonSpinner /> : 'Save key'}
-            </button>
-            {editing && (
-              <button type="button" className="button-secondary" onClick={() => setEditing(false)} disabled={busy}>
-                Cancel
+        ) : apiKey && !editing ? (
+          <>
+            <div className="ai-settings__row">
+              <span>Gemini API key</span>
+              <code className="ai-settings__key">{maskApiKey(apiKey)}</code>
+            </div>
+            <div className="ai-settings__actions">
+              <button type="button" className="button-secondary" onClick={handleTest} disabled={busy}>
+                Test
               </button>
-            )}
+              <button type="button" className="button-secondary" onClick={() => setEditing(true)} disabled={busy}>
+                Change
+              </button>
+              <button type="button" className="button-secondary" onClick={handleRemove} disabled={busy}>
+                Remove
+              </button>
+            </div>
+          </>
+        ) : (
+          <form className="ai-settings__form" onSubmit={handleSave}>
+            <div className="ai-settings__input">
+              <input
+                type={reveal ? 'text' : 'password'}
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                placeholder="Paste your Gemini API key"
+                autoComplete="off"
+                spellCheck={false}
+                aria-label="Gemini API key"
+              />
+              <button
+                type="button"
+                onClick={() => setReveal(!reveal)}
+                aria-label={reveal ? 'Hide key' : 'Show key'}
+              >
+                {reveal ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+            <div className="ai-settings__actions">
+              <button type="submit" className="button" disabled={busy || !draft.trim()}>
+                {busy ? <ButtonSpinner /> : 'Save key'}
+              </button>
+              {editing && (
+                <button type="button" className="button-secondary" onClick={() => setEditing(false)} disabled={busy}>
+                  Cancel
+                </button>
+              )}
+            </div>
+            <p className="ai-settings__hint">
+              Create a free key at{' '}
+              <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">
+                aistudio.google.com/apikey
+              </a>
+              . Use a project without billing and restrict the key to the Gemini API.
+            </p>
+          </form>
+        )}
+
+        <label className="ai-settings__row">
+          <span>Language</span>
+          <select
+            className="ai-settings__select"
+            value={language}
+            onChange={(e) => {
+              setAiLanguage(e.target.value);
+              setLanguage(e.target.value);
+            }}
+          >
+            {AI_LANGUAGES.map((lang) => (
+              <option key={lang} value={lang}>
+                {lang}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <div className="ai-settings__row">
+          <div className="ai-settings__copy">
+            <span id="ai-share-label">Share descriptions with AI</span>
+            <span className="ai-settings__status">
+              When off, only dates, amounts, categories and hashtags are sent.
+            </span>
           </div>
-          <p className="ai-settings__hint">
-            Create a free key at{' '}
-            <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">
-              aistudio.google.com/apikey
-            </a>
-            . Use a project without billing and restrict the key to the Gemini API.
-          </p>
-        </form>
-      )}
-
-      <label className="ai-settings__row">
-        <span>Language</span>
-        <select
-          className="ai-settings__select"
-          value={language}
-          onChange={(e) => {
-            setAiLanguage(e.target.value);
-            setLanguage(e.target.value);
-          }}
-        >
-          {AI_LANGUAGES.map((lang) => (
-            <option key={lang} value={lang}>
-              {lang}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="ai-settings__row ai-settings__toggle">
-        <span>Share descriptions with AI</span>
-        <input type="checkbox" checked={share} onChange={toggleShare} />
-      </label>
-      <p className="ai-settings__hint">
-        When off, only dates, amounts, categories and hashtags are sent.
-        {usage.requests > 0 && ` Today: ${usage.requests} requests, ${usage.tokens.toLocaleString()} tokens.`}
-      </p>
-
-      {limitedModels.length > 0 && (
-        <div className="ai-settings__limits">
-          <span className="ai-settings__label">Model limits</span>
-          {limitedModels.map(([model, record]) => {
-            const until = effectiveCooldownUntil(record);
-            const paused = until > Date.now();
-            return (
-              <details key={model} className="ai-settings__limit">
-                <summary>
-                  <span className={paused ? 'is-paused' : undefined}>{modelLabel(model)}</span>
-                  {' · '}
-                  {record.daily ? 'daily limit' : 'per-minute limit'}
-                  {record.limit ? ` (${record.limit})` : ''}
-                  {' · '}
-                  {paused ? `paused until ${formatTime(until)}` : `last hit ${formatTime(record.at)}`}
-                </summary>
-                <dl>
-                  <dt>Received</dt>
-                  <dd>{formatTime(record.at)}</dd>
-                  {record.retryAfterSeconds !== undefined && (
-                    <>
-                      <dt>Retry after</dt>
-                      <dd>{formatDuration(record.retryAfterSeconds)}</dd>
-                    </>
-                  )}
-                  <dt>Paused until</dt>
-                  <dd>{formatTime(until)}</dd>
-                </dl>
-              </details>
-            );
-          })}
+          <ProfileSwitch
+            checked={share}
+            labelledBy="ai-share-label"
+            onChange={(checked) => {
+              setShareDescriptions(checked);
+              setShare(checked);
+            }}
+          />
         </div>
-      )}
-    </div>
+
+        <div className="ai-settings__row">
+          <div className="ai-settings__copy">
+            <span id="ai-debug-label">Debug requests</span>
+            <span className="ai-settings__status">
+              New replies show every step, payload, and response.
+            </span>
+          </div>
+          <ProfileSwitch
+            checked={debug}
+            labelledBy="ai-debug-label"
+            onChange={(checked) => {
+              setAiDebugEnabled(checked);
+              setDebug(checked);
+            }}
+          />
+        </div>
+
+        {usage.requests > 0 && (
+          <p className="ai-settings__hint">
+            Today: {usage.requests} requests, {usage.tokens.toLocaleString()} tokens.
+          </p>
+        )}
+
+        {limitedModels.length > 0 && (
+          <div className="ai-settings__limits">
+            <span className="ai-settings__label">Model limits</span>
+            {limitedModels.map(([model, record]) => {
+              const until = effectiveCooldownUntil(record);
+              const paused = until > Date.now();
+              return (
+                <details key={model} className="ai-settings__limit">
+                  <summary>
+                    <span className={paused ? 'is-paused' : undefined}>{modelLabel(model)}</span>
+                    {' · '}
+                    {record.daily ? 'daily limit' : 'per-minute limit'}
+                    {record.limit ? ` (${record.limit})` : ''}
+                    {' · '}
+                    {paused ? `paused until ${formatTime(until)}` : `last hit ${formatTime(record.at)}`}
+                  </summary>
+                  <dl>
+                    <dt>Received</dt>
+                    <dd>{formatTime(record.at)}</dd>
+                    {record.retryAfterSeconds !== undefined && (
+                      <>
+                        <dt>Retry after</dt>
+                        <dd>{formatDuration(record.retryAfterSeconds)}</dd>
+                      </>
+                    )}
+                    <dt>Paused until</dt>
+                    <dd>{formatTime(until)}</dd>
+                  </dl>
+                </details>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </ProfileSection>
   );
 };
 

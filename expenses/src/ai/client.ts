@@ -192,6 +192,12 @@ async function* readSse(response: Response, signal?: AbortSignal) {
   }
 }
 
+export type StreamDebugEvent =
+  | { type: 'skipped'; model: string; reason: 'cooldown' | 'unavailable'; until?: number }
+  | { type: 'attempt'; model: string; url: string; request: GeminiRequest }
+  | { type: 'http_error'; model: string; status: number; durationMs: number; error: AiError }
+  | { type: 'success'; model: string; durationMs: number; chunkCount: number; result: GeminiResult };
+
 interface StreamOptions {
   apiKey: string;
   tier: AiModelTier;
@@ -200,6 +206,7 @@ interface StreamOptions {
   onText?: (textSoFar: string) => void;
   /** Start from this model (and later ones). Used when retrying with an alternate. */
   preferModel?: string;
+  onDebug?: (event: StreamDebugEvent) => void;
 }
 
 /**
@@ -213,6 +220,7 @@ export async function streamGenerate({
   signal,
   onText,
   preferModel,
+  onDebug,
 }: StreamOptions): Promise<GeminiResult> {
   if (!navigator.onLine) {
     throw new AiError('offline', 'No internet connection');
@@ -220,26 +228,51 @@ export async function streamGenerate({
 
   const list: string[] = [...AI_MODELS[tier]];
   const start = preferModel ? list.indexOf(preferModel) : 0;
-  const models = list.slice(start >= 0 && preferModel ? start : 0).filter((m) => !unavailableModels.has(m));
-  const candidates = models.filter((m) => !getModelCooldowns()[m]);
+  const cooldowns = getModelCooldowns();
+  const available: string[] = [];
+  const candidates: string[] = [];
 
-  if (models.length && !candidates.length) throw allLimitedError(models);
+  for (const model of list.slice(start >= 0 && preferModel ? start : 0)) {
+    if (unavailableModels.has(model)) {
+      onDebug?.({ type: 'skipped', model, reason: 'unavailable' });
+      continue;
+    }
+    available.push(model);
+    if (cooldowns[model]) {
+      onDebug?.({ type: 'skipped', model, reason: 'cooldown', until: cooldowns[model] });
+      continue;
+    }
+    candidates.push(model);
+  }
+
+  if (available.length && !candidates.length) throw allLimitedError(available);
 
   let lastError: AiError | null = null;
 
   for (const model of candidates) {
-    const response = await fetch(
-      `${GEMINI_API_URL}/models/${model}:streamGenerateContent?alt=sse`,
-      {
-        method: 'POST',
-        headers: headers(apiKey),
-        body: JSON.stringify({ ...request, contents: contentsFor(request.contents, model) }),
-        signal,
-      }
-    );
+    const url = `${GEMINI_API_URL}/models/${model}:streamGenerateContent?alt=sse`;
+    const payload: GeminiRequest = {
+      ...request,
+      contents: contentsFor(request.contents, model) as GeminiContent[],
+    };
+    onDebug?.({ type: 'attempt', model, url, request: payload });
+    const started = Date.now();
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: headers(apiKey),
+      body: JSON.stringify(payload),
+      signal,
+    });
 
     if (!response.ok) {
       lastError = await toAiError(response);
+      onDebug?.({
+        type: 'http_error',
+        model,
+        status: response.status,
+        durationMs: Date.now() - started,
+        error: lastError,
+      });
       if (lastError.kind === 'model') {
         unavailableModels.add(model);
         continue;
@@ -264,8 +297,10 @@ export async function streamGenerate({
     let text = '';
     let usage: GeminiUsage = {};
     let finishReason: string | undefined;
+    let chunkCount = 0;
 
     for await (const chunk of readSse(response, signal)) {
+      chunkCount += 1;
       const candidate = chunk?.candidates?.[0];
       if (chunk?.promptFeedback?.blockReason) {
         throw new AiError('blocked', `Blocked: ${chunk.promptFeedback.blockReason}`);
@@ -285,10 +320,18 @@ export async function streamGenerate({
       .filter((p) => p.functionCall)
       .map((p) => p.functionCall!);
 
-    return { parts, text, functionCalls, usage, finishReason, model };
+    const result = { parts, text, functionCalls, usage, finishReason, model };
+    onDebug?.({
+      type: 'success',
+      model,
+      durationMs: Date.now() - started,
+      chunkCount,
+      result,
+    });
+    return result;
   }
 
-  if (lastError?.kind === 'quota') throw allLimitedError(models);
+  if (lastError?.kind === 'quota') throw allLimitedError(available);
   throw lastError || new AiError('model', 'No available model');
 }
 

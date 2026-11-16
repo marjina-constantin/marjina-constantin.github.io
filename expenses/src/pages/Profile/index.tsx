@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Palette } from 'lucide-react';
 import {
   logout,
   useAuthDispatch,
@@ -15,6 +16,7 @@ import { AuthState } from '../../types/types';
 import AiSettings from '../../components/ai/AiSettings';
 import BiometricSettings from '../../components/privacy/BiometricSettings';
 import PrivacySettings from '../../components/privacy/PrivacySettings';
+import ProfileSection from '../../components/profile/ProfileSection';
 import TagSettings from '../../components/profile/TagSettings';
 
 const Profile = () => {
@@ -95,41 +97,48 @@ const Profile = () => {
       </div>
       <h3>{userDetails.current_user.name}</h3>
       <div className="user-settings">
-        <label className="currency-row">
-          <span>Currency</span>
-          <span className="currency-value">
-            {currencies[currency as keyof typeof currencies]}
-            <select
-              value={currency}
-              className="currency"
-              name="currency"
-              aria-label="Currency"
-              onChange={handleChange}
-            >
-              {sortedCurrencies.map(([id, currency]) => (
-                <option key={id} value={id}>
-                  {currency}
-                </option>
-              ))}
-            </select>
-          </span>
-        </label>
-        <div className="theme-picker">
-          {Object.entries(themeList).map(([id, { label, accent }]) => (
-            <button
-              key={id}
-              type="button"
-              className={`theme-swatch${theme === id ? ' active' : ''}`}
-              onClick={() => handleThemeSelect(id)}
-            >
-              <div
-                className="theme-swatch__preview"
-                style={{ background: accent }}
-              />
-              <span className="theme-swatch__label">{label}</span>
-            </button>
-          ))}
-        </div>
+        <ProfileSection
+          id="appearance"
+          icon={<Palette size={16} />}
+          title="Appearance"
+          summary={`${currencies[currency as keyof typeof currencies]} · ${themeList[theme].label}`}
+        >
+          <label className="currency-row">
+            <span>Currency</span>
+            <span className="currency-value">
+              {currencies[currency as keyof typeof currencies]}
+              <select
+                value={currency}
+                className="currency"
+                name="currency"
+                aria-label="Currency"
+                onChange={handleChange}
+              >
+                {sortedCurrencies.map(([id, currencyName]) => (
+                  <option key={id} value={id}>
+                    {currencyName}
+                  </option>
+                ))}
+              </select>
+            </span>
+          </label>
+          <div className="theme-picker">
+            {Object.entries(themeList).map(([id, { label, accent }]) => (
+              <button
+                key={id}
+                type="button"
+                className={`theme-swatch${theme === id ? ' active' : ''}`}
+                onClick={() => handleThemeSelect(id)}
+              >
+                <div
+                  className="theme-swatch__preview"
+                  style={{ background: accent }}
+                />
+                <span className="theme-swatch__label">{label}</span>
+              </button>
+            ))}
+          </div>
+        </ProfileSection>
         <TagSettings />
         <PrivacySettings />
         <BiometricSettings

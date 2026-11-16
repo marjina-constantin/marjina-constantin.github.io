@@ -322,43 +322,6 @@ const budgetOverview = ({ items }: ToolContext, args: Args) => {
   };
 };
 
-const budgetVsSpend = ({ items }: ToolContext, args: Args) => {
-  const budget = budgetFor(items, args);
-  if ('error' in budget) return budget;
-  const { month, windowSize, rings, isCurrent, pace } = budget;
-  const summary = summarizeBudgets(rings);
-  const over = rings
-    .filter((r) => r.ratio > 1.001)
-    .sort((a, b) => b.spent - b.budget - (a.spent - a.budget));
-  const left = rings
-    .filter((r) => r.left > 0)
-    .sort((a, b) => b.left - a.left)
-    .slice(0, clampLimit(args.limit, 20, 60));
-  const row = (r: BudgetRing) => `${ringKey(r)}|${r.spent}|${r.budget}|${r.left}`;
-  const projected = rings
-    .map((r) => ({ ring: r, month: round(r.spent / pace) }))
-    .filter((p) => p.month > p.ring.budget * 1.001)
-    .sort((a, b) => b.month - b.ring.budget - (a.month - a.ring.budget));
-  return {
-    month: monthKeyLabel(month),
-    window: windowSize,
-    spent: summary.spent,
-    budget: summary.budget,
-    overspend: round(over.reduce((sum, r) => sum + r.spent - r.budget, 0)),
-    columns: 'category|spent|budget|left',
-    over: over.map(row).join('\n'),
-    mostLeft: left.map(row).join('\n'),
-    ...(isCurrent && {
-      monthPace: round(pace, 3),
-      projectedSpent: round(summary.spent / pace),
-      projectedColumns: 'category|projectedMonth|budget|projectedOver',
-      projectedOver: projected
-        .map((p) => `${ringKey(p.ring)}|${p.month}|${p.ring.budget}|${round(p.month - p.ring.budget)}`)
-        .join('\n'),
-    }),
-  };
-};
-
 const spendSpikes = ({ items, shareDescriptions }: ToolContext, args: Args) => {
   const month = monthArg(args.month);
   if (!/^\d{4}-\d{2}$/.test(month)) return { error: 'month must be YYYY-MM' };
@@ -648,7 +611,6 @@ const executors: Record<string, (ctx: ToolContext, args: Args) => Record<string,
   get_month_summary: monthSummary,
   compare_periods: comparePeriods,
   get_budget_status: budgetOverview,
-  compare_budget_vs_spend: budgetVsSpend,
   detect_spend_spikes: spendSpikes,
   get_savings_rate_trend: savingsTrend,
   show_chart: showChart,
@@ -670,7 +632,6 @@ export const TOOL_LABELS: Record<string, string> = {
   get_month_summary: 'Summarizing the month',
   compare_periods: 'Comparing periods',
   get_budget_status: 'Checking budgets',
-  compare_budget_vs_spend: 'Comparing budget and spend',
   detect_spend_spikes: 'Looking for spending spikes',
   get_savings_rate_trend: 'Tracking the savings rate',
   show_chart: 'Building a chart',

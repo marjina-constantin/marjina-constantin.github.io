@@ -1,6 +1,7 @@
 import { isChatChart, type ChatChart } from './chart';
 import type { GeminiContent } from './client';
 import { AI_LIMITS, AI_STORAGE_KEYS } from './config';
+import type { AiDebugTrace } from './debug';
 
 export interface ChatMessage {
   id: string;
@@ -15,6 +16,8 @@ export interface ChatMessage {
   charts?: ChatChart[];
   /** Short next questions the model attached to this answer. */
   followUps?: string[];
+  /** In-memory only: request trail when debug is on. Not persisted. */
+  debug?: AiDebugTrace;
 }
 
 /** Messages kept on the device; older ones are dropped. */
@@ -82,7 +85,7 @@ export const chatSession: {
 
 export const saveChatSession = () => {
   const data = {
-    messages: chatSession.messages.slice(-MAX_STORED_MESSAGES),
+    messages: chatSession.messages.slice(-MAX_STORED_MESSAGES).map(({ debug: _debug, ...message }) => message),
     history: chatSession.history.slice(-AI_LIMITS.maxHistoryTurns * 2),
   };
   try {

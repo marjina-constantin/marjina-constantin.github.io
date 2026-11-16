@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Hash, X } from 'lucide-react';
+import ProfileSection from './ProfileSection';
 import { useNotification } from '../../context';
 import { notificationType } from '../../utils/constants';
 import { ButtonSpinner } from '../ui/LoadingSpinner';
@@ -175,19 +176,27 @@ const TagEditor = ({ initial }: { initial: TagCatalog }) => {
 
 const TagSettings = () => {
   const { catalog, status } = useTagCatalogState();
+  const tagCount = Object.values(catalog.custom).reduce(
+    (sum, tags) => sum + tags.length,
+    0
+  );
+  const summary =
+    status !== 'ready'
+      ? 'Loading…'
+      : catalog.mode === 'custom'
+        ? `Custom · ${tagCount}`
+        : 'Default';
 
   return (
-    <section className="tag-settings">
-      <div className="tag-settings__title">
-        <Hash size={16} />
-        Tags
+    <ProfileSection id="tags" icon={<Hash size={16} />} title="Tags" summary={summary}>
+      <div className="tag-settings">
+        {status === 'ready' ? (
+          <TagEditor initial={catalog} />
+        ) : (
+          <p className="tag-settings__hint">Loading your tags…</p>
+        )}
       </div>
-      {status === 'ready' ? (
-        <TagEditor initial={catalog} />
-      ) : (
-        <p className="tag-settings__hint">Loading your tags…</p>
-      )}
-    </section>
+    </ProfileSection>
   );
 };
 

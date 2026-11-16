@@ -33,6 +33,8 @@ import { getShareDescriptions } from '../../ai/storage';
 import { useData } from '../../context';
 import { ChatMessage } from '../../ai/chatSession';
 import { AI_STORAGE_KEYS, modelLabel, nextChatModel } from '../../ai/config';
+import { isAiDebugEnabled } from '../../ai/debug';
+import AiDebugPanel from '../../components/ai/AiDebugPanel';
 
 const formatTokens = (tokens: number) =>
   tokens >= 1000 ? `${(tokens / 1000).toFixed(1)}k` : `${tokens}`;
@@ -131,6 +133,7 @@ const AssistantMessage: React.FC<{
             ))}
           </div>
         )}
+        {isAiDebugEnabled() && message.debug && <AiDebugPanel trace={message.debug} />}
       </div>
     </div>
   );
@@ -178,9 +181,10 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
   const lastText = lastMessage?.text;
   const lastCharts = lastMessage?.charts?.length;
   const lastFollowUps = lastMessage?.followUps?.length;
+  const lastDebug = lastMessage?.debug?.steps.length;
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, [messages.length, lastText, lastCharts, lastFollowUps, showSuggestions]);
+  }, [messages.length, lastText, lastCharts, lastFollowUps, lastDebug, showSuggestions]);
 
   useEffect(() => {
     const el = inputRef.current;
@@ -408,7 +412,9 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
           </p>
         ) : (
           <p className="ai-disclaimer">
-            AI can make mistakes. Check important numbers.
+            {isAiDebugEnabled()
+              ? 'Debug is on. Each reply includes the request trail.'
+              : 'AI can make mistakes. Check important numbers.'}
           </p>
         )}
       </div>

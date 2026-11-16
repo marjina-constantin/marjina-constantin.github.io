@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Check, CloudUpload, Copy, Lock, LockOpen, ShieldCheck } from 'lucide-react';
+import ProfileSection from '../profile/ProfileSection';
 import { useNotification } from '../../context';
 import { notificationType } from '../../utils/constants';
 import { getSession, isTransitional, useEncryptionState } from '../../crypto/encryptionState';
@@ -54,12 +55,21 @@ const PrivacySettings = () => {
     setDriveBusy(false);
   };
 
+  const summary =
+    status === 'on'
+      ? 'Encrypted'
+      : status === 'off'
+        ? 'Off'
+        : status === 'migrating'
+          ? 'Locking…'
+          : status === 'unlocking'
+            ? 'Unlocking…'
+            : '…';
+
   return (
-    <div className="privacy-settings">
-      <div className="privacy-settings__title">
-        <ShieldCheck size={16} />
-        <span>Privacy</span>
-      </div>
+    <>
+    <ProfileSection id="privacy" icon={<ShieldCheck size={16} />} title="Privacy" summary={summary}>
+      <div className="privacy-settings">
 
       {status === null && (
         <div className="privacy-settings__row">
@@ -135,9 +145,11 @@ const PrivacySettings = () => {
         </p>
       )}
 
+      </div>
+    </ProfileSection>
       {wizard === 'lock' && <LockWizard onClose={() => setWizard(null)} />}
       {wizard === 'unlock' && <UnlockWizard onClose={() => setWizard(null)} />}
-    </div>
+    </>
   );
 };
 

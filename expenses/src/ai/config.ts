@@ -33,7 +33,7 @@ export const AI_LIMITS = {
   /** Safety cap per step; includes thinking tokens. Actual usage is much lower. */
   chatMaxOutputTokens: 4096,
   /** Tool-call rounds per question before the model is forced to answer. */
-  maxToolRounds: 5,
+  maxToolRounds: 8,
   /** Past user+model turns kept in the request (older ones are dropped). */
   maxHistoryTurns: 8,
   toolRowsDefault: 50,
@@ -54,6 +54,7 @@ export const AI_STORAGE_KEYS = {
   chatShowSuggestions: 'aiChatShowSuggestions',
   modelCooldowns: 'aiModelCooldowns',
   modelLimits: 'aiModelLimits',
+  debug: 'aiDebug',
 };
 
 export const AI_LANGUAGES = ['Romanian', 'English', 'Russian'] as const;
