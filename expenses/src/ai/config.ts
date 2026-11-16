@@ -33,7 +33,7 @@ export const AI_LIMITS = {
   /** Safety cap per step; includes thinking tokens. Actual usage is much lower. */
   chatMaxOutputTokens: 4096,
   /** Tool-call rounds per question before the model is forced to answer. */
-  maxToolRounds: 8,
+  maxToolRounds: 6,
   /** Past user+model turns kept in the request (older ones are dropped). */
   maxHistoryTurns: 8,
   toolRowsDefault: 50,
