@@ -68,6 +68,8 @@ const SyncSetup: React.FC = () => {
         'button:not(:disabled), .navbar a, .currency-row, [role="button"]'
       ) as HTMLElement | null;
       if (!target || target.classList.contains('modal-close')) return;
+      // Budgets and the category icon stay flat — no press-depth sink
+      if (target.closest('.budget-home, .transaction-category-box')) return;
       target.classList.remove('is-pressing');
       // Force reflow so rapid taps always replay the sink-and-spring animation
       void target.offsetWidth;

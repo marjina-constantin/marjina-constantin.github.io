@@ -251,7 +251,6 @@ button:hover {
 }
 
 button:not(:disabled),
-select:not(:disabled),
 .currency-row,
 [role='button'] {
   transition:
@@ -267,8 +266,23 @@ select:not(:disabled),
   }
 }
 
-.is-pressing {
+// Selects, budgets, and category icon stay flat — no press-depth sink
+.budget-home button.budget-card__toggle:active,
+.budget-home button.budget-ring:active,
+.budget-home .budget-segment button:active,
+.budget-home button.budget-text-btn:active,
+.transaction-list-item button.transaction-category-box:active {
+  transform: none;
+}
+
+.is-pressing:not(.budget-card__toggle):not(.budget-ring):not(.budget-text-btn):not(.transaction-category-box) {
   animation: buttonSinkSpring 340ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.budget-home .is-pressing,
+.budget-segment .is-pressing,
+.transaction-category-box.is-pressing {
+  animation: none;
 }
 
 input[type='submit'] {
@@ -2262,11 +2276,17 @@ input[type="date"] {
       cursor: pointer;
       font: inherit;
       -webkit-tap-highlight-color: transparent;
+      // Let the card own the gesture so swipe can start from the icon
+      touch-action: none;
 
       &:hover,
       &:focus-visible {
         border-color: rgba(255, 255, 255, 0.25);
         outline: none;
+      }
+
+      &:active {
+        transform: none;
       }
 
       .category-icon {
@@ -5350,12 +5370,6 @@ $budget-over: #ff8f8f;
   font: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-
-  @media (hover: hover) {
-    &:hover {
-      transform: translateY(-2px);
-    }
-  }
 
   &:focus {
     outline: none;

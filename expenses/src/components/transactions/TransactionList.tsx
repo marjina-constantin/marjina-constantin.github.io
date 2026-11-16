@@ -163,7 +163,6 @@ const TransactionList: React.FC<TransactionListProps> = ({
                   style={{ '--category-tint': categoryTint } as React.CSSProperties}
                   title={categoryLabel}
                   aria-label={categoryLabel || 'Category'}
-                  onTouchStart={(e) => e.stopPropagation()}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (categoryLabel) showCategoryTip(transaction.id);
