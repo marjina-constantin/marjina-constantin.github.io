@@ -80,6 +80,7 @@ End with the final score. 2-4 short sentences. No preamble. No bullet list.`,
         maxOutputTokens: 1024,
         responseMimeType: 'application/json',
         responseSchema: WHY_SCHEMA,
+        thinkingConfig: { thinkingLevel: 'minimal' },
       },
     },
   });

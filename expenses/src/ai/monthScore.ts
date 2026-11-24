@@ -306,7 +306,6 @@ export const factsPacketForModel = (facts: MonthScoreFacts) =>
   JSON.stringify(
     {
       month: facts.label,
-      currency,
       finalScore: facts.score,
       scoreSteps: facts.scoreSteps,
       skipped: facts.skipped,
