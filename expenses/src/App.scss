@@ -130,6 +130,13 @@ $color-map: (
     text-color: $white,
     tag-selected-text-color: #0c1424,
   ),
+  soft-lilac: (
+    accent-color: #cbb4e8,
+    secondary-color: #1c2a42,
+    bg-color: #0c1424,
+    text-color: $white,
+    tag-selected-text-color: #0c1424,
+  ),
 );
 
 @each $class, $colors in $color-map {
