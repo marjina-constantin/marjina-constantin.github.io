@@ -1,0 +1,14 @@
+---
+description: DRY, KISS, clarify first, reuse, don't break existing behavior
+alwaysApply: true
+---
+
+# How to change this codebase
+
+- **Clarify before implement.** If the request is ambiguous, the UX could go two ways, or a change might break data/sync/auth, ask **one** short question. Don't ask about obvious details. Don't stall on style nits.
+- **KISS / maximum simplicity.** Smallest change that does the job. No new abstraction, library, context, or folder until the same pattern appears a third time. Prefer a function over a framework.
+- **DRY, with taste.** Reuse the existing component, hook, helper, or CSS variable. Don't copy-paste a near-duplicate. Don't "DRY" two things that will need to diverge — duplication is cheaper than the wrong abstraction.
+- **Reuse before inventing.** Search `expenses/src` first (`components/ui`, `hooks`, `utils`, `context`). Extend what is there. New files only when nothing fits.
+- **Don't break existing things.** Keep current behavior for paths you are not changing. Preserve API shapes, route paths, CSS variables, and IndexedDB/sync unless the task is to change them. Fix the local case; don't refactor the neighborhood "while you're here."
+- **Don't over-protect.** No extra flags, wrappers, or compatibility layers for a hypothetical future. A slightly wider CSS selector or a small shared helper is enough if it keeps the old screen working.
+- **Verify the slice you touched.** `cd expenses && yarn build` for compile. Don't claim UI is fine without looking at the screens that share the state or component you changed.

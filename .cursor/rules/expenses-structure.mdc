@@ -1,0 +1,25 @@
+---
+description: Expenses PWA source map — where to look and how to move fast
+alwaysApply: true
+---
+
+# Expenses source map (`expenses/src`)
+
+Go straight here instead of wandering the GitHub Pages dump at repo root.
+
+| Need | Place |
+|---|---|
+| Types | `types/types.ts` (`TransactionOrIncomeItem`, `AuthState`, `DataItems`) |
+| Categories, API URL | `utils/constants.ts` (`ROOT_URL`) |
+| Routes (`/expenses/...`) | `config/routes.ts` + `App.tsx` |
+| Global state | `context/` — `useData`, `useAuthState`, `dataDispatch`; actions in `context/actions.ts` |
+| Derived totals | `utils/dataProcessing.ts` + `dataProcessor.worker.ts` (don't recompute in the page) |
+| Offline / API | `utils/offlineAPI.ts`, `indexedDB.ts`, `syncService.ts` |
+| UI primitives | `components/ui/` (`StatCard`, `Modal`, `NumberDisplay`, `Notification`) |
+| Feature UI | `components/{transactions,income,charts,layout,privacy,ai,budgets,sync,profile}/` |
+| Pages | `pages/{Home,Charts,Income,AddTransaction,Profile,Login,Assistant}/` |
+| Styles | **`App.scss` only** — CSS vars (`--accent-color`, `--bg-color`, `--surface-*`). No new CSS files, no CSS-in-JS |
+| Crypto / lock | `crypto/` + `components/privacy/` |
+| In-app AI | `ai/` — keys must not go in `VITE_*` |
+
+**Speed:** match naming and file placement next to neighbors; reuse `StatCard` / `Modal` / filters; add SCSS under the existing page/component section; don't add Redux/Zustand/Tailwind/MUI. `yarn start` on :3000, `yarn build` to check.

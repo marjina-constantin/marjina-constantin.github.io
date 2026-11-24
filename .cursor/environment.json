@@ -1,0 +1,9 @@
+{
+  "install": "cd expenses && yarn",
+  "terminals": [
+    {
+      "name": "vite",
+      "command": "cd expenses && yarn start"
+    }
+  ]
+}

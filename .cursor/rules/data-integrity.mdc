@@ -1,0 +1,22 @@
+---
+description: Do not casually touch sync, offline, fetch, or money calculations
+alwaysApply: true
+---
+
+# Data integrity — stop and ask
+
+Sync, offline queue, fetch, encryption-on-the-wire, and totals are easy to corrupt (lost items, duplicates, wrong month/profit). **Do not change this layer unless the user explicitly asked.** A UI/copy/CSS task is not permission to "clean up" these files.
+
+If the task *seems* to need a change here, **ask first** (one question). If they did ask, change the minimum, keep last-write-wins / timestamps / temp ids / queue semantics, and say what you touched.
+
+**Do not edit unless asked:**
+
+- Sync / queue: `utils/syncService.ts`, `offlineAPI.ts`, `indexedDB.ts`, `syncCallbacks.ts`, `hooks/useDataFetcher.ts`, `context/syncStatus.tsx`, `components/sync/`
+- Fetch / auth on requests: `utils/utils.ts` (`fetchData`), `authErrorHandler.ts`
+- Crypto on items: `crypto/nodeCodec.ts`, `encryptionState.ts` (encode/decode, write-blocked)
+- Totals / grouping: `utils/dataProcessing.ts`, `dataProcessor.worker.ts`, aggregation in `context/reducer.ts`
+- Money math on charts/budgets/AI: `budgets/model.ts`, `components/charts/`, `ai/data.ts`, `ai/context/summary.ts`
+
+**Safe without asking:** use `useData()` / `processData` as-is; render `data.totals`, `groupedData`, `categoryTotals`; add UI that does not recompute totals from `raw` in a new way.
+
+**Not safe:** new fetch paths, bypassing the offline queue, changing `cr`/`updated`/`id`, recomputing averages in a page, "simplifying" the worker, or fixing rounding/filters as a drive-by.

@@ -1,0 +1,13 @@
+---
+description: Git, GitHub Pages, and CI for the expenses PWA
+alwaysApply: true
+---
+
+# Expenses hosting
+
+- Work in `expenses/`. This git repo is `marjina-constantin.github.io`; default branch is `master`.
+- GitHub Pages serves branch `prod`. Never commit or force-push `prod`. CI on push to `master` builds `expenses` and updates `prod`.
+- Do not commit `expenses/home/`, `node_modules`, or `dist`. Do not hand-edit root `404.html`.
+- Prefer a feature branch + PR into `master`. Push straight to `master` only if the user asks for a quick deploy.
+- Backend is Drupal on Pantheon (`dev-expenses-api.pantheonsite.io`), not this repo. Do not add Vercel/Netlify or a second Pages deploy.
+- Verify with `cd expenses && yarn build` (and `yarn start` if UI needs a look).
