@@ -284,11 +284,12 @@ button:not(:disabled),
 .budget-home button.budget-card__toggle:active,
 .budget-home .budget-segment button:active,
 .budget-home button.budget-text-btn:active,
-.transaction-list-item button.transaction-category-box:active {
+.transaction-list-item button.transaction-category-box:active,
+.month-score:active {
   transform: none;
 }
 
-.is-pressing:not(.budget-card__toggle):not(.budget-text-btn):not(.transaction-category-box) {
+.is-pressing:not(.budget-card__toggle):not(.budget-text-btn):not(.transaction-category-box):not(.month-score) {
   animation: buttonSinkSpring 340ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -1342,6 +1343,28 @@ input[type="date"] {
 // PAGE TITLES
 // =============================================================================
 
+.page-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0 1.5rem;
+  min-height: 1.75rem;
+  position: relative;
+  z-index: 4;
+  overflow: visible;
+
+  @media (max-width: 640px) {
+    padding: 0 1rem;
+  }
+
+  .page-title {
+    margin: 0;
+    padding: 0;
+  }
+}
+
 .page-title {
   margin: 0 0 1rem;
   padding: 0 1.5rem;
@@ -1917,6 +1940,9 @@ input[type="date"] {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
   padding: 0 1.5rem;
+  overflow: visible;
+  position: relative;
+  z-index: 3;
 
   @media (max-width: 640px) {
     grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
@@ -2034,6 +2060,114 @@ input[type="date"] {
     .stat-label {
       font-size: 0.7rem;
     }
+  }
+
+}
+
+.month-score {
+  appearance: none;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  background: var(--surface-1);
+  border: 1px solid var(--surface-border-strong);
+  box-shadow: var(--surface-highlight);
+  color: var(--accent-color);
+  font: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+  overflow: visible;
+  -webkit-tap-highlight-color: transparent;
+
+  &.is-open {
+    background: var(--surface-2);
+  }
+
+  svg {
+    display: block;
+  }
+
+  &__value {
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  &__tip {
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    right: 0;
+    left: auto;
+    transform: none;
+    width: min(260px, calc(100vw - 2.5rem));
+    box-sizing: border-box;
+    white-space: normal;
+    text-align: left;
+    background: rgba(17, 24, 39, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.35;
+    padding: 0.4rem 0.55rem;
+    border-radius: $border-radius-sm;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    z-index: 8;
+    pointer-events: none;
+    animation: score-tip-in 0.16s ease-out;
+  }
+
+  &__wait {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  &__dots {
+    display: inline-flex;
+    gap: 0.18rem;
+
+    i {
+      width: 0.28rem;
+      height: 0.28rem;
+      border-radius: 50%;
+      background: currentColor;
+      animation: score-tip-dot 0.8s ease-in-out infinite;
+
+      &:nth-child(2) {
+        animation-delay: 0.12s;
+      }
+
+      &:nth-child(3) {
+        animation-delay: 0.24s;
+      }
+    }
+  }
+}
+
+@keyframes score-tip-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes score-tip-dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

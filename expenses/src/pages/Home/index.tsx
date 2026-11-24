@@ -5,6 +5,7 @@ import Modal from '../../components/ui/Modal';
 import ConfirmDeleteModal from '../../components/ui/ConfirmDeleteModal';
 import TransactionForm from '../../components/transactions/TransactionForm';
 import TransactionList from '../../components/transactions/TransactionList';
+import MonthScoreCard from '../../components/transactions/MonthScoreCard';
 import Filters from '../../components/transactions/Filters';
 import { notificationType, categories } from '../../utils/constants';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -134,7 +135,10 @@ const Home = () => {
           }}
         />
       </Modal>
-      <h2 className="page-title">{currentMonth || 'Expenses'}</h2>
+      <div className="page-title-row">
+        <h2 className="page-title">{currentMonth || 'Expenses'}</h2>
+        <MonthScoreCard month={currentMonth} />
+      </div>
       <Filters />
 
       {loading && <PageLoader />}
