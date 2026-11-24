@@ -292,4 +292,5 @@ export const themeList: Record<string, { label: string; accent: string; bg: stri
   'cambridge-blue':       { label: 'Cambridge blue',       accent: '#c0dcc1', bg: '#0c1424' },
   'malachite-green':      { label: 'Malachite green',      accent: '#2ce6b0', bg: '#0c1424' },
   'deep-space-indigo':    { label: 'Deep space indigo',    accent: '#9ba1eb', bg: '#0c1424' },
+  'soft-coral':           { label: 'Soft coral',           accent: '#f5a0a8', bg: '#0e1326' },
 };

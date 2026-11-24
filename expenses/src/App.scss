@@ -123,6 +123,13 @@ $color-map: (
     text-color: $white,
     tag-selected-text-color: rgba(255, 255, 255, 0.92),
   ),
+  soft-coral: (
+    accent-color: #f5a0a8,
+    secondary-color: #1f2242,
+    bg-color: #0e1326,
+    text-color: $white,
+    tag-selected-text-color: #0c1424,
+  ),
 );
 
 @each $class, $colors in $color-map {
