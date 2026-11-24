@@ -1917,6 +1917,9 @@ input[type="date"] {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
   padding: 0 1.5rem;
+  overflow: visible;
+  position: relative;
+  z-index: 3;
 
   @media (max-width: 640px) {
     grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
@@ -2034,6 +2037,88 @@ input[type="date"] {
     .stat-label {
       font-size: 0.7rem;
     }
+  }
+
+  &--score {
+    overflow: visible;
+    width: 100%;
+    margin: 0;
+    appearance: none;
+    background: var(--surface-1);
+    border: 1px solid var(--surface-border);
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    &.is-open {
+      background: var(--surface-2);
+      border-color: var(--surface-border-strong);
+    }
+  }
+}
+
+.stat-card-tip {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  left: auto;
+  transform: none;
+  width: min(220px, calc(100vw - 2.5rem));
+  box-sizing: border-box;
+  white-space: normal;
+  text-align: left;
+  background: rgba(17, 24, 39, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.35;
+  padding: 0.4rem 0.55rem;
+  border-radius: $border-radius-sm;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  z-index: 8;
+  pointer-events: none;
+  animation: category-tip-in 0.18s var(--ease-out-expo);
+
+  &__wait {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  &__dots {
+    display: inline-flex;
+    gap: 0.18rem;
+
+    i {
+      width: 0.28rem;
+      height: 0.28rem;
+      border-radius: 50%;
+      background: currentColor;
+      animation: score-tip-dot 0.8s ease-in-out infinite;
+
+      &:nth-child(2) {
+        animation-delay: 0.12s;
+      }
+
+      &:nth-child(3) {
+        animation-delay: 0.24s;
+      }
+    }
+  }
+}
+
+@keyframes score-tip-dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

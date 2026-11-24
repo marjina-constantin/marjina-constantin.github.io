@@ -4,6 +4,7 @@ import { formatNumber, getCategory } from '../../utils/utils';
 import { getCategoryIcon, getCategoryTint } from '../../utils/categoryIcons';
 import { TransactionOrIncomeItem } from '../../types/types';
 import StatCard from '../ui/StatCard';
+import MonthScoreCard from './MonthScoreCard';
 import SortControls from '../ui/SortControls';
 import { monthNames } from '../../utils/constants';
 import useSwipeActions from '../../hooks/useSwipeActions';
@@ -98,6 +99,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
             label="Profit"
           />
         )}
+        <MonthScoreCard month={month} />
       </div>
 
       <BudgetRings monthLabel={month} />
