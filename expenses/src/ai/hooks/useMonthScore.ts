@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useAuthState, useData } from '../../context';
-import { AuthState } from '../../types/types';
+import { useData } from '../../context';
 import { describeAiError } from '../client';
 import { getAiItems } from '../data';
 import {
@@ -17,7 +16,6 @@ const OFFLINE = 'You are offline. Connect to explain this score.';
 
 export function useMonthScore(monthLabel?: string) {
   const { data } = useData();
-  const { currency } = useAuthState() as AuthState;
   const { apiKey, status } = useAiApiKey();
   const items = useMemo(() => getAiItems(data.raw || []), [data.raw]);
   const monthKey = monthLabel ? monthLabelToKey(monthLabel) : null;
@@ -66,7 +64,7 @@ export function useMonthScore(monthLabel?: string) {
     setBusy(true);
     setText(null);
 
-    generateMonthScoreWhy(apiKey, facts, currency, controller.signal)
+    generateMonthScoreWhy(apiKey, facts, controller.signal)
       .then((why) => {
         if (cancelled) return;
         saveMonthScoreSnapshot({
@@ -89,7 +87,7 @@ export function useMonthScore(monthLabel?: string) {
       controller.abort();
       setBusy(false);
     };
-  }, [apiKey, currency, facts, open, status]);
+  }, [apiKey, facts, open, status]);
 
   useEffect(() => {
     if (!open || busy || !text) return;

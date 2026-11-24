@@ -288,7 +288,7 @@ button:not(:disabled),
   transform: none;
 }
 
-.is-pressing:not(.budget-card__toggle):not(.budget-text-btn):not(.transaction-category-box) {
+.is-pressing:not(.budget-card__toggle):not(.budget-text-btn):not(.transaction-category-box):not(.stat-card--score) {
   animation: buttonSinkSpring 340ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -2064,7 +2064,7 @@ input[type="date"] {
   right: 0;
   left: auto;
   transform: none;
-  width: min(220px, calc(100vw - 2.5rem));
+  width: min(260px, calc(100vw - 2.5rem));
   box-sizing: border-box;
   white-space: normal;
   text-align: left;
@@ -2079,7 +2079,7 @@ input[type="date"] {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
   z-index: 8;
   pointer-events: none;
-  animation: category-tip-in 0.18s var(--ease-out-expo);
+  animation: score-tip-in 0.16s ease-out;
 
   &__wait {
     display: inline-flex;
@@ -2106,6 +2106,15 @@ input[type="date"] {
         animation-delay: 0.24s;
       }
     }
+  }
+}
+
+@keyframes score-tip-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

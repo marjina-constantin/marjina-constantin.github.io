@@ -13,7 +13,6 @@ const WHY_SCHEMA = {
 export async function generateMonthScoreWhy(
   apiKey: string,
   facts: MonthScoreFacts,
-  currency: string,
   signal?: AbortSignal
 ): Promise<string> {
   const language = getAiLanguage();
@@ -25,19 +24,18 @@ export async function generateMonthScoreWhy(
       systemInstruction: {
         parts: [
           {
-            text: `You explain a 1-10 month score inside a personal expense tracker.
-Reply in ${language}. Use only numbers from FACTS. Never invent amounts, merchants, or categories.
-why: one or two short sentences, max 28 words, saying why the score is this number.
-If comparedTo is "none" and isOpenMonth is true, say the score is from this month's savings so far, not a trend.
-If comparedTo is "none" and isOpenMonth is false, say there is not enough history yet to compare.
-If comparedTo is a period, mention that period. No preamble.`,
+            text: `You turn a score formula into spoken ${language}.
+Use only SCORE_STEPS and skipped from FACTS. Never invent extra reasons, merchants, or numbers.
+Start at 6 and mention every plus/minus with the human reason already in the step.
+If skipped has items, add one short clause for them.
+End with the final score. 2-4 short sentences. No preamble. No bullet list.`,
           },
         ],
       },
-      contents: [{ role: 'user', parts: [{ text: `FACTS\n${factsPacketForModel(facts, currency)}` }] }],
+      contents: [{ role: 'user', parts: [{ text: `FACTS\n${factsPacketForModel(facts)}` }] }],
       generationConfig: {
-        temperature: 0.6,
-        maxOutputTokens: 256,
+        temperature: 0.3,
+        maxOutputTokens: 384,
         responseMimeType: 'application/json',
         responseSchema: WHY_SCHEMA,
         thinkingConfig: { thinkingLevel: 'minimal' },
@@ -49,7 +47,7 @@ If comparedTo is a period, mention that period. No preamble.`,
   const why = String(parsed.why ?? '')
     .replace(/\s+/g, ' ')
     .trim()
-    .slice(0, 220);
+    .slice(0, 360);
   if (!why) throw new Error('Empty response');
   return why;
 }

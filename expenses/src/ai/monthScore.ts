@@ -25,6 +25,11 @@ export interface CategoryDelta {
   pct: number | null;
 }
 
+export interface ScoreStep {
+  delta: number;
+  why: string;
+}
+
 export interface MonthScoreFacts {
   month: string;
   label: string;
@@ -40,6 +45,8 @@ export interface MonthScoreFacts {
   vsAvg: number | null;
   vsAvgPct: number | null;
   score: number;
+  scoreSteps: ScoreStep[];
+  skipped: string[];
   wentWell: CategoryDelta[];
   exploded: CategoryDelta[];
   fingerprint: string;
@@ -84,38 +91,95 @@ const averageOfMonths = (items: AiItem[], months: string[]) => {
   };
 };
 
+const money = (value: number) => Math.round(value).toLocaleString('en-US');
+
 const scoreFrom = ({
   hasIncome,
   saved,
   savingsRate,
   vsAvgPct,
+  compareLabel: period,
   explodedHot,
   useTrend,
+  isOpenMonth,
 }: {
   hasIncome: boolean;
   saved: number;
   savingsRate: number | null;
   vsAvgPct: number | null;
-  explodedHot: number;
+  compareLabel: MonthScoreFacts['compareLabel'];
+  explodedHot: CategoryDelta[];
   useTrend: boolean;
-}) => {
+  isOpenMonth: boolean;
+}): { score: number; steps: ScoreStep[]; skipped: string[] } => {
+  const steps: ScoreStep[] = [{ delta: 6, why: 'everyone starts at 6' }];
+  const skipped: string[] = [];
   let score = 6;
+
   if (hasIncome) {
-    if (saved > 0) score += 1;
-    if (saved < 0) score -= 2;
-    if (savingsRate !== null) {
-      if (savingsRate >= 20) score += 1;
-      if (savingsRate >= 35) score += 1;
-      if (savingsRate < 5) score -= 1;
+    if (saved > 0) {
+      const rate = savingsRate !== null ? ` (${Math.round(savingsRate)}% of income)` : '';
+      score += 1;
+      steps.push({ delta: 1, why: `saved ${money(saved)} this month${rate}` });
     }
+    if (saved < 0) {
+      score -= 2;
+      steps.push({ delta: -2, why: `spent ${money(Math.abs(saved))} more than income` });
+    }
+    if (savingsRate !== null) {
+      if (savingsRate >= 20) {
+        score += 1;
+        steps.push({ delta: 1, why: 'savings rate reached 20%' });
+      }
+      if (savingsRate >= 35) {
+        score += 1;
+        steps.push({ delta: 1, why: 'savings rate reached 35%' });
+      }
+      if (savingsRate < 5) {
+        score -= 1;
+        steps.push({ delta: -1, why: 'savings rate stayed under 5%' });
+      }
+    }
+  } else {
+    skipped.push('no income this month, so savings were not counted');
   }
-  if (useTrend && vsAvgPct !== null) {
-    if (vsAvgPct <= -8) score += 1;
-    if (vsAvgPct >= 10) score -= 1;
-    if (vsAvgPct >= 25) score -= 1;
-    score -= Math.min(2, explodedHot);
+
+  if (!useTrend) {
+    skipped.push(
+      isOpenMonth
+        ? 'month is still open, so past months were not compared'
+        : 'not enough past months to compare spending'
+    );
+  } else if (vsAvgPct !== null) {
+    const signed = `${vsAvgPct > 0 ? '+' : ''}${vsAvgPct}%`;
+    if (vsAvgPct <= -8) {
+      score += 1;
+      steps.push({ delta: 1, why: `spent ${signed} vs ${period}` });
+    }
+    if (vsAvgPct >= 10) {
+      score -= 1;
+      steps.push({ delta: -1, why: `spent ${signed} vs ${period}` });
+    }
+    if (vsAvgPct >= 25) {
+      score -= 1;
+      steps.push({ delta: -1, why: `spending was at least 25% over ${period}` });
+    }
+    const hot = explodedHot.slice(0, 2);
+    hot.forEach((category) => {
+      score -= 1;
+      const pct = category.pct !== null ? ` (${category.pct > 0 ? '+' : ''}${category.pct}%)` : '';
+      steps.push({
+        delta: -1,
+        why: `${category.label} ran 40%+ over its usual level${pct}`,
+      });
+    });
   }
-  return Math.max(1, Math.min(10, score));
+
+  const clamped = Math.max(1, Math.min(10, score));
+  if (clamped !== score) {
+    steps.push({ delta: clamped - score, why: `clamped to stay between 1 and 10` });
+  }
+  return { score: clamped, steps, skipped };
 };
 
 export const buildMonthScoreFacts = (
@@ -172,15 +236,18 @@ export const buildMonthScoreFacts = (
         .sort((a, b) => b.delta - a.delta)
         .slice(0, 3)
     : [];
-  const explodedHot = exploded.filter((c) => (c.pct || 0) >= 40).length;
+  const explodedHot = exploded.filter((c) => (c.pct || 0) >= 40);
   const [year, monthNum] = month.split('-').map(Number);
-  const score = scoreFrom({
+  const period = useTrend ? compareLabel(prevMonths.length) : 'none';
+  const { score, steps, skipped } = scoreFrom({
     hasIncome,
     saved,
     savingsRate,
     vsAvgPct,
+    compareLabel: period,
     explodedHot,
     useTrend,
+    isOpenMonth: open,
   });
 
   return {
@@ -193,14 +260,17 @@ export const buildMonthScoreFacts = (
     hasIncome,
     isOpenMonth: open,
     compareMonths: useTrend ? prevMonths.length : 0,
-    compareLabel: useTrend ? compareLabel(prevMonths.length) : 'none',
+    compareLabel: period,
     avgSpentPrev: avg ? avg.total : null,
     vsAvg,
     vsAvgPct,
     score,
+    scoreSteps: steps,
+    skipped,
     wentWell,
     exploded,
     fingerprint: [
+      'v2',
       month,
       spent,
       income,
@@ -232,31 +302,14 @@ export const saveMonthScoreSnapshot = (snapshot: MonthScoreSnapshot) => {
   localStorage.setItem(AI_STORAGE_KEYS.monthScores, JSON.stringify(store));
 };
 
-export const factsPacketForModel = (facts: MonthScoreFacts, currency: string) =>
+export const factsPacketForModel = (facts: MonthScoreFacts) =>
   JSON.stringify(
     {
       month: facts.label,
       currency,
-      score: facts.score,
-      isOpenMonth: facts.isOpenMonth,
-      comparedTo: facts.compareLabel,
-      spent: facts.spent,
-      income: facts.hasIncome ? facts.income : null,
-      saved: facts.hasIncome ? facts.saved : null,
-      savingsRatePct: facts.savingsRate,
-      vsAveragePct: facts.vsAvgPct,
-      vsAverage: facts.vsAvg,
-      avgSpentPrevious: facts.avgSpentPrev,
-      wentWell: facts.wentWell.map((c) => ({
-        label: c.label,
-        delta: c.delta,
-        pct: c.pct,
-      })),
-      exploded: facts.exploded.map((c) => ({
-        label: c.label,
-        delta: c.delta,
-        pct: c.pct,
-      })),
+      finalScore: facts.score,
+      scoreSteps: facts.scoreSteps,
+      skipped: facts.skipped,
     },
     null,
     2

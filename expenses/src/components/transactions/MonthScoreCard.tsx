@@ -4,7 +4,7 @@ import { useMonthScore } from '../../ai/hooks/useMonthScore';
 import NumberDisplay from '../ui/NumberDisplay';
 
 const MonthScoreCard: React.FC<{ month?: string }> = ({ month }) => {
-  const { score, open, busy, text, toggle } = useMonthScore(month);
+  const { score, open, text, toggle } = useMonthScore(month);
   if (score === null) return null;
 
   return (
@@ -24,7 +24,7 @@ const MonthScoreCard: React.FC<{ month?: string }> = ({ month }) => {
       <div className="stat-label">Score</div>
       {open && (
         <span className="stat-card-tip" role="status">
-          {busy && !text ? (
+          {!text ? (
             <span className="stat-card-tip__wait">
               <span className="stat-card-tip__dots" aria-hidden>
                 <i />
