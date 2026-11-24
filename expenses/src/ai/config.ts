@@ -55,7 +55,6 @@ export const AI_STORAGE_KEYS = {
   modelCooldowns: 'aiModelCooldowns',
   modelLimits: 'aiModelLimits',
   debug: 'aiDebug',
-  monthScores: 'aiMonthScores',
 };
 
 export const AI_LANGUAGES = ['Romanian', 'English', 'Russian'] as const;
