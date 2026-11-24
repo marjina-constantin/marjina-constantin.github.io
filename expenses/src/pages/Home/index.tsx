@@ -11,6 +11,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { TransactionOrIncomeItem } from '../../types/types';
 import { PageLoader } from '../../components/ui/LoadingSpinner';
 import { useDataFetcher } from '../../hooks/useDataFetcher';
+import AgentHomeCard from '../../components/layout/AgentHomeCard';
 
 const Home = () => {
   const showNotification = useNotification();
@@ -134,6 +135,7 @@ const Home = () => {
           }}
         />
       </Modal>
+      <AgentHomeCard />
       <h2 className="page-title">{currentMonth || 'Expenses'}</h2>
       <Filters />
 
