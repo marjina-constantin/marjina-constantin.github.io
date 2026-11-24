@@ -70,7 +70,7 @@ const SyncSetup: React.FC = () => {
       if (!target || target.classList.contains('modal-close')) return;
       // Category icon and budget chrome stay flat; rings keep the sink-and-spring press
       if (target.closest('.transaction-category-box')) return;
-      if (target.closest('.stat-card--score')) return;
+      if (target.closest('.month-score')) return;
       if (target.closest('.profile-section__header')) return;
       if (target.closest('.budget-home') && !target.closest('.budget-ring')) return;
       target.classList.remove('is-pressing');
