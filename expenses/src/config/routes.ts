@@ -5,6 +5,7 @@ import Profile from '../pages/Profile';
 import AddTransaction from '../pages/AddTransaction';
 import Income from '../pages/Income';
 import LazyAssistant from '../pages/LazyAssistant';
+import LazyMonthReport from '../pages/LazyMonthReport';
 
 const routes = [
   {
@@ -40,6 +41,11 @@ const routes = [
   {
     path: '/expenses/assistant',
     component: LazyAssistant,
+    isPrivate: true,
+  },
+  {
+    path: '/expenses/report',
+    component: LazyMonthReport,
     isPrivate: true,
   },
 ];

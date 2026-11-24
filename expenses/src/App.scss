@@ -1358,6 +1358,332 @@ input[type="date"] {
   }
 }
 
+.page-title-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 0 1rem;
+  min-height: 2rem;
+
+  .page-title {
+    margin: 0;
+    padding: 0 4.5rem;
+  }
+}
+
+.month-report-link {
+  position: absolute;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--surface-border-strong);
+  border-radius: 999px;
+  background: var(--surface-1);
+  color: var(--accent-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  @media (hover: hover) {
+    &:hover {
+      border-color: var(--accent-color);
+      background: var(--surface-2);
+    }
+  }
+
+  @media (max-width: 640px) {
+    right: 1rem;
+  }
+}
+
+.month-close-card {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  margin: 0 1.5rem 1.25rem;
+  padding: 1rem 1rem 1rem 0.95rem;
+  border: 1px solid var(--surface-border);
+  border-radius: $border-radius-lg;
+  background: var(--surface-1);
+  box-shadow: var(--surface-highlight);
+
+  @media (max-width: 640px) {
+    margin: 0 1rem 1rem;
+  }
+
+  &__icon {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--accent-color) 15%, transparent);
+    color: var(--accent-color);
+    box-shadow: 0 0 18px -4px color-mix(in srgb, var(--accent-color) 35%, transparent);
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__kicker {
+    margin: 0 0 0.25rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  &__headline {
+    margin: 0 0 0.85rem;
+    color: var(--text-primary);
+    font-size: 1.02rem;
+    font-weight: 600;
+    line-height: 1.35;
+
+    &.is-waiting {
+      color: var(--text-secondary);
+    }
+  }
+
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 0.95rem;
+    font-size: 0.85rem;
+    text-decoration: none;
+    width: auto;
+  }
+
+  &__dismiss {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    margin: -0.2rem -0.25rem 0 0;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+}
+
+.month-report {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 1.5rem 120px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+
+  @media (max-width: 640px) {
+    padding: 0 1rem 120px;
+  }
+
+  &__top {
+    position: relative;
+    margin-bottom: 0.5rem;
+  }
+
+  &__back {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    border-radius: $border-radius-md;
+
+    &:hover {
+      color: var(--accent-color);
+      background: var(--surface-2);
+    }
+  }
+
+  &__pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0 2.5rem;
+
+    .page-title {
+      margin: 0;
+      padding: 0;
+      flex: 1;
+    }
+
+    button {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: $border-radius-md;
+      border: 1px solid var(--surface-border-strong);
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface-1);
+      color: var(--text-primary);
+
+      &:hover:not(:disabled) {
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+      }
+
+      &:disabled {
+        opacity: 0.35;
+      }
+    }
+  }
+
+  &__headline {
+    margin: 0.75rem 0 0.25rem;
+    text-align: center;
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--text-primary);
+  }
+
+  &__stats {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  &__score-why {
+    margin: -0.75rem 0 1rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  &__empty {
+    margin: 2.5rem 0;
+    text-align: center;
+    color: var(--text-secondary);
+  }
+
+  &__stale {
+    display: inline-flex;
+    align-self: center;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0 auto 1rem;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--surface-border-strong);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--accent-color);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  &__columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin: 0.25rem 0 1.25rem;
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+
+  &__stories {
+    h3 {
+      margin: 0 0 0.7rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    li {
+      display: flex;
+      gap: 0.7rem;
+      align-items: flex-start;
+    }
+
+    strong {
+      display: block;
+      font-size: 0.92rem;
+      color: var(--text-primary);
+    }
+
+    p {
+      margin: 0.15rem 0 0;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      color: var(--text-secondary);
+    }
+  }
+
+  &__cat {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+  }
+
+  &__chart {
+    margin: 0.25rem 0 1.25rem;
+  }
+
+  &__next {
+    margin: 0;
+    padding: 0.9rem 1rem;
+    border-left: 2px solid var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 8%, transparent);
+    border-radius: 0 $border-radius-md $border-radius-md 0;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  &__joke {
+    margin: 1rem 0 0;
+    text-align: center;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+}
+
 // =============================================================================
 // PAGES - PROFILE / USER
 // =============================================================================

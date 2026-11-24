@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { NavLink } from 'react-router-dom';
 import { useNotification } from '../../context';
 import { deleteNode, fetchData } from '../../utils/utils';
 import Modal from '../../components/ui/Modal';
@@ -6,11 +7,20 @@ import ConfirmDeleteModal from '../../components/ui/ConfirmDeleteModal';
 import TransactionForm from '../../components/transactions/TransactionForm';
 import TransactionList from '../../components/transactions/TransactionList';
 import Filters from '../../components/transactions/Filters';
+import MonthCloseCard from '../../components/reports/MonthCloseCard';
 import { notificationType, categories } from '../../utils/constants';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { TransactionOrIncomeItem } from '../../types/types';
 import { PageLoader } from '../../components/ui/LoadingSpinner';
 import { useDataFetcher } from '../../hooks/useDataFetcher';
+import { getAiItems } from '../../ai/data';
+import {
+  closedExpenseMonths,
+  isClosedMonth,
+  isMonthReportViewed,
+  markMonthReportViewed,
+  monthLabelToKey,
+} from '../../ai/monthReport';
 
 const Home = () => {
   const showNotification = useNotification();
@@ -70,6 +80,17 @@ const Home = () => {
     });
   };
 
+  const closedMonths = useMemo(
+    () => closedExpenseMonths(getAiItems(data.raw || [])),
+    [data.raw]
+  );
+  const lastClosedMonth = closedMonths[0];
+  const [hideCloseCard, setHideCloseCard] = useState(false);
+  const showCloseCard =
+    !!lastClosedMonth &&
+    !hideCloseCard &&
+    !isMonthReportViewed(lastClosedMonth);
+
   const months = useMemo(
     () => items.groupedData ? Object.keys(items.groupedData) : [],
     [items.groupedData]
@@ -79,6 +100,11 @@ const Home = () => {
     () => months[currentMonthIndex] ? months[currentMonthIndex] : months[0],
     [months, currentMonthIndex]
   );
+  const currentMonthKey = monthLabelToKey(currentMonth || '');
+  const showReportLink =
+    !!currentMonthKey &&
+    isClosedMonth(currentMonthKey) &&
+    closedMonths.includes(currentMonthKey);
 
   useEffect(() => {
     if (data?.filtered) {
@@ -134,7 +160,23 @@ const Home = () => {
           }}
         />
       </Modal>
-      <h2 className="page-title">{currentMonth || 'Expenses'}</h2>
+      <div className="page-title-row">
+        <h2 className="page-title">{currentMonth || 'Expenses'}</h2>
+        {showReportLink && currentMonthKey && (
+          <NavLink to={`/expenses/report?month=${currentMonthKey}`} className="month-report-link">
+            Report
+          </NavLink>
+        )}
+      </div>
+      {showCloseCard && lastClosedMonth && (
+        <MonthCloseCard
+          month={lastClosedMonth}
+          onDismiss={() => {
+            markMonthReportViewed(lastClosedMonth);
+            setHideCloseCard(true);
+          }}
+        />
+      )}
       <Filters />
 
       {loading && <PageLoader />}
