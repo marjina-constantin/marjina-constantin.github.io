@@ -26,6 +26,8 @@ Source on `master` → CI build → `prod` → live. The agent does not deploy; 
 3. For small phone experiments, pushing directly to `master` is allowed if the user asks — still never touch `prod`.
 4. After merge to `master`, wait for **Node.js CI**. Do not push build output yourself.
 
+**Before any `git push` (including a direct push to `master`):** `git fetch` the branch you are updating and rebase onto the latest remote tip. Do not push if you are behind. Never force-push `master` or `prod`.
+
 ## Do not commit
 
 - `expenses/home/` (Vite `dist` renamed by `yarn build`)

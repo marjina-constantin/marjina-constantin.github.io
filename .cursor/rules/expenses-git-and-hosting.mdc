@@ -9,5 +9,6 @@ alwaysApply: true
 - GitHub Pages serves branch `prod`. Never commit or force-push `prod`. CI on push to `master` builds `expenses` and updates `prod`.
 - Do not commit `expenses/home/`, `node_modules`, or `dist`. Do not hand-edit root `404.html`.
 - Prefer a feature branch + PR into `master`. Push straight to `master` only if the user asks for a quick deploy.
+- Before any `git push` (including a direct push to `master`): `git fetch` the branch you are updating and rebase onto the latest remote tip. Do not push if you are behind. Never force-push `master` or `prod`.
 - Backend is Drupal on Pantheon (`dev-expenses-api.pantheonsite.io`), not this repo. Do not add Vercel/Netlify or a second Pages deploy.
 - Verify with `cd expenses && yarn build` (and `yarn start` if UI needs a look).
