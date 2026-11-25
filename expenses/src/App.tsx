@@ -1,6 +1,5 @@
 import './App.scss';
 import { applyChartTheme } from './utils/chartTheme';
-import { applyAppearance } from './utils/appearance';
 
 applyChartTheme();
 import {
@@ -72,7 +71,6 @@ const SyncSetup: React.FC = () => {
       // Category icon and budget chrome stay flat; rings keep the sink-and-spring press
       if (target.closest('.transaction-category-box')) return;
       if (target.closest('.profile-section__header')) return;
-      if (target.closest('.appearance-mode')) return;
       if (target.closest('.budget-home') && !target.closest('.budget-ring')) return;
       target.classList.remove('is-pressing');
       // Force reflow so rapid taps always replay the sink-and-spring animation
@@ -114,14 +112,6 @@ const SyncSetup: React.FC = () => {
     }
   }, [token, dataDispatch]);
 
-  return null;
-};
-
-const AppearanceSync: React.FC = () => {
-  const { appearance } = useAuthState() as AuthState;
-  useEffect(() => {
-    applyAppearance(appearance === 'light' ? 'light' : 'dark');
-  }, [appearance]);
   return null;
 };
 
@@ -168,7 +158,6 @@ function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <AppearanceSync />
         <NotificationProvider>
           <SyncStatusProvider>
             <Router>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Moon, Palette, Sun } from 'lucide-react';
+import { Palette } from 'lucide-react';
 import {
   logout,
   useAuthDispatch,
@@ -12,11 +12,6 @@ import { currencies } from '../../utils/constants';
 import { FaUserCircle } from 'react-icons/fa';
 import { fetchRequest } from '../../utils/utils';
 import { notificationType, themeList } from '../../utils/constants';
-import {
-  appearanceList,
-  persistAppearance,
-  type Appearance,
-} from '../../utils/appearance';
 import { AuthState } from '../../types/types';
 import AiSettings from '../../components/ai/AiSettings';
 import BiometricSettings from '../../components/privacy/BiometricSettings';
@@ -28,11 +23,10 @@ const Profile = () => {
   const showNotification = useNotification();
   const dispatch = useAuthDispatch();
   const { dataDispatch } = useData();
-  const { userDetails, token, currency, appearance } =
+  const { userDetails, token, currency } =
     useAuthState() as AuthState;
   let { theme } = useAuthState() as AuthState;
   theme = themeList[theme] ? theme : 'blue-pink-gradient';
-  const colorMode: Appearance = appearance === 'light' ? 'light' : 'dark';
   const navigate = useNavigate();
   const handleLogout = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -82,15 +76,6 @@ const Profile = () => {
       });
   };
 
-  const handleAppearanceSelect = (next: Appearance) => {
-    persistAppearance(next);
-    dispatch &&
-      dispatch({
-        type: 'UPDATE_USER',
-        payload: { appearance: next },
-      });
-  };
-
   const onBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const value = event.target.value;
     const name = event.target.name;
@@ -116,37 +101,8 @@ const Profile = () => {
           id="appearance"
           icon={<Palette size={16} />}
           title="Appearance"
-          summary={`${currencies[currency as keyof typeof currencies]} · ${appearanceList[colorMode]} · ${themeList[theme].label}`}
+          summary={`${currencies[currency as keyof typeof currencies]} · ${themeList[theme].label}`}
         >
-          <div className="appearance-mode">
-            <span className="appearance-mode__label" id="appearance-mode-label">
-              Mode
-            </span>
-            <div
-              className="appearance-mode__options"
-              role="group"
-              aria-labelledby="appearance-mode-label"
-            >
-              <button
-                type="button"
-                className={colorMode === 'dark' ? 'is-active' : ''}
-                aria-pressed={colorMode === 'dark'}
-                onClick={() => handleAppearanceSelect('dark')}
-              >
-                <Moon size={15} aria-hidden />
-                Dark
-              </button>
-              <button
-                type="button"
-                className={colorMode === 'light' ? 'is-active' : ''}
-                aria-pressed={colorMode === 'light'}
-                onClick={() => handleAppearanceSelect('light')}
-              >
-                <Sun size={15} aria-hidden />
-                Light
-              </button>
-            </div>
-          </div>
           <label className="currency-row">
             <span>Currency</span>
             <span className="currency-value">
@@ -172,8 +128,6 @@ const Profile = () => {
                 key={id}
                 type="button"
                 className={`theme-swatch${theme === id ? ' active' : ''}`}
-                aria-pressed={theme === id}
-                aria-label={label}
                 onClick={() => handleThemeSelect(id)}
               >
                 <div

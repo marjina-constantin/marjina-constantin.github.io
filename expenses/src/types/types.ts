@@ -42,7 +42,6 @@ export interface AuthState {
   token: string;
   value: any;
   theme: string;
-  appearance: 'dark' | 'light';
   currency: string;
   userIsLoggedIn: boolean;
   loading: boolean;

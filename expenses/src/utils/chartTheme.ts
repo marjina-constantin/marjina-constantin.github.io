@@ -1,59 +1,23 @@
 import Highcharts from 'highcharts';
 
-const cssToken = (name: string, fallback: string) => {
-  if (typeof document === 'undefined') return fallback;
-  return (
-    getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
-    fallback
-  );
+const label = {
+  color: 'rgba(255, 255, 255, 0.60)',
+  fontFamily: 'inherit',
+};
+
+const axis = {
+  gridLineColor: 'rgba(255, 255, 255, 0.06)',
+  lineColor: 'rgba(255, 255, 255, 0.10)',
+  tickColor: 'rgba(255, 255, 255, 0.10)',
+  labels: { style: label },
+  title: { style: label },
 };
 
 /**
  * Flat chart skin that sits on the page background, so it follows
  * the active theme without a separate color map.
  */
-export function applyChartTheme(appearance?: 'dark' | 'light') {
-  const isLight =
-    appearance === 'light' ||
-    (appearance == null &&
-      typeof document !== 'undefined' &&
-      document.documentElement.dataset.appearance === 'light');
-  const textPrimary = cssToken(
-    '--text-primary',
-    isLight ? 'rgba(22, 32, 51, 0.92)' : 'rgba(255, 255, 255, 0.87)'
-  );
-  const textSecondary = cssToken(
-    '--text-secondary',
-    isLight ? 'rgba(22, 32, 51, 0.64)' : 'rgba(255, 255, 255, 0.60)'
-  );
-  const textMuted = cssToken(
-    '--text-muted',
-    isLight ? 'rgba(22, 32, 51, 0.45)' : 'rgba(255, 255, 255, 0.42)'
-  );
-  const border = cssToken(
-    '--surface-border-strong',
-    isLight ? 'rgba(22, 32, 51, 0.14)' : 'rgba(255, 255, 255, 0.10)'
-  );
-  const grid = cssToken(
-    '--surface-border',
-    isLight ? 'rgba(22, 32, 51, 0.08)' : 'rgba(255, 255, 255, 0.06)'
-  );
-  const tooltipBg = isLight ? '#ffffff' : '#192338';
-  const tooltipBorder = isLight ? 'rgba(22, 32, 51, 0.12)' : border;
-
-  const label = {
-    color: textSecondary,
-    fontFamily: 'inherit',
-  };
-
-  const axis = {
-    gridLineColor: grid,
-    lineColor: border,
-    tickColor: border,
-    labels: { style: label },
-    title: { style: label },
-  };
-
+export function applyChartTheme() {
   Highcharts.setOptions({
     chart: {
       backgroundColor: 'transparent',
@@ -76,7 +40,7 @@ export function applyChartTheme(appearance?: 'dark' | 'light') {
     ],
     title: {
       style: {
-        color: textPrimary,
+        color: 'rgba(255, 255, 255, 0.87)',
         fontSize: '1.05rem',
         fontWeight: '600',
         fontFamily: 'inherit',
@@ -84,7 +48,7 @@ export function applyChartTheme(appearance?: 'dark' | 'light') {
     },
     subtitle: {
       style: {
-        color: textSecondary,
+        color: 'rgba(255, 255, 255, 0.60)',
         fontFamily: 'inherit',
       },
     },
@@ -92,25 +56,25 @@ export function applyChartTheme(appearance?: 'dark' | 'light') {
     yAxis: axis,
     legend: {
       itemStyle: {
-        color: textPrimary,
+        color: 'rgba(255, 255, 255, 0.80)',
         fontFamily: 'inherit',
         fontWeight: '500',
       },
       itemHoverStyle: {
-        color: textPrimary,
+        color: 'rgba(255, 255, 255, 0.95)',
       },
       itemHiddenStyle: {
-        color: textMuted,
+        color: 'rgba(255, 255, 255, 0.35)',
       },
     },
     tooltip: {
-      backgroundColor: tooltipBg,
+      backgroundColor: '#192338',
       borderWidth: 1,
-      borderColor: tooltipBorder,
+      borderColor: 'rgba(255, 255, 255, 0.10)',
       borderRadius: 10,
       shadow: false,
       style: {
-        color: textPrimary,
+        color: 'rgba(255, 255, 255, 0.87)',
         fontSize: '14px',
         fontFamily: 'inherit',
       },
@@ -120,7 +84,7 @@ export function applyChartTheme(appearance?: 'dark' | 'light') {
         animation: false,
         boostThreshold: 4000,
         dataLabels: {
-          color: textPrimary,
+          color: 'rgba(255, 255, 255, 0.85)',
           style: {
             textOutline: 'none',
             fontFamily: 'inherit',

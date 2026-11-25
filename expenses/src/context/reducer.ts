@@ -11,7 +11,6 @@ import {
 let cachedUser: any = null;
 let cachedToken: string = '';
 let cachedTheme: string = '';
-let cachedAppearance: string = '';
 
 const getCachedUser = () => {
   if (cachedUser === null) {
@@ -39,22 +38,9 @@ const getCachedTheme = () => {
   return cachedTheme;
 };
 
-const getCachedAppearance = () => {
-  if (!cachedAppearance) {
-    try {
-      const value = localStorage.getItem('appearance');
-      cachedAppearance = value ? JSON.parse(value) : '';
-    } catch {
-      cachedAppearance = '';
-    }
-  }
-  return cachedAppearance === 'light' ? 'light' : 'dark';
-};
-
 const user = getCachedUser();
 const token = cachedToken;
 const theme = getCachedTheme();
-const appearance = getCachedAppearance();
 
 export const initialState = {
   userDetails: '' || user,
@@ -64,7 +50,6 @@ export const initialState = {
   userIsLoggedIn: !!user,
   currency: user?.current_user?.currency || 'MDL',
   theme: theme || 'blue-pink-gradient',
-  appearance,
 };
 
 export const initialData = {
