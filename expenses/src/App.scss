@@ -3485,14 +3485,24 @@ input[type="date"] {
   &--user {
     justify-content: flex-end;
 
-    .ai-message__body {
+    .ai-message__column {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
       max-width: 85%;
+    }
+
+    .ai-message__body {
       padding: 0.65rem 0.95rem;
       border-radius: $border-radius-lg $border-radius-lg $border-radius-xs $border-radius-lg;
       background: color-mix(in srgb, var(--accent-color) 20%, transparent);
       color: #fff;
       white-space: pre-wrap;
       word-break: break-word;
+    }
+
+    .ai-message__footer {
+      justify-content: flex-end;
     }
   }
 

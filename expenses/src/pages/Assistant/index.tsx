@@ -53,6 +53,38 @@ const useOnline = () => {
   return online;
 };
 
+const CopyButton: React.FC<{ text: string; label: string }> = ({
+  text,
+  label,
+}) => {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard?.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  };
+
+  return (
+    <button type="button" onClick={copy} aria-label={label}>
+      {copied ? <Check size={14} /> : <Copy size={14} />}
+    </button>
+  );
+};
+
+const UserMessage: React.FC<{ message: ChatMessage }> = ({ message }) => (
+  <div className="ai-message ai-message--user">
+    <div className="ai-message__column">
+      <div className="ai-message__body">{message.text}</div>
+      {message.text && (
+        <div className="ai-message__footer">
+          <CopyButton text={message.text} label="Copy message" />
+        </div>
+      )}
+    </div>
+  </div>
+);
+
 const AssistantMessage: React.FC<{
   message: ChatMessage;
   onRetry?: () => void;
@@ -60,14 +92,6 @@ const AssistantMessage: React.FC<{
   onFollowUp?: (question: string) => void;
   altModel?: string | null;
 }> = ({ message, onRetry, onRetryAlt, onFollowUp, altModel }) => {
-  const [copied, setCopied] = useState(false);
-  const copy = () => {
-    navigator.clipboard?.writeText(message.text).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    });
-  };
-
   return (
     <div
       className={`ai-message ai-message--assistant ai-message--${message.status}`}
@@ -87,9 +111,7 @@ const AssistantMessage: React.FC<{
         {message.text && <AiMarkdown text={message.text} />}
         {message.status !== 'streaming' && message.text && (
           <div className="ai-message__footer">
-            <button type="button" onClick={copy} aria-label="Copy answer">
-              {copied ? <Check size={14} /> : <Copy size={14} />}
-            </button>
+            <CopyButton text={message.text} label="Copy answer" />
             {onRetry && (
               <button
                 type="button"
@@ -301,9 +323,7 @@ const Chat: React.FC<{ apiKey: string; dataLoading: boolean }> = ({
             const altModel = canRetry ? nextChatModel(message.failedModel) : null;
             const latest = index === messages.length - 1;
             return message.role === 'user' ? (
-              <div key={message.id} className="ai-message ai-message--user">
-                <div className="ai-message__body">{message.text}</div>
-              </div>
+              <UserMessage key={message.id} message={message} />
             ) : (
               <AssistantMessage
                 key={message.id}
